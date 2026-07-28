@@ -1,0 +1,3 @@
+{"id":"shapes-001","prompt":"Describe the shapes and colors in the image.","media":["examples/assets/shapes.svg"],"expected_keywords":["red circle","blue square"],"metadata":{"category":"image-description","language":"en","source":"project-generated"}}
+{"id":"project-001","prompt":"What is the name of this benchmark project?","media":[],"expected_keywords":["OpenMultimodalLab"],"metadata":{"category":"smoke-test","language":"en","source":"project-generated"}}
+{"id":"unscored-001","prompt":"Return any deterministic response for an infrastructure smoke test.","media":[],"expected_keywords":[],"metadata":{"category":"infrastructure","language":"en","source":"project-generated"}}
