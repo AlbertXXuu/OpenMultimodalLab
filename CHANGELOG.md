@@ -8,10 +8,11 @@ All notable changes to this project will be documented in this file.
 
 - Versioned benchmark tasks with required `schema_version: "1.0"`.
 - Clear dataset errors for missing and unsupported task schema versions.
+- Repeatable `oml run --category` filters with clear no-match errors.
 
 ### Planned
 
-- Task filtering and run manifests.
+- Run manifests.
 - First real vision-language model adapter.
 
 ## [0.1.0] - 2026-07-28

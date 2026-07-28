@@ -12,7 +12,12 @@ from typing import Sequence
 
 from . import __version__
 from .adapters import MockAdapter
-from .datasets import DatasetError, load_tasks
+from .datasets import (
+    DatasetError,
+    available_categories,
+    filter_tasks_by_categories,
+    load_tasks,
+)
 from .reporting import ReportError, format_summary, load_records, summarize
 from .runner import run_benchmark
 
@@ -31,6 +36,13 @@ def _build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument("--dataset", required=True, type=Path)
     run_parser.add_argument("--output", required=True, type=Path)
     run_parser.add_argument("--backend", choices=("mock",), default="mock")
+    run_parser.add_argument(
+        "--category",
+        action="append",
+        default=[],
+        metavar="CATEGORY",
+        help="Run only an exact task category; repeat to select multiple categories.",
+    )
     run_parser.add_argument(
         "--media-root",
         type=Path,
@@ -78,13 +90,34 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.command == "run":
         try:
             tasks = load_tasks(args.dataset, media_root=args.media_root)
+            if args.category:
+                all_categories = available_categories(tasks)
+                tasks = filter_tasks_by_categories(tasks, args.category)
+                if not tasks:
+                    requested = ", ".join(dict.fromkeys(args.category))
+                    available = ", ".join(all_categories) or "none"
+                    raise DatasetError(
+                        f"No tasks matched categories: {requested}. "
+                        f"Available: {available}"
+                    )
             adapter = MockAdapter()
             records = run_benchmark(tasks, adapter, args.output)
         except DatasetError as exc:
             print(f"Dataset error: {exc}", file=sys.stderr)
             return 2
         print(f"Wrote {len(records)} records to {args.output}")
-        print(format_summary(summarize([json.loads(line) for line in args.output.read_text(encoding='utf-8').splitlines()])))
+        print(
+            format_summary(
+                summarize(
+                    [
+                        json.loads(line)
+                        for line in args.output.read_text(
+                            encoding="utf-8"
+                        ).splitlines()
+                    ]
+                )
+            )
+        )
         return 0
 
     if args.command == "report":
