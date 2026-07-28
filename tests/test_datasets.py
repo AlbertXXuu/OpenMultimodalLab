@@ -18,6 +18,7 @@ class LoadTasksTests(unittest.TestCase):
             dataset.write_text(
                 json.dumps(
                     {
+                        "schema_version": "1.0",
                         "id": "task-1",
                         "prompt": "Describe the image.",
                         "media": ["image.svg"],
@@ -32,11 +33,16 @@ class LoadTasksTests(unittest.TestCase):
 
             self.assertEqual(len(tasks), 1)
             self.assertEqual(tasks[0].id, "task-1")
+            self.assertEqual(tasks[0].schema_version, "1.0")
 
     def test_rejects_duplicate_identifiers(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             dataset = Path(temp_dir) / "tasks.jsonl"
-            item = {"id": "duplicate", "prompt": "Prompt"}
+            item = {
+                "schema_version": "1.0",
+                "id": "duplicate",
+                "prompt": "Prompt",
+            }
             dataset.write_text(
                 json.dumps(item) + "\n" + json.dumps(item) + "\n",
                 encoding="utf-8",
@@ -52,6 +58,7 @@ class LoadTasksTests(unittest.TestCase):
             dataset.write_text(
                 json.dumps(
                     {
+                        "schema_version": "1.0",
                         "id": "missing-media",
                         "prompt": "Prompt",
                         "media": ["missing.png"],
@@ -63,6 +70,37 @@ class LoadTasksTests(unittest.TestCase):
 
             with self.assertRaisesRegex(DatasetError, "does not exist"):
                 load_tasks(dataset, media_root=root)
+
+    def test_rejects_missing_schema_version(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dataset = Path(temp_dir) / "tasks.jsonl"
+            dataset.write_text(
+                json.dumps({"id": "task-1", "prompt": "Prompt"}) + "\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(DatasetError, "schema_version"):
+                load_tasks(dataset)
+
+    def test_rejects_unsupported_schema_version(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dataset = Path(temp_dir) / "tasks.jsonl"
+            dataset.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "9.9",
+                        "id": "task-1",
+                        "prompt": "Prompt",
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(
+                DatasetError, "unsupported schema version"
+            ):
+                load_tasks(dataset)
 
 
 if __name__ == "__main__":

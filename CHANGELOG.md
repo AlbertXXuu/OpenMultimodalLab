@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Versioned benchmark tasks with required `schema_version: "1.0"`.
+- Clear dataset errors for missing and unsupported task schema versions.
+
 ### Planned
 
-- Versioned task schema.
 - Task filtering and run manifests.
 - First real vision-language model adapter.
 

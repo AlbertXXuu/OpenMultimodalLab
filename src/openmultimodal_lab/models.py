@@ -6,24 +6,35 @@ from dataclasses import dataclass, field
 from typing import Any, Mapping
 
 
+CURRENT_TASK_SCHEMA_VERSION = "1.0"
+SUPPORTED_TASK_SCHEMA_VERSIONS = frozenset({CURRENT_TASK_SCHEMA_VERSION})
+
+
 @dataclass(frozen=True, slots=True)
 class EvaluationTask:
     """A single versioned benchmark task."""
 
     id: str
     prompt: str
+    schema_version: str = CURRENT_TASK_SCHEMA_VERSION
     media: tuple[str, ...] = ()
     expected_keywords: tuple[str, ...] = ()
     metadata: Mapping[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, Any]) -> "EvaluationTask":
+        schema_version = value.get("schema_version")
         task_id = value.get("id")
         prompt = value.get("prompt")
         media = value.get("media", [])
         expected_keywords = value.get("expected_keywords", [])
         metadata = value.get("metadata", {})
 
+        if not isinstance(schema_version, str) or not schema_version.strip():
+            raise ValueError("'schema_version' must be a non-empty string")
+        schema_version = schema_version.strip()
+        if schema_version not in SUPPORTED_TASK_SCHEMA_VERSIONS:
+            raise ValueError(f"unsupported schema version '{schema_version}'")
         if not isinstance(task_id, str) or not task_id.strip():
             raise ValueError("'id' must be a non-empty string")
         if not isinstance(prompt, str) or not prompt.strip():
@@ -40,6 +51,7 @@ class EvaluationTask:
         return cls(
             id=task_id.strip(),
             prompt=prompt.strip(),
+            schema_version=schema_version,
             media=tuple(media),
             expected_keywords=tuple(item.strip() for item in expected_keywords),
             metadata=metadata,

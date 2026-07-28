@@ -91,6 +91,7 @@
 
 ```json
 {
+  "schema_version": "1.0",
   "id": "shapes-001",
   "prompt": "Describe the shapes and colors in the image.",
   "media": ["examples/assets/shapes.svg"],
