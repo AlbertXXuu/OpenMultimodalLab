@@ -48,6 +48,16 @@ oml report --input runs/smoke.jsonl
 python -m unittest discover -s tests -v
 ```
 
+只运行某一类任务时使用 `--category`；该参数可以重复：
+
+```powershell
+oml run `
+  --dataset examples/tasks/smoke.jsonl `
+  --output runs/image-and-smoke.jsonl `
+  --category image-description `
+  --category smoke-test
+```
+
 不安装项目时，也可以临时设置源码路径：
 
 ```powershell

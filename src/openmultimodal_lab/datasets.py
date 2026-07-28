@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from pathlib import Path
 
 from .models import EvaluationTask
@@ -10,6 +11,36 @@ from .models import EvaluationTask
 
 class DatasetError(ValueError):
     """Raised when a dataset cannot be safely interpreted."""
+
+
+def available_categories(tasks: Iterable[EvaluationTask]) -> list[str]:
+    """Return sorted, non-empty category names declared by the tasks."""
+
+    categories = {
+        category.strip()
+        for task in tasks
+        if isinstance((category := task.metadata.get("category")), str)
+        and category.strip()
+    }
+    return sorted(categories)
+
+
+def filter_tasks_by_categories(
+    tasks: Iterable[EvaluationTask],
+    categories: Iterable[str],
+) -> list[EvaluationTask]:
+    """Keep tasks whose exact category matches one of the requested values."""
+
+    requested = {category.strip() for category in categories if category.strip()}
+    if not requested:
+        return list(tasks)
+
+    return [
+        task
+        for task in tasks
+        if isinstance((category := task.metadata.get("category")), str)
+        and category.strip() in requested
+    ]
 
 
 def load_tasks(
