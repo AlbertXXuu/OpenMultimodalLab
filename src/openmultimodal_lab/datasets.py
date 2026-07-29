@@ -78,7 +78,15 @@ def load_tasks(
             try:
                 task = EvaluationTask.from_mapping(value)
             except ValueError as exc:
-                raise DatasetError(f"{path}:{line_number}: {exc}") from exc
+                raw_task_id = value.get("id")
+                task_context = (
+                    f" task '{raw_task_id.strip()}'"
+                    if isinstance(raw_task_id, str) and raw_task_id.strip()
+                    else ""
+                )
+                raise DatasetError(
+                    f"{path}:{line_number}:{task_context} {exc}"
+                ) from exc
 
             if task.id in seen_ids:
                 raise DatasetError(f"{path}:{line_number}: duplicate task id '{task.id}'")

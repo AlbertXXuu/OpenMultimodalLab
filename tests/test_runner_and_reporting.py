@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from openmultimodal_lab.adapters import MockAdapter
+from openmultimodal_lab.adapters.errors import AdapterOutOfMemoryError
 from openmultimodal_lab.models import EvaluationTask
 from openmultimodal_lab.reporting import load_records, summarize
 from openmultimodal_lab.runner import run_benchmark
@@ -49,6 +50,22 @@ class RunnerAndReportingTests(unittest.TestCase):
 
         self.assertEqual(records[0].status, "generation_error")
         self.assertIn("injected failure", records[0].error or "")
+
+    def test_typed_adapter_failure_keeps_specific_status(self) -> None:
+        class OutOfMemoryAdapter:
+            name = "memory-limited"
+            revision = "revision-1"
+
+            def generate(self, task: EvaluationTask):
+                raise AdapterOutOfMemoryError("CUDA out of memory")
+
+        task = EvaluationTask(id="failure", prompt="Fail specifically.")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "run.jsonl"
+            records = run_benchmark([task], OutOfMemoryAdapter(), output)
+
+        self.assertEqual(records[0].status, "out_of_memory")
+        self.assertEqual(records[0].model_revision, "revision-1")
 
 
 if __name__ == "__main__":
