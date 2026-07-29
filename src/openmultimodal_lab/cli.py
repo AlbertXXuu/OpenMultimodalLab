@@ -3,15 +3,18 @@
 from __future__ import annotations
 
 import argparse
+import importlib
+import importlib.util
 import json
 import platform
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 from typing import Sequence
 
 from . import __version__
-from .adapters import MockAdapter
+from .adapters import BACKEND_NAMES, create_adapter
 from .datasets import (
     DatasetError,
     available_categories,
@@ -22,6 +25,16 @@ from .reporting import ReportError, format_summary, load_records, summarize
 from .runner import run_benchmark
 
 
+def _positive_int(value: str) -> int:
+    try:
+        parsed = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("must be an integer") from exc
+    if parsed < 1:
+        raise argparse.ArgumentTypeError("must be at least 1")
+    return parsed
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="oml",
@@ -30,12 +43,35 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
 
-    commands.add_parser("doctor", help="Inspect the local core runtime.")
+    doctor_parser = commands.add_parser(
+        "doctor",
+        help="Inspect the local core or model runtime.",
+    )
+    doctor_parser.add_argument(
+        "--backend",
+        choices=("core",) + BACKEND_NAMES[1:],
+        default="core",
+        help="Also check optional packages required by a real backend.",
+    )
 
     run_parser = commands.add_parser("run", help="Run a JSONL task dataset.")
     run_parser.add_argument("--dataset", required=True, type=Path)
     run_parser.add_argument("--output", required=True, type=Path)
-    run_parser.add_argument("--backend", choices=("mock",), default="mock")
+    run_parser.add_argument("--backend", choices=BACKEND_NAMES, default="mock")
+    run_parser.add_argument(
+        "--model-id",
+        help="Override the backend's default model repository.",
+    )
+    run_parser.add_argument(
+        "--model-revision",
+        help="Override the backend's pinned model revision.",
+    )
+    run_parser.add_argument(
+        "--max-new-tokens",
+        type=_positive_int,
+        default=128,
+        help="Maximum tokens generated for each task (default: 128).",
+    )
     run_parser.add_argument(
         "--category",
         action="append",
@@ -60,13 +96,36 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _doctor() -> int:
+def _gpu_summary() -> str:
+    executable = shutil.which("nvidia-smi")
+    if executable is None:
+        return "not detected"
+    try:
+        result = subprocess.run(
+            [
+                executable,
+                "--query-gpu=name,memory.total,driver_version",
+                "--format=csv,noheader",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return "nvidia-smi failed"
+    return result.stdout.strip() or "not detected"
+
+
+def _doctor(backend: str) -> int:
     python_version = platform.python_version()
+    gpu_summary = _gpu_summary()
     print("OpenMultimodalLab doctor")
     print(f"Package version: {__version__}")
     print(f"Python: {python_version}")
     print(f"Platform: {platform.platform()}")
     print(f"Git available: {'yes' if shutil.which('git') else 'no'}")
+    print(f"NVIDIA GPU: {gpu_summary}")
     print(f"Working directory: {Path.cwd()}")
 
     if sys.version_info < (3, 11):
@@ -77,6 +136,48 @@ def _doctor() -> int:
             "Note: the core works on Python 3.13+, but real ML backends target "
             "Python 3.11/3.12."
         )
+    if backend == "qwen3-vl":
+        required_modules = (
+            "torch",
+            "torchvision",
+            "transformers",
+            "accelerate",
+            "PIL",
+        )
+        missing = [
+            module
+            for module in required_modules
+            if importlib.util.find_spec(module) is None
+        ]
+        if missing:
+            print(f"Missing Qwen3-VL modules: {', '.join(missing)}")
+            print(
+                "Install with: python -m pip install -e \".[qwen3-vl]\""
+            )
+            print("Status: Qwen3-VL runtime is not ready.")
+            return 1
+        try:
+            torch = importlib.import_module("torch")
+        except (ImportError, OSError) as exc:
+            print(f"Could not import PyTorch: {type(exc).__name__}: {exc}")
+            print("Status: Qwen3-VL runtime is not ready.")
+            return 1
+        torch_version = getattr(torch, "__version__", "unknown")
+        cuda_version = getattr(getattr(torch, "version", None), "cuda", None)
+        cuda_available = bool(torch.cuda.is_available())
+        print(f"PyTorch: {torch_version}")
+        print(f"PyTorch CUDA build: {cuda_version or 'none'}")
+        print(f"CUDA available to PyTorch: {'yes' if cuda_available else 'no'}")
+        if gpu_summary not in {"not detected", "nvidia-smi failed"} and not cuda_available:
+            print(
+                "Detected an NVIDIA GPU, but PyTorch cannot use CUDA. "
+                "Install a CUDA-enabled PyTorch wheel."
+            )
+            print("Status: Qwen3-VL GPU runtime is not ready.")
+            return 1
+        print("Status: Qwen3-VL runtime dependencies are ready.")
+        return 0
+
     print("Status: core runtime ready.")
     return 0
 
@@ -85,7 +186,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
 
     if args.command == "doctor":
-        return _doctor()
+        return _doctor(args.backend)
 
     if args.command == "run":
         try:
@@ -100,7 +201,13 @@ def main(argv: Sequence[str] | None = None) -> int:
                         f"No tasks matched categories: {requested}. "
                         f"Available: {available}"
                     )
-            adapter = MockAdapter()
+            adapter = create_adapter(
+                args.backend,
+                media_root=args.media_root,
+                model_id=args.model_id,
+                revision=args.model_revision,
+                max_new_tokens=args.max_new_tokens,
+            )
             records = run_benchmark(tasks, adapter, args.output)
         except DatasetError as exc:
             print(f"Dataset error: {exc}", file=sys.stderr)

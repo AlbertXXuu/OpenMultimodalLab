@@ -12,11 +12,16 @@ All notable changes to this project will be documented in this file.
 - Reproducible `synthetic-v1` dataset with 10 project-generated PNG tasks.
 - Evaluation Protocol v1 covering fairness, timing, failures, and reporting.
 - Standard-library image generator plus byte-for-byte reproducibility tests.
+- Lazy-loaded Qwen3-VL Transformers adapter with a pinned model revision.
+- Typed model-load and out-of-memory result statuses.
+- GPU-aware `doctor --backend qwen3-vl` diagnostics.
+- Dataset validation errors that include both source line and task ID.
+- Preserved first Qwen3-VL ten-task raw run and evidence-based baseline report.
 
 ### Planned
 
 - Run manifests.
-- First real vision-language model adapter.
+- Warm-up and detailed performance measurements.
 
 ## [0.1.0] - 2026-07-28
 

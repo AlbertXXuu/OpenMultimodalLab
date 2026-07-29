@@ -10,6 +10,7 @@ from time import perf_counter_ns
 from typing import Iterable
 
 from .adapters.base import ModelAdapter
+from .adapters.errors import AdapterError
 from .metrics import keyword_score
 from .models import EvaluationTask, RunRecord
 
@@ -58,9 +59,13 @@ def run_benchmark(
                     task_id=task.id,
                     category=str(task.metadata.get("category", "uncategorized")),
                     backend=getattr(adapter, "name", type(adapter).__name__),
-                    model_revision="unknown",
+                    model_revision=getattr(adapter, "revision", "unknown"),
                     timestamp_utc=started_at,
-                    status="generation_error",
+                    status=(
+                        exc.status
+                        if isinstance(exc, AdapterError)
+                        else "generation_error"
+                    ),
                     response_text=None,
                     latency_ms=latency_ms,
                     score=None,

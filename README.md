@@ -4,7 +4,7 @@
 
 项目要解决的问题是：同一个图片、文档或视频任务，在不同视觉语言模型上究竟表现如何？它们的准确率、延迟、显存占用、失败方式和运行成本是否能被公平、可复现地比较？
 
-> 当前阶段：`v0.1` 基础评测闭环。先保证任务可以加载、模型适配器可以替换、结果可以记录和汇总，再接入真实模型。
+> 当前阶段：`v0.2` 开发中。基础评测闭环已经接入第一个真实本地模型 Qwen3-VL-2B，并开始用真实输出校验数据和评分质量。
 
 ## 你现在要做什么
 
@@ -20,6 +20,8 @@
 - [范围与需求](docs/02-scope-and-requirements.md)
 - [技术架构](docs/03-architecture.md)
 - [评测协议](docs/evaluation-protocol.md)
+- [Qwen3-VL 真实模型后端](docs/backends/qwen3-vl.md)
+- [Qwen3-VL 第一份真实基线报告](docs/reports/2026-07-30-qwen3-vl-baseline.md)
 - [12 周路线图](docs/04-roadmap.md)
 - [每周工作方法](docs/05-weekly-workflow.md)
 - [质量与开源标准](docs/06-quality-and-open-source.md)
@@ -36,6 +38,8 @@ JSONL 任务集 -> 模型适配器 -> 推理记录 -> 自动评分 -> JSONL 结�
 ```
 
 `mock` 后端只用于测试基础设施，不能作为模型能力结果发布。
+
+真实模型后端使用 `--backend qwen3-vl`。它固定模型 revision、延迟加载权重，并把模型加载失败和显存不足写入原始结果。安装与首次运行见 [Qwen3-VL 后端说明](docs/backends/qwen3-vl.md)。
 
 ## 快速开始
 

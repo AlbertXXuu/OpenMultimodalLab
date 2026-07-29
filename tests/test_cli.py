@@ -6,6 +6,8 @@ import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from openmultimodal_lab.cli import main
 from openmultimodal_lab.reporting import load_records
@@ -98,6 +100,37 @@ class RunCommandTests(unittest.TestCase):
             "Available: document, image-description, spatial-reasoning",
             stderr.getvalue(),
         )
+
+
+class DoctorCommandTests(unittest.TestCase):
+    def test_detects_cpu_only_torch_when_nvidia_gpu_exists(self) -> None:
+        fake_torch = SimpleNamespace(
+            __version__="2.13.0+cpu",
+            version=SimpleNamespace(cuda=None),
+            cuda=SimpleNamespace(is_available=lambda: False),
+        )
+        stdout = io.StringIO()
+
+        with (
+            patch(
+                "openmultimodal_lab.cli._gpu_summary",
+                return_value="NVIDIA RTX Test GPU, 8192 MiB, driver",
+            ),
+            patch(
+                "openmultimodal_lab.cli.importlib.util.find_spec",
+                return_value=object(),
+            ),
+            patch(
+                "openmultimodal_lab.cli.importlib.import_module",
+                return_value=fake_torch,
+            ),
+            redirect_stdout(stdout),
+        ):
+            exit_code = main(["doctor", "--backend", "qwen3-vl"])
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("PyTorch CUDA build: none", stdout.getvalue())
+        self.assertIn("GPU runtime is not ready", stdout.getvalue())
 
 
 if __name__ == "__main__":

@@ -102,6 +102,27 @@ class LoadTasksTests(unittest.TestCase):
             ):
                 load_tasks(dataset)
 
+    def test_validation_error_includes_line_and_task_id(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dataset = Path(temp_dir) / "tasks.jsonl"
+            dataset.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "1.0",
+                        "id": "broken-prompt",
+                        "prompt": "",
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(
+                DatasetError,
+                r"tasks\.jsonl:1: task 'broken-prompt'",
+            ):
+                load_tasks(dataset)
+
 
 if __name__ == "__main__":
     unittest.main()
