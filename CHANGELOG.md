@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file.
 - Versioned benchmark tasks with required `schema_version: "1.0"`.
 - Clear dataset errors for missing and unsupported task schema versions.
 - Repeatable `oml run --category` filters with clear no-match errors.
+- Reproducible `synthetic-v1` dataset with 10 project-generated PNG tasks.
+- Evaluation Protocol v1 covering fairness, timing, failures, and reporting.
+- Standard-library image generator plus byte-for-byte reproducibility tests.
 
 ### Planned
 

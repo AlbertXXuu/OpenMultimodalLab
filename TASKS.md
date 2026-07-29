@@ -23,8 +23,8 @@
 - [x] 检查媒体文件存在性。
 - [x] 支持按一个或多个任务类别过滤运行。
 - [ ] 为错误信息增加行号和任务 ID。
-- [ ] 建立 10 条许可证清晰的图片任务。
-- [ ] 写第一版评测协议。
+- [x] 建立 10 条许可证清晰且可重新生成的图片任务。
+- [x] 写第一版评测协议。
 
 ## Later
 
@@ -52,3 +52,5 @@ python -m unittest discover -s tests -v
 完成任务后在对应复选框打勾，并把真实结果写入 PR、Release Notes 或周报。不要把计划中的数字写成已完成结果。
 
 第一周实际结果见：[docs/reports/2026-07-28-week-01.md](docs/reports/2026-07-28-week-01.md)。
+
+合成图片任务结果见：[docs/reports/2026-07-29-synthetic-v1.md](docs/reports/2026-07-29-synthetic-v1.md)。
