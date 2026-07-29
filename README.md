@@ -19,6 +19,7 @@
 - [目标与验收标准](docs/01-goals-and-success.md)
 - [范围与需求](docs/02-scope-and-requirements.md)
 - [技术架构](docs/03-architecture.md)
+- [评测协议](docs/evaluation-protocol.md)
 - [12 周路线图](docs/04-roadmap.md)
 - [每周工作方法](docs/05-weekly-workflow.md)
 - [质量与开源标准](docs/06-quality-and-open-source.md)
@@ -46,6 +47,20 @@ oml doctor
 oml run --dataset examples/tasks/smoke.jsonl --output runs/smoke.jsonl
 oml report --input runs/smoke.jsonl
 python -m unittest discover -s tests -v
+```
+
+运行第一批 10 条可复现图片任务：
+
+```powershell
+oml run `
+  --dataset examples/tasks/synthetic-v1.jsonl `
+  --output runs/synthetic-v1-mock.jsonl
+```
+
+媒体由标准库脚本生成，可随时重新构建：
+
+```powershell
+python scripts/generate_synthetic_images.py
 ```
 
 只运行某一类任务时使用 `--category`；该参数可以重复：
