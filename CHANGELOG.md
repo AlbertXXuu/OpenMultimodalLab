@@ -17,6 +17,12 @@ All notable changes to this project will be documented in this file.
 - GPU-aware `doctor --backend qwen3-vl` diagnostics.
 - Dataset validation errors that include both source line and task ID.
 - Preserved first Qwen3-VL ten-task raw run and evidence-based baseline report.
+- Task schema 1.1 with explicit, validated deterministic scoring rules.
+- Normalized exact-match and ordered or unordered attribute-group scorers.
+- Immutable `synthetic-v1.1` correcting prompt/reference alignment defects.
+- Run record schema 0.2 with task/dataset versions, metric identity, and details.
+- A distinct `evaluation_error` result that preserves successful model output.
+- Preserved Qwen3-VL validation run demonstrating 10/10 structured-score matches.
 
 ### Planned
 

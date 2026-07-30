@@ -12,7 +12,12 @@ class MockAdapter:
     revision = "deterministic-v1"
 
     def generate(self, task: EvaluationTask) -> ModelOutput:
-        if task.expected_keywords:
+        if (
+            task.scoring.type == "normalized_exact_match"
+            and task.expected_keywords
+        ):
+            response = task.expected_keywords[0]
+        elif task.expected_keywords:
             response = "Mock observation: " + ", ".join(task.expected_keywords) + "."
         else:
             response = f"Mock response for task {task.id}."
