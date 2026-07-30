@@ -23,11 +23,15 @@ All notable changes to this project will be documented in this file.
 - Run record schema 0.2 with task/dataset versions, metric identity, and details.
 - A distinct `evaluation_error` result that preserves successful model output.
 - Preserved Qwen3-VL validation run demonstrating 10/10 structured-score matches.
+- Auditable warm-up and repeated measurement phases in run record schema 0.3.
+- CUDA-synchronized Qwen3-VL TTFT, throughput, preprocessing, and peak-memory metrics.
+- Portable run manifests with input hashes, model/config identity, environment, Git state, and durable record counts.
+- Median and p95 performance summaries that exclude warm-up attempts.
+- Preserved first protocol-compliant Qwen3-VL performance run, manifest, and evidence report.
 
 ### Planned
 
-- Run manifests.
-- Warm-up and detailed performance measurements.
+- Timeout and resume support.
 
 ## [0.1.0] - 2026-07-28
 

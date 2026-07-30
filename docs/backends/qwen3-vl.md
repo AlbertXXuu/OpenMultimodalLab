@@ -59,20 +59,22 @@ Start with the single visual-comparison task:
 ```powershell
 .\.venv-ml\Scripts\oml.exe run `
   --backend qwen3-vl `
-  --dataset examples/tasks/synthetic-v1.jsonl `
+  --dataset examples/tasks/synthetic-v1.1.jsonl `
   --category visual-comparison `
   --max-new-tokens 32 `
   --output runs/qwen3-vl-single.jsonl
 ```
 
-After that succeeds, run the ten-task image set:
+After that succeeds, run the ten-task image set with the formal timing profile:
 
 ```powershell
 .\.venv-ml\Scripts\oml.exe run `
   --backend qwen3-vl `
-  --dataset examples/tasks/synthetic-v1.jsonl `
+  --dataset examples/tasks/synthetic-v1.1.jsonl `
+  --warmup 1 `
+  --repetitions 3 `
   --max-new-tokens 64 `
-  --output runs/qwen3-vl-synthetic-v1.jsonl
+  --output runs/qwen3-vl-synthetic-v1.1-formal.jsonl
 ```
 
 The first command downloads the pinned model into the Hugging Face user cache.
@@ -88,6 +90,14 @@ Every successful record includes:
 - deterministic `do_sample=false`;
 - maximum generated tokens;
 - input and output token counts.
+- model loading, media loading, preprocessing, TTFT, generation, and text
+  decoding time;
+- generated-token and decode-only throughput;
+- maximum allocated CUDA memory during generation.
+
+Every CLI run also writes a portable manifest beside the JSONL output. The
+manifest hashes the task file and media and records the effective environment,
+Git state, repetitions, warm-up, model identity, and timing definitions.
 
 Model-load errors and CUDA out-of-memory failures become explicit
 `model_load_error` and `out_of_memory` records instead of terminating the run
@@ -97,11 +107,12 @@ without evidence.
 
 - Only image media is validated by this first slice.
 - The adapter uses batch size 1 and greedy decoding.
-- Model load time, preprocessing time, time to first token, throughput, and
-  peak VRAM are not separated yet.
-- A single successful run is an engineering baseline, not a publishable model
-  comparison. The evaluation protocol requires warm-up and repeated formal
-  runs.
+- TTFT marks completion of first-token logits inside local generation; it is
+  not application streaming latency.
+- Peak GPU memory is allocated memory, not the CUDA allocator's reserved pool
+  or total system VRAM.
+- A single successful run remains an engineering smoke test, not a publishable
+  comparison.
 
 ## Primary references
 

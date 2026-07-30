@@ -109,6 +109,8 @@ class _FakeModel:
 
     def generate(self, **kwargs: object) -> list[_FakeTokenRow]:
         self.generation_kwargs = kwargs
+        for processor in kwargs["logits_processor"]:
+            processor(None, None)
         return [_FakeTokenRow([1, 2, 3, 7, 8])]
 
 
@@ -133,12 +135,39 @@ class _FakeTorch:
         return nullcontext()
 
 
+class _FakeCuda:
+    synchronized_devices: list[str] = []
+    reset_devices: list[str] = []
+
+    @staticmethod
+    def is_available() -> bool:
+        return True
+
+    @classmethod
+    def synchronize(cls, device: str) -> None:
+        cls.synchronized_devices.append(device)
+
+    @classmethod
+    def reset_peak_memory_stats(cls, device: str) -> None:
+        cls.reset_devices.append(device)
+
+    @staticmethod
+    def max_memory_allocated(device: str) -> int:
+        return 4096 * 1024 * 1024
+
+
+class _FakeCudaTorch(_FakeTorch):
+    cuda = _FakeCuda
+
+
 class Qwen3VLAdapterTests(unittest.TestCase):
     def setUp(self) -> None:
         _FakeProcessorLoader.processor = _FakeProcessor()
         _FakeProcessorLoader.call = None
         _FakeModelLoader.model = _FakeModel()
         _FakeModelLoader.call = None
+        _FakeCuda.synchronized_devices = []
+        _FakeCuda.reset_devices = []
 
     def test_generates_with_pinned_revision_and_records_configuration(self) -> None:
         image_module = _FakeImageModule()
@@ -172,6 +201,21 @@ class Qwen3VLAdapterTests(unittest.TestCase):
         self.assertEqual(output.usage["input_tokens"], 3)
         self.assertEqual(output.usage["output_tokens"], 2)
         self.assertEqual(output.usage["max_new_tokens"], 16)
+        self.assertIsInstance(output.usage["model_load_ms"], float)
+        self.assertIsInstance(output.usage["media_load_ms"], float)
+        self.assertIsInstance(output.usage["preprocessing_ms"], float)
+        self.assertIsInstance(output.usage["ttft_ms"], float)
+        self.assertIsInstance(output.usage["generation_ms"], float)
+        self.assertIsInstance(output.usage["text_decode_ms"], float)
+        self.assertIsInstance(
+            output.usage["output_tokens_per_second"],
+            float,
+        )
+        self.assertIsInstance(
+            output.usage["decode_tokens_per_second"],
+            float,
+        )
+        self.assertIsNone(output.usage["peak_gpu_memory_mb"])
         self.assertEqual(
             _FakeModelLoader.call[1]["revision"],
             DEFAULT_MODEL_REVISION,
@@ -189,6 +233,36 @@ class Qwen3VLAdapterTests(unittest.TestCase):
             "cuda:0",
         )
         self.assertTrue(image_module.converted.closed)
+
+    def test_cuda_timings_synchronize_and_record_peak_allocated_memory(
+        self,
+    ) -> None:
+        dependencies = _Dependencies(
+            torch=_FakeCudaTorch(),
+            auto_model=_FakeModelLoader,
+            auto_processor=_FakeProcessorLoader,
+            image_module=_FakeImageModule(),
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "image.png").write_bytes(b"test image placeholder")
+            task = EvaluationTask(
+                id="image-1",
+                prompt="Describe.",
+                media=("image.png",),
+            )
+            adapter = Qwen3VLAdapter(media_root=root)
+
+            with patch(
+                "openmultimodal_lab.adapters.qwen3_vl._load_dependencies",
+                return_value=dependencies,
+            ):
+                output = adapter.generate(task)
+
+        self.assertGreaterEqual(len(_FakeCuda.synchronized_devices), 3)
+        self.assertEqual(_FakeCuda.reset_devices, ["cuda:0"])
+        self.assertEqual(output.usage["peak_gpu_memory_mb"], 4096)
 
     def test_missing_optional_dependencies_become_model_load_records(self) -> None:
         task = EvaluationTask(
