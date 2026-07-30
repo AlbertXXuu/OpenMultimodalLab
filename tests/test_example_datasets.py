@@ -11,6 +11,9 @@ from openmultimodal_lab.datasets import available_categories, load_tasks
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SYNTHETIC_DATASET = PROJECT_ROOT / "examples" / "tasks" / "synthetic-v1.jsonl"
+SYNTHETIC_DATASET_V1_1 = (
+    PROJECT_ROOT / "examples" / "tasks" / "synthetic-v1.1.jsonl"
+)
 SYNTHETIC_MEDIA = PROJECT_ROOT / "examples" / "assets" / "synthetic-v1"
 GENERATOR = PROJECT_ROOT / "scripts" / "generate_synthetic_images.py"
 
@@ -68,6 +71,28 @@ class SyntheticDatasetTests(unittest.TestCase):
                 strict=True,
             ):
                 self.assertEqual(committed.read_bytes(), generated.read_bytes())
+
+    def test_synthetic_v1_1_has_explicit_structured_scoring(self) -> None:
+        tasks = load_tasks(SYNTHETIC_DATASET_V1_1, media_root=PROJECT_ROOT)
+
+        self.assertEqual(len(tasks), 10)
+        self.assertTrue(all(task.schema_version == "1.1" for task in tasks))
+        self.assertTrue(
+            all(
+                task.metadata.get("dataset_version") == "synthetic-v1.1"
+                for task in tasks
+            )
+        )
+        self.assertEqual(
+            {task.scoring.type for task in tasks},
+            {"normalized_exact_match", "attribute_groups"},
+        )
+        shape_list = next(task for task in tasks if task.id == "shapes-multi-001")
+        self.assertEqual(
+            shape_list.expected_keywords[-1],
+            "green square",
+        )
+        self.assertTrue(shape_list.scoring.ordered)
 
 
 if __name__ == "__main__":

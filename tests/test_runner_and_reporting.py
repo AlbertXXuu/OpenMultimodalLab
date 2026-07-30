@@ -6,7 +6,7 @@ from pathlib import Path
 
 from openmultimodal_lab.adapters import MockAdapter
 from openmultimodal_lab.adapters.errors import AdapterOutOfMemoryError
-from openmultimodal_lab.models import EvaluationTask
+from openmultimodal_lab.models import EvaluationTask, ScoringConfig
 from openmultimodal_lab.reporting import load_records, summarize
 from openmultimodal_lab.runner import run_benchmark
 
@@ -35,6 +35,9 @@ class RunnerAndReportingTests(unittest.TestCase):
         self.assertEqual(summary["scored_tasks"], 1)
         self.assertEqual(summary["mean_score"], 1.0)
         self.assertTrue(all(record.status == "success" for record in records))
+        self.assertTrue(all(record.schema_version == "0.2" for record in records))
+        self.assertEqual(records[0].metric_name, "keyword_coverage")
+        self.assertEqual(records[0].task_schema_version, "1.1")
 
     def test_adapter_failure_is_recorded(self) -> None:
         class FailingAdapter:
@@ -66,6 +69,21 @@ class RunnerAndReportingTests(unittest.TestCase):
 
         self.assertEqual(records[0].status, "out_of_memory")
         self.assertEqual(records[0].model_revision, "revision-1")
+
+    def test_evaluation_failure_preserves_generated_response(self) -> None:
+        task = EvaluationTask(
+            id="invalid-programmatic-scorer",
+            prompt="Generate successfully.",
+            expected_keywords=("answer",),
+            scoring=ScoringConfig(type="not-registered"),
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "run.jsonl"
+            records = run_benchmark([task], MockAdapter(), output)
+
+        self.assertEqual(records[0].status, "evaluation_error")
+        self.assertIn("Mock observation", records[0].response_text or "")
+        self.assertIn("unsupported scoring type", records[0].error or "")
 
 
 if __name__ == "__main__":

@@ -72,7 +72,7 @@
 
 ### FR-05 评价
 
-第一阶段支持确定性关键词评价；后续针对 OCR、结构化抽取、选择题和空间关系增加专用评价器。
+支持旧版确定性关键词评价，以及任务显式选择的规范化精确匹配和属性组评价；后续针对 OCR、结构化抽取和图表增加专用评价器。
 
 ### FR-06 报告
 
@@ -91,19 +91,25 @@
 
 ```json
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "id": "shapes-001",
   "prompt": "Describe the shapes and colors in the image.",
   "media": ["examples/assets/shapes.svg"],
   "expected_keywords": ["red circle", "blue square"],
+  "scoring": {
+    "type": "attribute_groups",
+    "groups": [["red", "circle"], ["blue", "square"]],
+    "ordered": false
+  },
   "metadata": {
+    "dataset_version": "synthetic-v1.1",
     "category": "image-description",
     "language": "en"
   }
 }
 ```
 
-后续 schema 会增加媒体类型、评分器、参考答案、许可证来源和难度，但必须保持版本迁移说明。
+`schema_version: "1.0"` 继续按旧关键词覆盖率读取；`1.1` 必须声明评分器。后续 schema 会增加媒体类型、结构化参考答案和许可证来源，但必须保持版本迁移说明。
 
 ## 6. 隐私与许可证要求
 

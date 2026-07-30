@@ -72,7 +72,7 @@ class ModelAdapter(Protocol):
 - `generation_error`
 - `evaluation_error`
 
-当前基础版本只实现通用异常记录，接入真实模型时再增加可识别的 OOM 和超时分类。
+当前已区分模型加载、OOM、通用生成和评分失败；超时仍待真实后端实现。
 
 ## 6. 计划中的仓库结构
 

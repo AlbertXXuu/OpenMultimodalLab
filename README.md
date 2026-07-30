@@ -4,7 +4,7 @@
 
 项目要解决的问题是：同一个图片、文档或视频任务，在不同视觉语言模型上究竟表现如何？它们的准确率、延迟、显存占用、失败方式和运行成本是否能被公平、可复现地比较？
 
-> 当前阶段：`v0.2` 开发中。基础评测闭环已经接入第一个真实本地模型 Qwen3-VL-2B，并开始用真实输出校验数据和评分质量。
+> 当前阶段：`v0.2` 开发中。基础评测闭环已经接入第一个真实本地模型 Qwen3-VL-2B，并发布带结构化评分的 `synthetic-v1.1`。
 
 ## 你现在要做什么
 
@@ -22,6 +22,7 @@
 - [评测协议](docs/evaluation-protocol.md)
 - [Qwen3-VL 真实模型后端](docs/backends/qwen3-vl.md)
 - [Qwen3-VL 第一份真实基线报告](docs/reports/2026-07-30-qwen3-vl-baseline.md)
+- [synthetic-v1.1 与结构化评分报告](docs/reports/2026-07-31-synthetic-v1-1-structured-scoring.md)
 - [12 周路线图](docs/04-roadmap.md)
 - [每周工作方法](docs/05-weekly-workflow.md)
 - [质量与开源标准](docs/06-quality-and-open-source.md)
@@ -53,15 +54,15 @@ oml report --input runs/smoke.jsonl
 python -m unittest discover -s tests -v
 ```
 
-运行第一批 10 条可复现图片任务：
+运行当前 10 条可复现图片任务：
 
 ```powershell
 oml run `
-  --dataset examples/tasks/synthetic-v1.jsonl `
-  --output runs/synthetic-v1-mock.jsonl
+  --dataset examples/tasks/synthetic-v1.1.jsonl `
+  --output runs/synthetic-v1.1-mock.jsonl
 ```
 
-媒体由标准库脚本生成，可随时重新构建：
+`synthetic-v1` 作为已发布历史版本保持不变；`synthetic-v1.1` 修正了真实模型运行发现的标注问题，并为每条任务声明确定性评分规则。媒体由标准库脚本生成，可随时重新构建：
 
 ```powershell
 python scripts/generate_synthetic_images.py

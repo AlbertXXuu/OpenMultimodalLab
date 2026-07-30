@@ -123,6 +123,74 @@ class LoadTasksTests(unittest.TestCase):
             ):
                 load_tasks(dataset)
 
+    def test_loads_schema_v1_1_structured_scoring(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dataset = Path(temp_dir) / "tasks.jsonl"
+            dataset.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "1.1",
+                        "id": "structured",
+                        "prompt": "Describe the shapes.",
+                        "expected_keywords": ["red circle"],
+                        "scoring": {
+                            "type": "attribute_groups",
+                            "groups": [["red", "circle"]],
+                            "ordered": False,
+                        },
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            tasks = load_tasks(dataset)
+
+        self.assertEqual(tasks[0].schema_version, "1.1")
+        self.assertEqual(tasks[0].scoring.type, "attribute_groups")
+        self.assertEqual(tasks[0].scoring.groups, (("red", "circle"),))
+
+    def test_schema_v1_1_requires_scoring_rule(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dataset = Path(temp_dir) / "tasks.jsonl"
+            dataset.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "1.1",
+                        "id": "missing-scoring",
+                        "prompt": "Prompt",
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(DatasetError, "'scoring' must be an object"):
+                load_tasks(dataset)
+
+    def test_rejects_mismatched_attribute_groups(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dataset = Path(temp_dir) / "tasks.jsonl"
+            dataset.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "1.1",
+                        "id": "mismatched-groups",
+                        "prompt": "Prompt",
+                        "expected_keywords": ["red circle", "blue square"],
+                        "scoring": {
+                            "type": "attribute_groups",
+                            "groups": [["red", "circle"]],
+                        },
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(DatasetError, "must have equal length"):
+                load_tasks(dataset)
+
 
 if __name__ == "__main__":
     unittest.main()
