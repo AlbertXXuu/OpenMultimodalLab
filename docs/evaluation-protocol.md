@@ -94,27 +94,57 @@ configuration and explain the difference.
 
 ## 7. Repetition and warm-up
 
-- Perform at least one unscored warm-up before performance measurement.
-- Run every formal configuration at least three times.
+- Use `--warmup 1` or more before performance measurement.
+- Use `--repetitions 3` or more for every formal configuration.
 - Keep task order fixed unless the run manifest records a seeded shuffle.
 - Report medians for central tendency and p95 for latency tails.
 - Do not discard slow, failed, or out-of-memory samples.
+
+Warm-up attempts are stored with `phase: "warmup"` and remain auditable, but
+they are excluded from score, latency, throughput, and failure aggregates.
+Measured records use `phase: "measurement"` and a one-based `repetition`.
 
 The current `mock` smoke runs are infrastructure checks and are exempt from
 three-run model reporting because they do not measure a real model.
 
 ## 8. Timing boundaries
 
-Future real-model adapters must distinguish:
+The Qwen3-VL adapter records:
 
-- model load time;
-- media preprocessing time;
-- time to first token;
-- decode or generation time;
-- end-to-end task latency.
+- `model_load_ms`: dependency, processor, and weight loading;
+- `media_load_ms`: opening media and converting it to RGB;
+- `preprocessing_ms`: chat-template processing, tokenization, tensor creation,
+  and device transfer;
+- `ttft_ms`: synchronized `model.generate` start to completion of the first
+  generated-token logits;
+- `generation_ms`: synchronized wall time of the complete `model.generate`;
+- `text_decode_ms`: generated token IDs to response text;
+- `latency_ms`: adapter invocation plus deterministic evaluation in the runner;
+- `peak_gpu_memory_mb`: maximum CUDA memory allocated during generation.
 
-GPU timings must synchronize the device at measurement boundaries. Reported
-throughput must state whether it uses generated tokens only or all tokens.
+`output_tokens_per_second` counts generated token IDs, including terminal
+special tokens, over `generation_ms`. `decode_tokens_per_second` excludes the
+first generated token and divides by `generation_ms - ttft_ms`.
+
+CUDA is synchronized at preprocessing, generation, and first-token boundaries.
+The TTFT value is a local model-compute boundary, not network streaming time or
+time until rendered text reaches an application.
+
+## 8.1 Run manifest
+
+Every `oml run` writes `<output>.manifest.json` before inference starts and
+finalizes it after the run. The manifest records:
+
+- dataset and media SHA-256 values;
+- selected task IDs, categories, dataset versions, and fixed order;
+- backend, model ID, immutable revision, and generation parameters;
+- warm-up count, repetitions, and metric boundaries;
+- OS, Python, package versions, CPU, GPU, driver, and Git commit/dirty state;
+- final status and the number of durable warm-up and measurement records.
+
+Paths are repository-relative where possible. Inputs outside the repository
+are represented by basename plus content hash so published manifests do not
+leak personal absolute paths.
 
 ## 9. Scoring
 

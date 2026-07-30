@@ -10,6 +10,8 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from openmultimodal_lab.cli import main
+from openmultimodal_lab.manifest import manifest_path_for
+from openmultimodal_lab.models import ModelOutput
 from openmultimodal_lab.reporting import load_records
 
 
@@ -47,7 +49,14 @@ class RunCommandTests(unittest.TestCase):
             output = root / "run.jsonl"
             self._write_dataset(dataset)
 
-            with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            with (
+                patch(
+                    "openmultimodal_lab.cli._gpu_summary",
+                    return_value="not detected",
+                ),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(io.StringIO()),
+            ):
                 exit_code = main(
                     [
                         "run",
@@ -78,7 +87,14 @@ class RunCommandTests(unittest.TestCase):
             self._write_dataset(dataset)
             stderr = io.StringIO()
 
-            with redirect_stdout(io.StringIO()), redirect_stderr(stderr):
+            with (
+                patch(
+                    "openmultimodal_lab.cli._gpu_summary",
+                    return_value="not detected",
+                ),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(stderr),
+            ):
                 exit_code = main(
                     [
                         "run",
@@ -100,6 +116,111 @@ class RunCommandTests(unittest.TestCase):
             "Available: document, image-description, spatial-reasoning",
             stderr.getvalue(),
         )
+
+    def test_run_writes_manifest_for_warmup_and_repetitions(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            dataset = root / "tasks.jsonl"
+            output = root / "run.jsonl"
+            self._write_dataset(dataset)
+
+            with (
+                patch(
+                    "openmultimodal_lab.cli._gpu_summary",
+                    return_value="Test GPU, 8192 MiB, driver",
+                ),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(io.StringIO()),
+            ):
+                exit_code = main(
+                    [
+                        "run",
+                        "--dataset",
+                        str(dataset),
+                        "--output",
+                        str(output),
+                        "--warmup",
+                        "1",
+                        "--repetitions",
+                        "2",
+                    ]
+                )
+
+            records = load_records(output)
+            manifest = json.loads(
+                manifest_path_for(output).read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(len(records), 7)
+        self.assertEqual(records[0]["phase"], "warmup")
+        self.assertEqual(manifest["status"], "completed")
+        self.assertEqual(manifest["records_written"], 7)
+        self.assertEqual(manifest["warmup_records"], 1)
+        self.assertEqual(manifest["measurement_records"], 6)
+        self.assertEqual(manifest["protocol"]["repetitions"], 2)
+        self.assertEqual(
+            manifest["environment"]["gpu"],
+            "Test GPU, 8192 MiB, driver",
+        )
+
+    def test_interrupted_run_manifest_counts_durable_partial_records(self) -> None:
+        class InterruptingAdapter:
+            name = "interrupting"
+            revision = "test"
+
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def generate(self, task: object) -> ModelOutput:
+                self.calls += 1
+                if self.calls == 2:
+                    raise KeyboardInterrupt()
+                return ModelOutput(
+                    text="generated",
+                    backend=self.name,
+                    model_revision=self.revision,
+                )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            dataset = root / "tasks.jsonl"
+            output = root / "run.jsonl"
+            self._write_dataset(dataset)
+
+            with (
+                patch(
+                    "openmultimodal_lab.cli.create_adapter",
+                    return_value=InterruptingAdapter(),
+                ),
+                patch(
+                    "openmultimodal_lab.cli._gpu_summary",
+                    return_value="not detected",
+                ),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(io.StringIO()),
+                self.assertRaises(KeyboardInterrupt),
+            ):
+                main(
+                    [
+                        "run",
+                        "--dataset",
+                        str(dataset),
+                        "--output",
+                        str(output),
+                    ]
+                )
+
+            records = load_records(output)
+            manifest = json.loads(
+                manifest_path_for(output).read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(len(records), 1)
+        self.assertEqual(manifest["status"], "failed")
+        self.assertEqual(manifest["records_written"], 1)
+        self.assertEqual(manifest["measurement_records"], 1)
+        self.assertEqual(manifest["error"], "KeyboardInterrupt: ")
 
 
 class DoctorCommandTests(unittest.TestCase):

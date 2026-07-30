@@ -170,6 +170,8 @@ class RunRecord:
     """Serializable result for one task and one adapter invocation."""
 
     schema_version: str
+    phase: str
+    repetition: int
     task_schema_version: str
     dataset_version: str
     task_id: str

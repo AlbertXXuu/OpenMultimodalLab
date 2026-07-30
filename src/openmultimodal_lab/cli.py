@@ -11,7 +11,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import Sequence
+from typing import Any, Sequence
 
 from . import __version__
 from .adapters import BACKEND_NAMES, create_adapter
@@ -20,6 +20,12 @@ from .datasets import (
     available_categories,
     filter_tasks_by_categories,
     load_tasks,
+)
+from .manifest import (
+    build_run_manifest,
+    finalize_run_manifest,
+    manifest_path_for,
+    write_run_manifest,
 )
 from .reporting import ReportError, format_summary, load_records, summarize
 from .runner import run_benchmark
@@ -32,6 +38,16 @@ def _positive_int(value: str) -> int:
         raise argparse.ArgumentTypeError("must be an integer") from exc
     if parsed < 1:
         raise argparse.ArgumentTypeError("must be at least 1")
+    return parsed
+
+
+def _non_negative_int(value: str) -> int:
+    try:
+        parsed = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("must be an integer") from exc
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("must be at least 0")
     return parsed
 
 
@@ -71,6 +87,18 @@ def _build_parser() -> argparse.ArgumentParser:
         type=_positive_int,
         default=128,
         help="Maximum tokens generated for each task (default: 128).",
+    )
+    run_parser.add_argument(
+        "--warmup",
+        type=_non_negative_int,
+        default=0,
+        help="Unscored warm-up attempts on the first task (default: 0).",
+    )
+    run_parser.add_argument(
+        "--repetitions",
+        type=_positive_int,
+        default=1,
+        help="Measured repetitions of the selected task set (default: 1).",
     )
     run_parser.add_argument(
         "--category",
@@ -208,11 +236,64 @@ def main(argv: Sequence[str] | None = None) -> int:
                 revision=args.model_revision,
                 max_new_tokens=args.max_new_tokens,
             )
-            records = run_benchmark(tasks, adapter, args.output)
+            manifest_path = manifest_path_for(args.output)
+            manifest = build_run_manifest(
+                dataset_path=args.dataset,
+                output_path=args.output,
+                media_root=args.media_root,
+                tasks=tasks,
+                backend=args.backend,
+                model_id=str(getattr(adapter, "model_id", args.backend)),
+                model_revision=str(
+                    getattr(adapter, "revision", "deterministic")
+                ),
+                max_new_tokens=args.max_new_tokens,
+                warmup=args.warmup,
+                repetitions=args.repetitions,
+                categories=args.category,
+                gpu_summary=_gpu_summary(),
+                project_root=Path.cwd(),
+            )
+            write_run_manifest(manifest_path, manifest)
+            records = []
+            try:
+                records = run_benchmark(
+                    tasks,
+                    adapter,
+                    args.output,
+                    warmup=args.warmup,
+                    repetitions=args.repetitions,
+                )
+            except BaseException as exc:
+                partial_records: list[dict[str, Any]] = []
+                if args.output.is_file():
+                    try:
+                        partial_records = load_records(args.output)
+                    except ReportError:
+                        partial_records = []
+                write_run_manifest(
+                    manifest_path,
+                    finalize_run_manifest(
+                        manifest,
+                        partial_records,
+                        status="failed",
+                        error=f"{type(exc).__name__}: {exc}",
+                    ),
+                )
+                raise
+            write_run_manifest(
+                manifest_path,
+                finalize_run_manifest(
+                    manifest,
+                    records,
+                    status="completed",
+                ),
+            )
         except DatasetError as exc:
             print(f"Dataset error: {exc}", file=sys.stderr)
             return 2
         print(f"Wrote {len(records)} records to {args.output}")
+        print(f"Wrote run manifest to {manifest_path}")
         print(
             format_summary(
                 summarize(

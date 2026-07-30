@@ -20,6 +20,7 @@
 - [范围与需求](docs/02-scope-and-requirements.md)
 - [技术架构](docs/03-architecture.md)
 - [评测协议](docs/evaluation-protocol.md)
+- [运行记录与实验清单](docs/run-records-and-manifests.md)
 - [Qwen3-VL 真实模型后端](docs/backends/qwen3-vl.md)
 - [Qwen3-VL 第一份真实基线报告](docs/reports/2026-07-30-qwen3-vl-baseline.md)
 - [synthetic-v1.1 与结构化评分报告](docs/reports/2026-07-31-synthetic-v1-1-structured-scoring.md)
@@ -67,6 +68,20 @@ oml run `
 ```powershell
 python scripts/generate_synthetic_images.py
 ```
+
+真实模型的正式性能实验必须先 warm-up，并至少重复三次：
+
+```powershell
+oml run `
+  --backend qwen3-vl `
+  --dataset examples/tasks/synthetic-v1.1.jsonl `
+  --warmup 1 `
+  --repetitions 3 `
+  --max-new-tokens 64 `
+  --output runs/qwen3-vl-synthetic-v1.1-formal.jsonl
+```
+
+该命令会同时生成 `.jsonl.manifest.json` 运行清单，保存数据与媒体哈希、模型 revision、环境、Git 状态、计时协议和有效参数。warm-up 记录会保留，但不会进入得分和性能汇总。
 
 只运行某一类任务时使用 `--category`；该参数可以重复：
 

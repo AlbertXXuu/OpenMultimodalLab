@@ -35,7 +35,9 @@ class RunnerAndReportingTests(unittest.TestCase):
         self.assertEqual(summary["scored_tasks"], 1)
         self.assertEqual(summary["mean_score"], 1.0)
         self.assertTrue(all(record.status == "success" for record in records))
-        self.assertTrue(all(record.schema_version == "0.2" for record in records))
+        self.assertTrue(all(record.schema_version == "0.3" for record in records))
+        self.assertTrue(all(record.phase == "measurement" for record in records))
+        self.assertTrue(all(record.repetition == 1 for record in records))
         self.assertEqual(records[0].metric_name, "keyword_coverage")
         self.assertEqual(records[0].task_schema_version, "1.1")
 
@@ -84,6 +86,169 @@ class RunnerAndReportingTests(unittest.TestCase):
         self.assertEqual(records[0].status, "evaluation_error")
         self.assertIn("Mock observation", records[0].response_text or "")
         self.assertIn("unsupported scoring type", records[0].error or "")
+
+    def test_warmup_and_repetitions_are_recorded_but_scored_separately(
+        self,
+    ) -> None:
+        tasks = [
+            EvaluationTask(
+                id="task-1",
+                prompt="First.",
+                expected_keywords=("first",),
+            ),
+            EvaluationTask(
+                id="task-2",
+                prompt="Second.",
+                expected_keywords=("second",),
+            ),
+        ]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "run.jsonl"
+            records = run_benchmark(
+                tasks,
+                MockAdapter(),
+                output,
+                warmup=1,
+                repetitions=3,
+            )
+            loaded = load_records(output)
+            summary = summarize(loaded)
+
+        self.assertEqual(len(records), 7)
+        self.assertEqual(records[0].phase, "warmup")
+        self.assertIsNone(records[0].score)
+        self.assertEqual(
+            [record.repetition for record in records[1:]],
+            [1, 1, 2, 2, 3, 3],
+        )
+        self.assertEqual(summary["total_records"], 7)
+        self.assertEqual(summary["warmup_attempts"], 1)
+        self.assertEqual(summary["total_tasks"], 6)
+        self.assertEqual(summary["unique_tasks"], 2)
+        self.assertEqual(summary["repetitions"], 3)
+        self.assertEqual(summary["mean_score"], 1.0)
+        self.assertFalse(summary["formal_performance_run"])
+
+    def test_summary_excludes_warmup_from_performance_metrics(self) -> None:
+        records = [
+            {
+                "phase": "warmup",
+                "repetition": 1,
+                "task_id": "task-1",
+                "status": "success",
+                "latency_ms": 9999,
+                "score": None,
+                "usage": {
+                    "model_load_ms": 12000,
+                    "ttft_ms": 9999,
+                    "output_tokens_per_second": 1,
+                    "peak_gpu_memory_mb": 9999,
+                },
+            },
+            {
+                "phase": "measurement",
+                "repetition": 1,
+                "task_id": "task-1",
+                "status": "success",
+                "latency_ms": 100,
+                "score": 1,
+                "usage": {
+                    "preprocessing_ms": 10,
+                    "ttft_ms": 20,
+                    "generation_ms": 50,
+                    "output_tokens_per_second": 40,
+                    "decode_tokens_per_second": 60,
+                    "peak_gpu_memory_mb": 4000,
+                },
+            },
+            {
+                "phase": "measurement",
+                "repetition": 2,
+                "task_id": "task-1",
+                "status": "success",
+                "latency_ms": 200,
+                "score": 0,
+                "usage": {
+                    "preprocessing_ms": 20,
+                    "ttft_ms": 40,
+                    "generation_ms": 100,
+                    "output_tokens_per_second": 20,
+                    "decode_tokens_per_second": 30,
+                    "peak_gpu_memory_mb": 4100,
+                },
+            },
+        ]
+
+        summary = summarize(records)
+
+        self.assertEqual(summary["median_latency_ms"], 150)
+        self.assertEqual(summary["median_ttft_ms"], 30)
+        self.assertEqual(summary["p95_ttft_ms"], 40)
+        self.assertEqual(summary["median_preprocessing_ms"], 15)
+        self.assertEqual(summary["model_load_ms"], 12000)
+        self.assertEqual(summary["median_generation_ms"], 75)
+        self.assertEqual(summary["median_output_tokens_per_second"], 30)
+        self.assertEqual(summary["median_decode_tokens_per_second"], 45)
+        self.assertEqual(summary["peak_gpu_memory_mb"], 4100)
+        self.assertTrue(summary["performance_metrics_complete"])
+        self.assertFalse(summary["formal_performance_run"])
+
+    def test_summary_treats_legacy_records_as_single_measurement(self) -> None:
+        summary = summarize(
+            [
+                {
+                    "schema_version": "0.2",
+                    "task_id": "legacy-task",
+                    "status": "success",
+                    "latency_ms": 25,
+                    "score": 1,
+                    "usage": {},
+                }
+            ]
+        )
+
+        self.assertEqual(summary["total_records"], 1)
+        self.assertEqual(summary["warmup_attempts"], 0)
+        self.assertEqual(summary["total_tasks"], 1)
+        self.assertEqual(summary["unique_tasks"], 1)
+        self.assertEqual(summary["repetitions"], 1)
+
+    def test_summary_marks_only_complete_three_repeat_run_as_formal(self) -> None:
+        usage = {
+            "preprocessing_ms": 5,
+            "ttft_ms": 10,
+            "generation_ms": 20,
+            "output_tokens_per_second": 30,
+            "peak_gpu_memory_mb": 4000,
+        }
+        records = [
+            {
+                "phase": "warmup",
+                "repetition": 1,
+                "task_id": "task-1",
+                "status": "success",
+                "latency_ms": 100,
+                "score": None,
+                "usage": usage,
+            },
+            *[
+                {
+                    "phase": "measurement",
+                    "repetition": repetition,
+                    "task_id": "task-1",
+                    "status": "success",
+                    "latency_ms": 25,
+                    "score": 1,
+                    "usage": usage,
+                }
+                for repetition in (1, 2, 3)
+            ],
+        ]
+
+        summary = summarize(records)
+
+        self.assertTrue(summary["performance_metrics_complete"])
+        self.assertTrue(summary["formal_performance_run"])
 
 
 if __name__ == "__main__":

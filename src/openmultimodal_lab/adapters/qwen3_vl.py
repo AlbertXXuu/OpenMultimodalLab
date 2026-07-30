@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from time import perf_counter_ns
 from typing import Any
 
 from ..models import EvaluationTask, ModelOutput
@@ -25,6 +26,20 @@ class _Dependencies:
     auto_model: Any
     auto_processor: Any
     image_module: Any
+
+
+class _FirstTokenTimer:
+    """Transformers logits hook used to mark the first generated token."""
+
+    def __init__(self, synchronize: Any) -> None:
+        self._synchronize = synchronize
+        self.first_token_ns: int | None = None
+
+    def __call__(self, input_ids: Any, scores: Any) -> Any:
+        if self.first_token_ns is None:
+            self._synchronize()
+            self.first_token_ns = perf_counter_ns()
+        return scores
 
 
 def _load_dependencies() -> _Dependencies:
@@ -75,12 +90,13 @@ class Qwen3VLAdapter:
         self._processor: Any = None
         self._load_error: AdapterError | None = None
 
-    def _ensure_loaded(self) -> None:
+    def _ensure_loaded(self) -> float:
         if self._model is not None and self._processor is not None:
-            return
+            return 0.0
         if self._load_error is not None:
             raise self._load_error
 
+        load_start_ns = perf_counter_ns()
         try:
             dependencies = _load_dependencies()
             processor = dependencies.auto_processor.from_pretrained(
@@ -107,6 +123,36 @@ class Qwen3VLAdapter:
         self._dependencies = dependencies
         self._processor = processor
         self._model = model
+        return (perf_counter_ns() - load_start_ns) / 1_000_000
+
+    def _cuda_is_active(self) -> bool:
+        if self._dependencies is None or self._model is None:
+            return False
+        cuda = getattr(self._dependencies.torch, "cuda", None)
+        is_available = getattr(cuda, "is_available", None)
+        return (
+            callable(is_available)
+            and bool(is_available())
+            and str(self._model.device).casefold().startswith("cuda")
+        )
+
+    def _synchronize_cuda(self) -> None:
+        if not self._cuda_is_active():
+            return
+        self._dependencies.torch.cuda.synchronize(self._model.device)
+
+    def _reset_peak_gpu_memory(self) -> None:
+        if not self._cuda_is_active():
+            return
+        self._dependencies.torch.cuda.reset_peak_memory_stats(self._model.device)
+
+    def _peak_gpu_memory_mb(self) -> float | None:
+        if not self._cuda_is_active():
+            return None
+        allocated = self._dependencies.torch.cuda.max_memory_allocated(
+            self._model.device
+        )
+        return float(allocated) / (1024 * 1024)
 
     def _resolve_media(self, task: EvaluationTask) -> list[Path]:
         if not task.media:
@@ -136,15 +182,18 @@ class Qwen3VLAdapter:
 
     def generate(self, task: EvaluationTask) -> ModelOutput:
         media_paths = self._resolve_media(task)
-        self._ensure_loaded()
+        model_load_ms = self._ensure_loaded()
         assert self._dependencies is not None
 
         images: list[Any] = []
         try:
+            media_start_ns = perf_counter_ns()
             for path in media_paths:
                 with self._dependencies.image_module.open(path) as source:
                     images.append(source.convert("RGB"))
+            media_load_ms = (perf_counter_ns() - media_start_ns) / 1_000_000
 
+            preprocess_start_ns = perf_counter_ns()
             content = [
                 {"type": "image", "image": image}
                 for image in images
@@ -160,24 +209,61 @@ class Qwen3VLAdapter:
                 return_tensors="pt",
             )
             inputs = inputs.to(self._model.device)
+            self._synchronize_cuda()
+            preprocessing_ms = (
+                perf_counter_ns() - preprocess_start_ns
+            ) / 1_000_000
             prompt_tokens = int(inputs["input_ids"].shape[-1])
 
+            self._reset_peak_gpu_memory()
+            self._synchronize_cuda()
+            generation_start_ns = perf_counter_ns()
+            first_token_timer = _FirstTokenTimer(self._synchronize_cuda)
             with self._dependencies.torch.inference_mode():
                 generated_ids = self._model.generate(
                     **inputs,
                     max_new_tokens=self.max_new_tokens,
                     do_sample=False,
+                    logits_processor=[first_token_timer],
                 )
+            self._synchronize_cuda()
+            generation_ms = (
+                perf_counter_ns() - generation_start_ns
+            ) / 1_000_000
+            ttft_ms = (
+                (first_token_timer.first_token_ns - generation_start_ns)
+                / 1_000_000
+                if first_token_timer.first_token_ns is not None
+                else None
+            )
+            peak_gpu_memory_mb = self._peak_gpu_memory_mb()
 
             trimmed_ids = [
                 output_ids[prompt_tokens:] for output_ids in generated_ids
             ]
+            decode_start_ns = perf_counter_ns()
             text = self._processor.batch_decode(
                 trimmed_ids,
                 skip_special_tokens=True,
                 clean_up_tokenization_spaces=False,
             )[0].strip()
+            text_decode_ms = (perf_counter_ns() - decode_start_ns) / 1_000_000
             output_tokens = len(trimmed_ids[0])
+            output_tokens_per_second = (
+                output_tokens / (generation_ms / 1000)
+                if generation_ms > 0
+                else None
+            )
+            decode_duration_ms = (
+                generation_ms - ttft_ms if ttft_ms is not None else None
+            )
+            decode_tokens_per_second = (
+                (output_tokens - 1) / (decode_duration_ms / 1000)
+                if output_tokens > 1
+                and decode_duration_ms is not None
+                and decode_duration_ms > 0
+                else None
+            )
         except Exception as exc:
             if self._is_out_of_memory(exc):
                 raise AdapterOutOfMemoryError(str(exc)) from exc
@@ -200,5 +286,14 @@ class Qwen3VLAdapter:
                 "max_new_tokens": self.max_new_tokens,
                 "input_tokens": prompt_tokens,
                 "output_tokens": output_tokens,
+                "model_load_ms": model_load_ms,
+                "media_load_ms": media_load_ms,
+                "preprocessing_ms": preprocessing_ms,
+                "ttft_ms": ttft_ms,
+                "generation_ms": generation_ms,
+                "text_decode_ms": text_decode_ms,
+                "output_tokens_per_second": output_tokens_per_second,
+                "decode_tokens_per_second": decode_tokens_per_second,
+                "peak_gpu_memory_mb": peak_gpu_memory_mb,
             },
         )
