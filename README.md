@@ -24,6 +24,7 @@
 - [Qwen3-VL 真实模型后端](docs/backends/qwen3-vl.md)
 - [Qwen3-VL 第一份真实基线报告](docs/reports/2026-07-30-qwen3-vl-baseline.md)
 - [synthetic-v1.1 与结构化评分报告](docs/reports/2026-07-31-synthetic-v1-1-structured-scoring.md)
+- [Qwen3-VL 正式性能基线](docs/reports/2026-07-31-qwen3-vl-formal-performance.md)
 - [12 周路线图](docs/04-roadmap.md)
 - [每周工作方法](docs/05-weekly-workflow.md)
 - [质量与开源标准](docs/06-quality-and-open-source.md)

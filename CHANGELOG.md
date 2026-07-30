@@ -27,6 +27,7 @@ All notable changes to this project will be documented in this file.
 - CUDA-synchronized Qwen3-VL TTFT, throughput, preprocessing, and peak-memory metrics.
 - Portable run manifests with input hashes, model/config identity, environment, Git state, and durable record counts.
 - Median and p95 performance summaries that exclude warm-up attempts.
+- Preserved first protocol-compliant Qwen3-VL performance run, manifest, and evidence report.
 
 ### Planned
 
