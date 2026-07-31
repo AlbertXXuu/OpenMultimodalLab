@@ -38,6 +38,8 @@ All notable changes to this project will be documented in this file.
 - Default output collision protection, explicit `--overwrite`, and per-record atomic manifest checkpoints with output SHA-256/size.
 - Standard-library repository audit for text hygiene, local links, JSON/JSONL, secrets, and personal paths.
 - Non-duplicated CI with compile, dependency, repository-quality, and wheel-build gates.
+- Result-first English project homepage with a complete Simplified Chinese counterpart.
+- Copyable first-benchmark tutorial from offline smoke to formal real-model evidence.
 
 ### Planned
 
