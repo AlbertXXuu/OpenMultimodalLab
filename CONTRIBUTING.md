@@ -11,6 +11,8 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e .
 python -m unittest discover -s tests -v
+python scripts/check_repository.py
+python -m pip wheel . --no-deps --wheel-dir dist
 ```
 
 ## 修改要求
@@ -21,6 +23,8 @@ python -m unittest discover -s tests -v
 - 文档命令必须实际运行。
 - 不提交密钥、模型权重、大型数据和 `runs/` 结果。
 - 不用 `mock` 后端结果描述真实模型能力。
+- 所有受支持文本保持 UTF-8、无尾随空格且以换行结束。
+- 本地 Markdown 链接和 JSON/JSONL 必须通过仓库审计器。
 
 ## 新增模型 Adapter
 

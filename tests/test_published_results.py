@@ -68,9 +68,11 @@ class PublishedResultTests(unittest.TestCase):
             manifest["environment"]["git"]["commit"],
             "92c2ae7f58eaf36de7c3e2833a1ce191be3b284e",
         )
-        self.assertNotIn("albertxu", manifest_text.casefold())
-        self.assertNotIn("C:\\", manifest_text)
-        self.assertNotIn("D:\\", manifest_text)
+        self.assertNotRegex(manifest_text, r"(?i)[a-z]:[\\/]")
+        self.assertNotRegex(
+            manifest_text,
+            r"(?i)/(?:home|users)/[^/\s]+/",
+        )
 
     def test_formal_manifest_hashes_current_dataset_and_media(self) -> None:
         manifest = json.loads(FORMAL_QWEN_MANIFEST.read_text(encoding="utf-8"))
@@ -180,9 +182,11 @@ class PublishedResultTests(unittest.TestCase):
                     "huggingface-hub",
                     manifest["environment"]["packages"],
                 )
-                self.assertNotIn("albertxu", manifest_text.casefold())
-                self.assertNotIn("C:\\", manifest_text)
-                self.assertNotIn("D:\\", manifest_text)
+                self.assertNotRegex(manifest_text, r"(?i)[a-z]:[\\/]")
+                self.assertNotRegex(
+                    manifest_text,
+                    r"(?i)/(?:home|users)/[^/\s]+/",
+                )
 
     def test_two_model_manifests_share_current_dataset_and_media(self) -> None:
         manifests = [
