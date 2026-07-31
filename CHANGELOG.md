@@ -36,6 +36,8 @@ All notable changes to this project will be documented in this file.
 - Preserved same-commit Qwen3-VL-2B versus SmolVLM2-500M formal comparison.
 - Strict `--resume` validation that appends only a compatible run prefix's missing attempts.
 - Default output collision protection, explicit `--overwrite`, and per-record atomic manifest checkpoints with output SHA-256/size.
+- Standard-library repository audit for text hygiene, local links, JSON/JSONL, secrets, and personal paths.
+- Non-duplicated CI with compile, dependency, repository-quality, and wheel-build gates.
 
 ### Planned
 
