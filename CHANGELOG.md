@@ -33,6 +33,7 @@ All notable changes to this project will be documented in this file.
 - Lazy-loaded `smolvlm2` backend with explicit BF16 loading and dependency diagnostics.
 - Model/processor/chat-template metadata and tokenizer-aware comparison guidance.
 - Third-party runtime, model-weight, and synthetic-dataset license inventory.
+- Preserved same-commit Qwen3-VL-2B versus SmolVLM2-500M formal comparison.
 
 ### Planned
 
