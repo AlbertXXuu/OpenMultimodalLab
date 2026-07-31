@@ -76,9 +76,11 @@ For output `runs/example.jsonl`, the CLI creates:
 runs/example.jsonl.manifest.json
 ```
 
-The file is written with `status: "started"` before inference and atomically
-finalized to `completed` or `failed`. If interruption occurs after records were
-flushed, the failed manifest reconstructs and counts those durable partial
+An empty output identity is written with `status: "started"` before inference.
+After every JSONL record is flushed and synced to disk, the manifest is
+atomically checkpointed with the current record counts, byte length, and
+SHA-256. It is finalized to `completed` or `failed`. If a handled interruption
+occurs, the failed manifest reconstructs and counts the durable partial
 records.
 
 The manifest contains:
@@ -89,8 +91,50 @@ The manifest contains:
 - warm-up and repetition settings;
 - timing and memory definitions;
 - OS, Python, packages, CPU/GPU, Git commit and dirty state;
-- output status and durable record counts.
+- output status, durable record counts, byte length, and SHA-256.
 
 Repository-relative paths are retained. External absolute paths are reduced to
 basename plus content hash to prevent personal paths from entering a published
 artifact.
+
+Run artifacts themselves are excluded when the manifest measures Git dirty
+state. This prevents a result written inside the repository from making an
+otherwise clean run appear dirty; other tracked or untracked changes still
+remain visible.
+
+## Output safety and strict resume
+
+The CLI does not silently replace an existing output or manifest:
+
+- choose a new output path for an independent run;
+- use `--resume` for a compatible interrupted run;
+- use `--overwrite` only when replacement is intentional.
+
+`--resume` accepts only a manifest with `status: "started"` or
+`status: "failed"`. Before appending anything, it verifies:
+
+1. task JSONL, media hashes, selected task IDs, categories, and order;
+2. backend, model ID/revision, generation options, warm-up, and repetitions;
+3. OS, Python, installed runtime packages, GPU, and Git state;
+4. the stored output byte length and SHA-256 when the previous attempt
+   finalized its manifest;
+5. valid UTF-8 JSONL ending on a complete newline-delimited record;
+6. that every existing record is the exact prefix of the requested attempt
+   plan, including phase, repetition, task, backend, revision, schema, and
+   media.
+
+Only missing attempts are appended. The original creation time remains in the
+manifest; `resumed_at_utc` and `resume_count` record recovery history. A
+completed run cannot be resumed because an additional experiment should use a
+new output path.
+
+A hard process or power loss leaves the last atomic `started` checkpoint. If
+the process stops after a record reaches disk but before its manifest
+checkpoint, the declared byte length or hash no longer matches and resume is
+rejected rather than guessing which state is authoritative. A truncated final
+line is likewise rejected rather than discarded.
+
+The SHA-256 is an integrity check, not a digital signature. It detects
+accidental or unilateral output changes while the manifest is trusted; an
+actor who can rewrite both files can replace both values. Signed provenance is
+outside the current local benchmark threat model.

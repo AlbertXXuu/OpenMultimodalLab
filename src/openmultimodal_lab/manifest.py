@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import importlib.metadata
 import json
+import os
 import platform
 import subprocess
 import sys
@@ -16,6 +17,10 @@ from .models import EvaluationTask, RunRecord
 
 
 MANIFEST_SCHEMA_VERSION = "1.0"
+
+
+class ManifestResumeError(ValueError):
+    """Raised when a stored manifest is incompatible with a resumed run."""
 
 
 def _sha256(path: Path) -> str:
@@ -34,7 +39,10 @@ def _portable_path(path: Path, root: Path) -> str:
         return path.name
 
 
-def _git_state(root: Path) -> dict[str, Any]:
+def _git_state(
+    root: Path,
+    ignored_paths: Iterable[Path] = (),
+) -> dict[str, Any]:
     def run(*arguments: str) -> str | None:
         try:
             completed = subprocess.run(
@@ -50,7 +58,20 @@ def _git_state(root: Path) -> dict[str, Any]:
         return completed.stdout.strip()
 
     commit = run("rev-parse", "HEAD")
-    status = run("status", "--porcelain")
+    status_arguments = [
+        "status",
+        "--porcelain",
+        "--untracked-files=all",
+        "--",
+        ".",
+    ]
+    for ignored_path in ignored_paths:
+        try:
+            relative = ignored_path.resolve().relative_to(root.resolve())
+        except ValueError:
+            continue
+        status_arguments.append(f":(exclude){relative.as_posix()}")
+    status = run(*status_arguments)
     return {
         "commit": commit or "unavailable",
         "dirty": status is None or bool(status),
@@ -83,6 +104,198 @@ def manifest_path_for(output_path: str | Path) -> Path:
     return output.with_suffix(output.suffix + ".manifest.json")
 
 
+def load_run_manifest(path: str | Path) -> dict[str, Any]:
+    """Load one run manifest as a JSON object."""
+
+    source = Path(path)
+    if not source.is_file():
+        raise ManifestResumeError(
+            f"cannot resume because manifest does not exist: {source}"
+        )
+    try:
+        value = json.loads(source.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise ManifestResumeError(
+            f"cannot resume because manifest is unreadable: {source}: {exc}"
+        ) from exc
+    if not isinstance(value, dict):
+        raise ManifestResumeError("run manifest must be a JSON object")
+    return value
+
+
+def validate_resume_manifest(
+    existing: Mapping[str, Any],
+    candidate: Mapping[str, Any],
+    *,
+    output_path: str | Path,
+) -> None:
+    """Reject a resume when inputs, code, environment, or protocol changed."""
+
+    status = existing.get("status")
+    if status not in {"started", "failed"}:
+        raise ManifestResumeError(
+            f"run status is '{status}'; only started or failed runs can resume"
+        )
+
+    for section in (
+        "schema_version",
+        "dataset",
+        "backend",
+        "generation",
+        "protocol",
+        "environment",
+    ):
+        if existing.get(section) != candidate.get(section):
+            raise ManifestResumeError(
+                f"resume configuration mismatch in '{section}'"
+            )
+
+    existing_output = existing.get("output")
+    candidate_output = candidate.get("output")
+    if not isinstance(existing_output, Mapping) or not isinstance(
+        candidate_output,
+        Mapping,
+    ):
+        raise ManifestResumeError("run manifest has an invalid output section")
+    if existing_output.get("path") != candidate_output.get("path"):
+        raise ManifestResumeError(
+            "resume configuration mismatch in 'output.path'"
+        )
+
+    output = Path(output_path)
+    if not output.is_file():
+        raise ManifestResumeError(
+            f"cannot resume because output does not exist: {output}"
+        )
+    declared_size = existing_output.get("size_bytes")
+    if (
+        not isinstance(declared_size, int)
+        or isinstance(declared_size, bool)
+        or declared_size < 0
+    ):
+        raise ManifestResumeError(
+            "run manifest has an invalid 'output.size_bytes'"
+        )
+    if output.stat().st_size != declared_size:
+        raise ManifestResumeError(
+            "existing output size does not match the run manifest"
+        )
+    declared_sha256 = existing_output.get("sha256")
+    if (
+        not isinstance(declared_sha256, str)
+        or len(declared_sha256) != 64
+        or any(
+            character not in "0123456789abcdef"
+            for character in declared_sha256
+        )
+    ):
+        raise ManifestResumeError(
+            "run manifest has an invalid 'output.sha256'"
+        )
+    if _sha256(output) != declared_sha256:
+        raise ManifestResumeError(
+            "existing output SHA-256 does not match the run manifest"
+        )
+
+
+def validate_resume_record_count(
+    existing: Mapping[str, Any],
+    actual_count: int,
+) -> None:
+    """Check a manifest's durable count when a checkpoint declared one."""
+
+    if (
+        not isinstance(actual_count, int)
+        or isinstance(actual_count, bool)
+        or actual_count < 0
+    ):
+        raise ValueError("actual_count must be a non-negative integer")
+    declared_count = existing.get("records_written")
+    if (
+        not isinstance(declared_count, int)
+        or isinstance(declared_count, bool)
+        or declared_count < 0
+    ):
+        raise ManifestResumeError(
+            "run manifest has an invalid 'records_written'"
+        )
+    if declared_count != actual_count:
+        raise ManifestResumeError(
+            "existing output record count does not match the run manifest"
+        )
+
+
+def prepare_resumed_manifest(
+    existing: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Return an in-progress manifest while preserving run provenance."""
+
+    resumed = dict(existing)
+    for key in (
+        "completed_at_utc",
+        "error",
+    ):
+        resumed.pop(key, None)
+    previous_resume_count = existing.get("resume_count", 0)
+    if (
+        not isinstance(previous_resume_count, int)
+        or isinstance(previous_resume_count, bool)
+        or previous_resume_count < 0
+    ):
+        raise ManifestResumeError(
+            "run manifest has an invalid 'resume_count'"
+        )
+    resumed.update(
+        {
+            "status": "started",
+            "resumed_at_utc": datetime.now(timezone.utc).isoformat(),
+            "resume_count": previous_resume_count + 1,
+        }
+    )
+    return resumed
+
+
+def checkpoint_run_manifest(
+    manifest: Mapping[str, Any],
+    records: Iterable[RunRecord | Mapping[str, Any]],
+    *,
+    output_path: str | Path,
+) -> dict[str, Any]:
+    """Record a durable in-progress prefix and its output identity."""
+
+    checkpoint = dict(manifest)
+    record_list = list(records)
+
+    def phase(record: RunRecord | Mapping[str, Any]) -> str:
+        if isinstance(record, Mapping):
+            return str(record.get("phase", "measurement"))
+        return record.phase
+
+    output_file = Path(output_path)
+    output = dict(checkpoint.get("output", {}))
+    output.update(
+        {
+            "sha256": _sha256(output_file),
+            "size_bytes": output_file.stat().st_size,
+        }
+    )
+    checkpoint.update(
+        {
+            "status": "started",
+            "checkpointed_at_utc": datetime.now(timezone.utc).isoformat(),
+            "records_written": len(record_list),
+            "warmup_records": sum(
+                phase(record) == "warmup" for record in record_list
+            ),
+            "measurement_records": sum(
+                phase(record) != "warmup" for record in record_list
+            ),
+            "output": output,
+        }
+    )
+    return checkpoint
+
+
 def build_run_manifest(
     *,
     dataset_path: str | Path,
@@ -103,6 +316,8 @@ def build_run_manifest(
 
     root = Path(project_root).resolve()
     dataset = Path(dataset_path)
+    output = Path(output_path)
+    output_manifest = manifest_path_for(output)
     media_base = Path(media_root)
     task_list = list(tasks)
     media_entries: list[dict[str, str]] = []
@@ -141,7 +356,7 @@ def build_run_manifest(
             "task_ids": [task.id for task in task_list],
             "media": media_entries,
         },
-        "output": {"path": _portable_path(Path(output_path), root)},
+        "output": {"path": _portable_path(output, root)},
         "backend": {
             "name": backend,
             "model_id": model_id,
@@ -170,7 +385,16 @@ def build_run_manifest(
             "processor": platform.processor() or "unavailable",
             "gpu": gpu_summary,
             "packages": _package_versions(),
-            "git": _git_state(root),
+            "git": _git_state(
+                root,
+                (
+                    output,
+                    output_manifest,
+                    output_manifest.with_suffix(
+                        output_manifest.suffix + ".tmp"
+                    ),
+                ),
+            ),
         },
     }
 
@@ -181,6 +405,7 @@ def finalize_run_manifest(
     *,
     status: str,
     error: str | None = None,
+    output_path: str | Path | None = None,
 ) -> dict[str, Any]:
     finalized = dict(manifest)
     record_list = list(records)
@@ -204,18 +429,38 @@ def finalize_run_manifest(
             "error": error,
         }
     )
+    if output_path is not None:
+        output_file = Path(output_path)
+        if output_file.is_file():
+            output = dict(finalized.get("output", {}))
+            output.update(
+                {
+                    "sha256": _sha256(output_file),
+                    "size_bytes": output_file.stat().st_size,
+                }
+            )
+            finalized["output"] = output
     return finalized
 
 
 def write_run_manifest(path: str | Path, manifest: Mapping[str, Any]) -> None:
-    """Atomically replace a JSON manifest."""
+    """Sync a temporary JSON manifest and atomically replace the prior file."""
 
     destination = Path(path)
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_suffix(destination.suffix + ".tmp")
-    temporary.write_text(
-        json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-        newline="\n",
+    serialized = (
+        json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True)
+        + "\n"
     )
+    with temporary.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(serialized)
+        handle.flush()
+        os.fsync(handle.fileno())
     temporary.replace(destination)
+    if os.name != "nt":
+        directory_descriptor = os.open(destination.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory_descriptor)
+        finally:
+            os.close(directory_descriptor)

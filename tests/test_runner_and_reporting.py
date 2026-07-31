@@ -3,12 +3,17 @@ from __future__ import annotations
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from openmultimodal_lab.adapters import MockAdapter
 from openmultimodal_lab.adapters.errors import AdapterOutOfMemoryError
-from openmultimodal_lab.models import EvaluationTask, ScoringConfig
+from openmultimodal_lab.models import (
+    EvaluationTask,
+    ModelOutput,
+    ScoringConfig,
+)
 from openmultimodal_lab.reporting import load_records, summarize
-from openmultimodal_lab.runner import run_benchmark
+from openmultimodal_lab.runner import ResumeError, run_benchmark
 
 
 class RunnerAndReportingTests(unittest.TestCase):
@@ -71,6 +76,177 @@ class RunnerAndReportingTests(unittest.TestCase):
 
         self.assertEqual(records[0].status, "out_of_memory")
         self.assertEqual(records[0].model_revision, "revision-1")
+
+    def test_resume_appends_only_missing_attempts(self) -> None:
+        class InterruptingAdapter:
+            name = "stable"
+            revision = "revision-1"
+
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def generate(self, task: EvaluationTask) -> ModelOutput:
+                self.calls += 1
+                if self.calls == 2:
+                    raise KeyboardInterrupt()
+                return ModelOutput(
+                    text=task.id,
+                    backend=self.name,
+                    model_revision=self.revision,
+                )
+
+        class ResumedAdapter:
+            name = "stable"
+            revision = "revision-1"
+
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def generate(self, task: EvaluationTask) -> ModelOutput:
+                self.calls += 1
+                return ModelOutput(
+                    text=task.id,
+                    backend=self.name,
+                    model_revision=self.revision,
+                )
+
+        tasks = [
+            EvaluationTask(id="task-1", prompt="First."),
+            EvaluationTask(id="task-2", prompt="Second."),
+        ]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "run.jsonl"
+            with self.assertRaises(KeyboardInterrupt):
+                run_benchmark(
+                    tasks,
+                    InterruptingAdapter(),
+                    output,
+                    repetitions=2,
+                )
+
+            resumed_adapter = ResumedAdapter()
+            checkpoint_sizes: list[int] = []
+            records = run_benchmark(
+                tasks,
+                resumed_adapter,
+                output,
+                repetitions=2,
+                resume=True,
+                on_record_persisted=lambda current: checkpoint_sizes.append(
+                    len(current)
+                ),
+            )
+            loaded = load_records(output)
+
+        self.assertEqual(resumed_adapter.calls, 3)
+        self.assertEqual(checkpoint_sizes, [2, 3, 4])
+        self.assertEqual(len(records), 4)
+        self.assertEqual(len(loaded), 4)
+        self.assertEqual(
+            [
+                (record["task_id"], record["repetition"])
+                for record in loaded
+            ],
+            [
+                ("task-1", 1),
+                ("task-2", 1),
+                ("task-1", 2),
+                ("task-2", 2),
+            ],
+        )
+
+    def test_each_record_is_synced_before_checkpoint(self) -> None:
+        tasks = [
+            EvaluationTask(id="task-1", prompt="First."),
+            EvaluationTask(id="task-2", prompt="Second."),
+        ]
+        events: list[tuple[str, int]] = []
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "run.jsonl"
+            with patch(
+                "openmultimodal_lab.runner.os.fsync",
+                side_effect=lambda descriptor: events.append(
+                    ("sync", descriptor)
+                ),
+            ) as fsync:
+                run_benchmark(
+                    tasks,
+                    MockAdapter(),
+                    output,
+                    on_record_persisted=lambda records: events.append(
+                        ("checkpoint", len(records))
+                    ),
+                )
+
+        self.assertEqual(fsync.call_count, 2)
+        self.assertEqual(
+            [event[0] for event in events],
+            ["sync", "checkpoint", "sync", "checkpoint"],
+        )
+
+    def test_resume_rejects_truncated_jsonl_boundary(self) -> None:
+        task = EvaluationTask(id="task-1", prompt="First.")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "run.jsonl"
+            run_benchmark([task], MockAdapter(), output)
+            output.write_bytes(output.read_bytes().rstrip(b"\n"))
+
+            with self.assertRaisesRegex(
+                ResumeError,
+                "durable JSONL record boundary",
+            ):
+                run_benchmark(
+                    [task],
+                    MockAdapter(),
+                    output,
+                    resume=True,
+                )
+
+    def test_resume_rejects_changed_attempt_plan(self) -> None:
+        tasks = [
+            EvaluationTask(id="task-1", prompt="First."),
+            EvaluationTask(id="task-2", prompt="Second."),
+        ]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "run.jsonl"
+            run_benchmark(tasks, MockAdapter(), output)
+
+            with self.assertRaisesRegex(
+                ResumeError,
+                "not the expected run prefix",
+            ):
+                run_benchmark(
+                    list(reversed(tasks)),
+                    MockAdapter(),
+                    output,
+                    resume=True,
+                )
+
+    def test_resume_rejects_changed_reference_contract(self) -> None:
+        original = EvaluationTask(
+            id="task-1",
+            prompt="First.",
+            expected_keywords=("first",),
+        )
+        changed = EvaluationTask(
+            id="task-1",
+            prompt="First.",
+            expected_keywords=("different",),
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "run.jsonl"
+            run_benchmark([original], MockAdapter(), output)
+
+            with self.assertRaisesRegex(
+                ResumeError,
+                "expected_keywords",
+            ):
+                run_benchmark(
+                    [changed],
+                    MockAdapter(),
+                    output,
+                    resume=True,
+                )
 
     def test_evaluation_failure_preserves_generated_response(self) -> None:
         task = EvaluationTask(

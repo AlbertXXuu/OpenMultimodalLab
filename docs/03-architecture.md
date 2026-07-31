@@ -61,9 +61,13 @@ Qwen3-VL 与 SmolVLM2 通过共享的 `TransformersImageTextAdapter` 执行
 3. Runner 将任务交给 Adapter。
 4. Runner 先执行可审计但不计分的 warm-up，再按固定顺序重复正式任务。
 5. Evaluator 根据任务指定规则评分。
-6. 每条任务立即追加到原始 JSONL。
-7. Reporter 排除 warm-up，从正式记录重建质量与性能汇总。
-8. 运行清单保存输入哈希、模型、环境、Git 状态和计时协议。
+6. 每条任务立即追加并同步到磁盘，再原子更新包含记录数和输出哈希的
+   `started` checkpoint。
+7. 中断恢复前验证 manifest、输出哈希和现有记录是否为执行计划的严格前缀，
+   只追加缺失尝试。
+8. Reporter 排除 warm-up，从正式记录重建质量与性能汇总。
+9. 运行清单保存输入哈希、模型、环境、Git 状态、计时协议、输出字节数和
+   SHA-256。
 
 ## 5. 失败模型
 
