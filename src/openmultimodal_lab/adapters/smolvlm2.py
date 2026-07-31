@@ -1,8 +1,9 @@
-"""Local Transformers adapter for Qwen3-VL instruction models."""
+"""Local Transformers adapter for SmolVLM2 instruction models."""
 
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from .errors import AdapterDependencyError
 from .transformers_image_text import (
@@ -10,18 +11,19 @@ from .transformers_image_text import (
     TransformersImageTextAdapter,
 )
 
-DEFAULT_MODEL_ID = "Qwen/Qwen3-VL-2B-Instruct"
-DEFAULT_MODEL_REVISION = "89644892e4d85e24eaac8bacfd4f463576704203"
+DEFAULT_MODEL_ID = "HuggingFaceTB/SmolVLM2-500M-Video-Instruct"
+DEFAULT_MODEL_REVISION = "7b375e1b73b11138ff12fe22c8f2822d8fe03467"
 
 
 def _load_dependencies() -> TransformersDependencies:
     try:
+        import num2words  # noqa: F401 - required by the SmolVLM processor
         import torch
         from PIL import Image
         from transformers import AutoModelForImageTextToText, AutoProcessor
     except ImportError as exc:
         raise AdapterDependencyError(
-            "Qwen3-VL dependencies are missing. Install the 'qwen3-vl' "
+            "SmolVLM2 dependencies are missing. Install the 'smolvlm2' "
             "optional dependency group in a Python 3.11/3.12 environment."
         ) from exc
 
@@ -33,11 +35,11 @@ def _load_dependencies() -> TransformersDependencies:
     )
 
 
-class Qwen3VLAdapter(TransformersImageTextAdapter):
-    """Run a pinned Qwen3-VL checkpoint locally through Transformers."""
+class SmolVLM2Adapter(TransformersImageTextAdapter):
+    """Run the pinned SmolVLM2 500M checkpoint through Transformers."""
 
-    name = "qwen3-vl"
-    display_name = "Qwen3-VL"
+    name = "smolvlm2"
+    display_name = "SmolVLM2"
 
     def __init__(
         self,
@@ -56,3 +58,20 @@ class Qwen3VLAdapter(TransformersImageTextAdapter):
 
     def _load_runtime_dependencies(self) -> TransformersDependencies:
         return _load_dependencies()
+
+    def _model_load_kwargs(
+        self,
+        dependencies: TransformersDependencies,
+    ) -> dict[str, Any]:
+        return {
+            "dtype": dependencies.torch.bfloat16,
+            "device_map": "auto",
+            "low_cpu_mem_usage": True,
+        }
+
+    def _move_inputs_to_model(self, inputs: Any) -> Any:
+        assert self._dependencies is not None
+        return inputs.to(
+            self._model.device,
+            dtype=self._dependencies.torch.bfloat16,
+        )

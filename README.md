@@ -4,7 +4,7 @@
 
 项目要解决的问题是：同一个图片、文档或视频任务，在不同视觉语言模型上究竟表现如何？它们的准确率、延迟、显存占用、失败方式和运行成本是否能被公平、可复现地比较？
 
-> 当前阶段：`v0.2` 开发中。基础评测闭环已经接入第一个真实本地模型 Qwen3-VL-2B，并发布带结构化评分的 `synthetic-v1.1`。
+> 当前阶段：`v0.2` 开发中。基础评测闭环已经接入 Qwen3-VL-2B 与 SmolVLM2-500M 两个真实本地模型，并发布带结构化评分的 `synthetic-v1.1`。
 
 ## 你现在要做什么
 
@@ -22,9 +22,11 @@
 - [评测协议](docs/evaluation-protocol.md)
 - [运行记录与实验清单](docs/run-records-and-manifests.md)
 - [Qwen3-VL 真实模型后端](docs/backends/qwen3-vl.md)
+- [SmolVLM2 真实模型后端](docs/backends/smolvlm2.md)
 - [Qwen3-VL 第一份真实基线报告](docs/reports/2026-07-30-qwen3-vl-baseline.md)
 - [synthetic-v1.1 与结构化评分报告](docs/reports/2026-07-31-synthetic-v1-1-structured-scoring.md)
 - [Qwen3-VL 正式性能基线](docs/reports/2026-07-31-qwen3-vl-formal-performance.md)
+- [Qwen3-VL-2B vs SmolVLM2-500M 正式对比](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md)
 - [12 周路线图](docs/04-roadmap.md)
 - [每周工作方法](docs/05-weekly-workflow.md)
 - [质量与开源标准](docs/06-quality-and-open-source.md)
@@ -42,7 +44,7 @@ JSONL 任务集 -> 模型适配器 -> 推理记录 -> 自动评分 -> JSONL 结�
 
 `mock` 后端只用于测试基础设施，不能作为模型能力结果发布。
 
-真实模型后端使用 `--backend qwen3-vl`。它固定模型 revision、延迟加载权重，并把模型加载失败和显存不足写入原始结果。安装与首次运行见 [Qwen3-VL 后端说明](docs/backends/qwen3-vl.md)。
+真实模型后端使用 `--backend qwen3-vl` 或 `--backend smolvlm2`。两者固定模型 revision、延迟加载权重，共用相同的计时和错误契约，并把模型加载失败和显存不足写入原始结果。安装与首次运行见 [Qwen3-VL 后端说明](docs/backends/qwen3-vl.md)和 [SmolVLM2 后端说明](docs/backends/smolvlm2.md)。
 
 ## 快速开始
 
@@ -120,4 +122,7 @@ python -m openmultimodal_lab doctor
 
 ## License
 
-项目代码采用 Apache-2.0。正式公开模型和数据实验前，还需要逐项检查所用模型、数据集和媒体样例的许可证兼容性。
+项目代码与项目生成的合成媒体采用 Apache-2.0。真实模型权重和可选运行依赖
+使用各自许可证且不提交到本仓库；当前审计清单见
+[Third-Party Notices](THIRD_PARTY_NOTICES.md)。正式公开新模型或数据实验前，
+仍需逐项更新许可证证据。

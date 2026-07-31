@@ -7,12 +7,17 @@ from pathlib import Path
 from .base import ModelAdapter
 from .mock import MockAdapter
 from .qwen3_vl import (
-    DEFAULT_MODEL_ID,
-    DEFAULT_MODEL_REVISION,
+    DEFAULT_MODEL_ID as QWEN3_VL_MODEL_ID,
+    DEFAULT_MODEL_REVISION as QWEN3_VL_MODEL_REVISION,
     Qwen3VLAdapter,
 )
+from .smolvlm2 import (
+    DEFAULT_MODEL_ID as SMOLVLM2_MODEL_ID,
+    DEFAULT_MODEL_REVISION as SMOLVLM2_MODEL_REVISION,
+    SmolVLM2Adapter,
+)
 
-BACKEND_NAMES = ("mock", "qwen3-vl")
+BACKEND_NAMES = ("mock", "qwen3-vl", "smolvlm2")
 
 
 def create_adapter(
@@ -30,8 +35,15 @@ def create_adapter(
     if backend == "qwen3-vl":
         return Qwen3VLAdapter(
             media_root=media_root,
-            model_id=model_id or DEFAULT_MODEL_ID,
-            revision=revision or DEFAULT_MODEL_REVISION,
+            model_id=model_id or QWEN3_VL_MODEL_ID,
+            revision=revision or QWEN3_VL_MODEL_REVISION,
+            max_new_tokens=max_new_tokens,
+        )
+    if backend == "smolvlm2":
+        return SmolVLM2Adapter(
+            media_root=media_root,
+            model_id=model_id or SMOLVLM2_MODEL_ID,
+            revision=revision or SMOLVLM2_MODEL_REVISION,
             max_new_tokens=max_new_tokens,
         )
     raise ValueError(f"Unsupported backend: {backend}")

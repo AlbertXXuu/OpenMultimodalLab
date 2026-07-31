@@ -109,12 +109,14 @@ three-run model reporting because they do not measure a real model.
 
 ## 8. Timing boundaries
 
-The Qwen3-VL adapter records:
+The native Transformers image-text adapters record the same fields:
 
 - `model_load_ms`: dependency, processor, and weight loading;
 - `media_load_ms`: opening media and converting it to RGB;
 - `preprocessing_ms`: chat-template processing, tokenization, tensor creation,
   and device transfer;
+- `input_tensor_shapes` and serializable native image-processor settings:
+  auditable evidence of the effective model input representation;
 - `ttft_ms`: synchronized `model.generate` start to completion of the first
   generated-token logits;
 - `generation_ms`: synchronized wall time of the complete `model.generate`;
@@ -129,6 +131,12 @@ first generated token and divides by `generation_ms - ttft_ms`.
 CUDA is synchronized at preprocessing, generation, and first-token boundaries.
 The TTFT value is a local model-compute boundary, not network streaming time or
 time until rendered text reaches an application.
+
+Cross-family token throughput requires a tokenizer caveat: two tokenizers may
+encode the same answer into different numbers of IDs. Use throughput for
+repeated measurements within one model configuration. For cross-family
+comparison, emphasize task quality, end-to-end task latency, TTFT, failures,
+and peak memory, while publishing the raw token counts.
 
 ## 8.1 Run manifest
 

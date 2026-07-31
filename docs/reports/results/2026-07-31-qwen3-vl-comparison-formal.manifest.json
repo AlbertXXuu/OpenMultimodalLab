@@ -1,0 +1,118 @@
+{
+  "backend": {
+    "model_id": "Qwen/Qwen3-VL-2B-Instruct",
+    "model_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+    "name": "qwen3-vl"
+  },
+  "completed_at_utc": "2026-07-31T11:30:05.099735+00:00",
+  "created_at_utc": "2026-07-31T11:29:37.051372+00:00",
+  "dataset": {
+    "media": [
+      {
+        "path": "examples/assets/synthetic-v1/shapes-basic-001.png",
+        "sha256": "4d395520f365158d5552a02f72b3ae5415bbd3fb5c6a758cb2372e0a264637c1"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/spatial-above-001.png",
+        "sha256": "a6578d60906f1daccf5091eaf575b3707279a3c136a154cb463de3c84f8c05be"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/counting-circles-001.png",
+        "sha256": "81938f85a073facb2ca534deb6f24f9eb76a0455bf85fa0561c788c84fb7aa36"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/counting-squares-001.png",
+        "sha256": "0a24f3a15ed134bc5874af121a76b401615041e277ad47e4f956001a46f2f370"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/spatial-left-001.png",
+        "sha256": "4bb5c2212e624a3e18631366a882d1d1b3aa7265863b9f4058060275ea912acf"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/spatial-below-001.png",
+        "sha256": "eaad001c43b9cb30740e2e023c692dc186b7ef2d16b68c042e61a0e148242b40"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/shapes-multi-001.png",
+        "sha256": "f05d4bd4a377f6ffd43597f0d20bae1df9f135201546c490a4e0717a5621e432"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/counting-rectangles-001.png",
+        "sha256": "10b889aed2c0e129b92429f54540af8d291367b3863fc8a68be1d77d51db081d"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/spatial-between-001.png",
+        "sha256": "2c805d9e3f096c493472bba47cf4937e0c340cd3e5d64e6a7a6eb125cc85f25b"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/comparison-size-001.png",
+        "sha256": "3a69b0256d8b561ef74080eaa72e2fb33e1e4c1fd2219daa73d0b22929ff84ed"
+      }
+    ],
+    "path": "examples/tasks/synthetic-v1.1.jsonl",
+    "sha256": "682e4089fc2f9793209b40beb0026279bd0f58d3ec4fcf75d3f65abba88e4692",
+    "task_ids": [
+      "shapes-basic-001",
+      "spatial-above-001",
+      "counting-circles-001",
+      "counting-squares-001",
+      "spatial-left-001",
+      "spatial-below-001",
+      "shapes-multi-001",
+      "counting-rectangles-001",
+      "spatial-between-001",
+      "comparison-size-001"
+    ],
+    "versions": [
+      "synthetic-v1.1"
+    ]
+  },
+  "environment": {
+    "executable_bits": 64,
+    "git": {
+      "commit": "e6d25410e66c483747a519b1877f0ae4a1d5b380",
+      "dirty": false
+    },
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU, 8188 MiB, 596.49",
+    "packages": {
+      "accelerate": "1.14.0",
+      "huggingface-hub": "1.25.1",
+      "num2words": "0.5.14",
+      "openmultimodal-lab": "0.1.0",
+      "pillow": "12.3.0",
+      "safetensors": "0.8.0",
+      "tokenizers": "0.22.2",
+      "torch": "2.13.0+cu130",
+      "torchvision": "0.28.0+cu130",
+      "transformers": "5.14.1"
+    },
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "python": "3.11.0",
+    "python_implementation": "CPython"
+  },
+  "error": null,
+  "generation": {
+    "batch_size": 1,
+    "do_sample": false,
+    "max_new_tokens": 64
+  },
+  "measurement_records": 30,
+  "output": {
+    "path": "runs/2026-07-31-qwen3-vl-two-model-formal-e6d2541.jsonl"
+  },
+  "protocol": {
+    "categories": [],
+    "gpu_synchronization": "adapter timing boundaries when CUDA is active",
+    "peak_memory_boundary": "maximum allocated CUDA memory during generation",
+    "repetitions": 3,
+    "task_order": "dataset order repeated without shuffle",
+    "throughput_boundary": "generated tokens over model.generate duration",
+    "ttft_boundary": "generation start to first-token logits completion",
+    "warmup_attempts": 1
+  },
+  "records_written": 31,
+  "schema_version": "1.0",
+  "status": "completed",
+  "warmup_records": 1
+}
