@@ -215,12 +215,279 @@ class RunCommandTests(unittest.TestCase):
             manifest = json.loads(
                 manifest_path_for(output).read_text(encoding="utf-8")
             )
+            output_size = output.stat().st_size
 
         self.assertEqual(len(records), 1)
         self.assertEqual(manifest["status"], "failed")
         self.assertEqual(manifest["records_written"], 1)
         self.assertEqual(manifest["measurement_records"], 1)
         self.assertEqual(manifest["error"], "KeyboardInterrupt: ")
+        self.assertEqual(
+            manifest["output"]["size_bytes"],
+            output_size,
+        )
+        self.assertEqual(len(manifest["output"]["sha256"]), 64)
+
+    def test_run_refuses_implicit_overwrite(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            dataset = root / "tasks.jsonl"
+            output = root / "run.jsonl"
+            self._write_dataset(dataset)
+
+            with (
+                patch(
+                    "openmultimodal_lab.cli._gpu_summary",
+                    return_value="not detected",
+                ),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(io.StringIO()),
+            ):
+                first_exit_code = main(
+                    [
+                        "run",
+                        "--dataset",
+                        str(dataset),
+                        "--output",
+                        str(output),
+                    ]
+                )
+            original = output.read_bytes()
+            stderr = io.StringIO()
+            with (
+                patch(
+                    "openmultimodal_lab.cli._gpu_summary",
+                    return_value="not detected",
+                ),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(stderr),
+            ):
+                second_exit_code = main(
+                    [
+                        "run",
+                        "--dataset",
+                        str(dataset),
+                        "--output",
+                        str(output),
+                    ]
+                )
+
+            unchanged = output.read_bytes()
+            resume_stderr = io.StringIO()
+            with (
+                patch(
+                    "openmultimodal_lab.cli._gpu_summary",
+                    return_value="not detected",
+                ),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(resume_stderr),
+            ):
+                resume_exit_code = main(
+                    [
+                        "run",
+                        "--dataset",
+                        str(dataset),
+                        "--output",
+                        str(output),
+                        "--resume",
+                    ]
+                )
+
+        self.assertEqual(first_exit_code, 0)
+        self.assertEqual(second_exit_code, 2)
+        self.assertEqual(resume_exit_code, 2)
+        self.assertEqual(unchanged, original)
+        self.assertIn(
+            "output or manifest already exists",
+            stderr.getvalue(),
+        )
+        self.assertIn(
+            "only started or failed runs can resume",
+            resume_stderr.getvalue(),
+        )
+
+    def test_run_resumes_interrupted_prefix_without_duplicates(self) -> None:
+        class InterruptingAdapter:
+            name = "mock"
+            revision = "resume-test"
+
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def generate(self, task: object) -> ModelOutput:
+                self.calls += 1
+                if self.calls == 2:
+                    raise KeyboardInterrupt()
+                return ModelOutput(
+                    text="generated",
+                    backend=self.name,
+                    model_revision=self.revision,
+                )
+
+        class ResumedAdapter:
+            name = "mock"
+            revision = "resume-test"
+
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def generate(self, task: object) -> ModelOutput:
+                self.calls += 1
+                return ModelOutput(
+                    text="generated",
+                    backend=self.name,
+                    model_revision=self.revision,
+                )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            dataset = root / "tasks.jsonl"
+            output = root / "run.jsonl"
+            self._write_dataset(dataset)
+            interrupted = InterruptingAdapter()
+
+            with (
+                patch(
+                    "openmultimodal_lab.cli.create_adapter",
+                    return_value=interrupted,
+                ),
+                patch(
+                    "openmultimodal_lab.cli._gpu_summary",
+                    return_value="not detected",
+                ),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(io.StringIO()),
+                self.assertRaises(KeyboardInterrupt),
+            ):
+                main(
+                    [
+                        "run",
+                        "--dataset",
+                        str(dataset),
+                        "--output",
+                        str(output),
+                    ]
+                )
+
+            resumed = ResumedAdapter()
+            with (
+                patch(
+                    "openmultimodal_lab.cli.create_adapter",
+                    return_value=resumed,
+                ),
+                patch(
+                    "openmultimodal_lab.cli._gpu_summary",
+                    return_value="not detected",
+                ),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(io.StringIO()),
+            ):
+                exit_code = main(
+                    [
+                        "run",
+                        "--dataset",
+                        str(dataset),
+                        "--output",
+                        str(output),
+                        "--resume",
+                    ]
+                )
+
+            records = load_records(output)
+            manifest = json.loads(
+                manifest_path_for(output).read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(resumed.calls, 2)
+        self.assertEqual(len(records), 3)
+        self.assertEqual(
+            [record["task_id"] for record in records],
+            ["image-1", "document-1", "spatial-1"],
+        )
+        self.assertEqual(manifest["status"], "completed")
+        self.assertEqual(manifest["resume_count"], 1)
+        self.assertEqual(manifest["records_written"], 3)
+        self.assertEqual(len(manifest["output"]["sha256"]), 64)
+
+    def test_resume_rejects_tampered_output_before_adapter_call(self) -> None:
+        class InterruptingAdapter:
+            name = "mock"
+            revision = "resume-test"
+
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def generate(self, task: object) -> ModelOutput:
+                self.calls += 1
+                if self.calls == 2:
+                    raise KeyboardInterrupt()
+                return ModelOutput(
+                    text="generated",
+                    backend=self.name,
+                    model_revision=self.revision,
+                )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            dataset = root / "tasks.jsonl"
+            output = root / "run.jsonl"
+            self._write_dataset(dataset)
+            interrupted = InterruptingAdapter()
+
+            with (
+                patch(
+                    "openmultimodal_lab.cli.create_adapter",
+                    return_value=interrupted,
+                ),
+                patch(
+                    "openmultimodal_lab.cli._gpu_summary",
+                    return_value="not detected",
+                ),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(io.StringIO()),
+                self.assertRaises(KeyboardInterrupt),
+            ):
+                main(
+                    [
+                        "run",
+                        "--dataset",
+                        str(dataset),
+                        "--output",
+                        str(output),
+                    ]
+                )
+
+            output.write_bytes(output.read_bytes() + b" ")
+            manifest_before = manifest_path_for(output).read_bytes()
+            stderr = io.StringIO()
+            with (
+                patch(
+                    "openmultimodal_lab.cli.create_adapter",
+                    return_value=InterruptingAdapter(),
+                ),
+                patch(
+                    "openmultimodal_lab.cli._gpu_summary",
+                    return_value="not detected",
+                ),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(stderr),
+            ):
+                exit_code = main(
+                    [
+                        "run",
+                        "--dataset",
+                        str(dataset),
+                        "--output",
+                        str(output),
+                        "--resume",
+                    ]
+                )
+            manifest_after = manifest_path_for(output).read_bytes()
+
+        self.assertEqual(exit_code, 2)
+        self.assertEqual(manifest_after, manifest_before)
+        self.assertIn("output size", stderr.getvalue())
 
 
 class DoctorCommandTests(unittest.TestCase):

@@ -27,6 +27,7 @@
 - [synthetic-v1.1 与结构化评分报告](docs/reports/2026-07-31-synthetic-v1-1-structured-scoring.md)
 - [Qwen3-VL 正式性能基线](docs/reports/2026-07-31-qwen3-vl-formal-performance.md)
 - [Qwen3-VL-2B vs SmolVLM2-500M 正式对比](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md)
+- [严格断点续跑与输出完整性报告](docs/reports/2026-07-31-resumable-runs.md)
 - [12 周路线图](docs/04-roadmap.md)
 - [每周工作方法](docs/05-weekly-workflow.md)
 - [质量与开源标准](docs/06-quality-and-open-source.md)
@@ -85,6 +86,24 @@ oml run `
 ```
 
 该命令会同时生成 `.jsonl.manifest.json` 运行清单，保存数据与媒体哈希、模型 revision、环境、Git 状态、计时协议和有效参数。warm-up 记录会保留，但不会进入得分和性能汇总。
+
+为避免误删实验，`oml run` 默认拒绝覆盖已有 JSONL 或 manifest。中断后使用
+完全相同的命令并增加 `--resume`；系统会先核对数据、媒体、模型、环境、
+协议、已有记录顺序和输出哈希，只追加尚未完成的尝试：
+
+```powershell
+oml run `
+  --backend qwen3-vl `
+  --dataset examples/tasks/synthetic-v1.1.jsonl `
+  --warmup 1 `
+  --repetitions 3 `
+  --max-new-tokens 64 `
+  --output runs/qwen3-vl-synthetic-v1.1-formal.jsonl `
+  --resume
+```
+
+只有明确不再需要旧结果时才使用 `--overwrite`。严格恢复与完整性边界见
+[运行记录与实验清单](docs/run-records-and-manifests.md)。
 
 只运行某一类任务时使用 `--category`；该参数可以重复：
 

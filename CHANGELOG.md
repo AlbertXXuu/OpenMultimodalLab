@@ -34,10 +34,12 @@ All notable changes to this project will be documented in this file.
 - Model/processor/chat-template metadata and tokenizer-aware comparison guidance.
 - Third-party runtime, model-weight, and synthetic-dataset license inventory.
 - Preserved same-commit Qwen3-VL-2B versus SmolVLM2-500M formal comparison.
+- Strict `--resume` validation that appends only a compatible run prefix's missing attempts.
+- Default output collision protection, explicit `--overwrite`, and per-record atomic manifest checkpoints with output SHA-256/size.
 
 ### Planned
 
-- Timeout and resume support.
+- Per-attempt timeout and bounded retry support.
 
 ## [0.1.0] - 2026-07-28
 

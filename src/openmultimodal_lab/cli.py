@@ -22,13 +22,24 @@ from .datasets import (
     load_tasks,
 )
 from .manifest import (
+    ManifestResumeError,
     build_run_manifest,
+    checkpoint_run_manifest,
     finalize_run_manifest,
+    load_run_manifest,
     manifest_path_for,
+    prepare_resumed_manifest,
+    validate_resume_manifest,
+    validate_resume_record_count,
     write_run_manifest,
 )
+from .models import RunRecord
 from .reporting import ReportError, format_summary, load_records, summarize
-from .runner import run_benchmark
+from .runner import (
+    ResumeError,
+    run_benchmark,
+    validate_resume_output,
+)
 
 
 def _positive_int(value: str) -> int:
@@ -73,6 +84,17 @@ def _build_parser() -> argparse.ArgumentParser:
     run_parser = commands.add_parser("run", help="Run a JSONL task dataset.")
     run_parser.add_argument("--dataset", required=True, type=Path)
     run_parser.add_argument("--output", required=True, type=Path)
+    output_mode = run_parser.add_mutually_exclusive_group()
+    output_mode.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume a compatible started or failed run without duplicates.",
+    )
+    output_mode.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Explicitly replace an existing output and manifest.",
+    )
     run_parser.add_argument("--backend", choices=BACKEND_NAMES, default="mock")
     run_parser.add_argument(
         "--model-id",
@@ -280,8 +302,63 @@ def main(argv: Sequence[str] | None = None) -> int:
                 gpu_summary=_gpu_summary(),
                 project_root=Path.cwd(),
             )
+            if args.resume:
+                existing_manifest = load_run_manifest(manifest_path)
+                validate_resume_manifest(
+                    existing_manifest,
+                    manifest,
+                    output_path=args.output,
+                )
+                existing_records = validate_resume_output(
+                    tasks,
+                    adapter,
+                    args.output,
+                    warmup=args.warmup,
+                    repetitions=args.repetitions,
+                )
+                validate_resume_record_count(
+                    existing_manifest,
+                    len(existing_records),
+                )
+                manifest = prepare_resumed_manifest(existing_manifest)
+            elif not args.overwrite and (
+                args.output.exists() or manifest_path.exists()
+            ):
+                raise ManifestResumeError(
+                    "output or manifest already exists; choose a new "
+                    "--output, use --resume for an interrupted compatible "
+                    "run, or pass --overwrite to replace it"
+                )
+            if not args.resume:
+                args.output.parent.mkdir(parents=True, exist_ok=True)
+                with args.output.open(
+                    "w",
+                    encoding="utf-8",
+                    newline="\n",
+                ):
+                    pass
+                manifest = checkpoint_run_manifest(
+                    manifest,
+                    [],
+                    output_path=args.output,
+                )
             write_run_manifest(manifest_path, manifest)
             records = []
+
+            def persist_checkpoint(
+                current_records: tuple[RunRecord, ...],
+            ) -> None:
+                nonlocal manifest
+                manifest = checkpoint_run_manifest(
+                    manifest,
+                    current_records,
+                    output_path=args.output,
+                )
+                write_run_manifest(
+                    manifest_path,
+                    manifest,
+                )
+
             try:
                 records = run_benchmark(
                     tasks,
@@ -289,6 +366,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                     args.output,
                     warmup=args.warmup,
                     repetitions=args.repetitions,
+                    resume=args.resume,
+                    on_record_persisted=persist_checkpoint,
                 )
             except BaseException as exc:
                 partial_records: list[dict[str, Any]] = []
@@ -304,6 +383,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         partial_records,
                         status="failed",
                         error=f"{type(exc).__name__}: {exc}",
+                        output_path=args.output,
                     ),
                 )
                 raise
@@ -313,12 +393,19 @@ def main(argv: Sequence[str] | None = None) -> int:
                     manifest,
                     records,
                     status="completed",
+                    output_path=args.output,
                 ),
             )
         except DatasetError as exc:
             print(f"Dataset error: {exc}", file=sys.stderr)
             return 2
-        print(f"Wrote {len(records)} records to {args.output}")
+        except (ManifestResumeError, ResumeError) as exc:
+            print(f"Run error: {exc}", file=sys.stderr)
+            return 2
+        except OSError as exc:
+            print(f"Run error: {type(exc).__name__}: {exc}", file=sys.stderr)
+            return 2
+        print(f"Run contains {len(records)} records in {args.output}")
         print(f"Wrote run manifest to {manifest_path}")
         print(
             format_summary(
