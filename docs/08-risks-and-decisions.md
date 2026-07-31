@@ -68,11 +68,42 @@ Janus-Pro。Qwen3-VL-2B 的模型体积、Apache-2.0 许可、Transformers
 Gemma 需要额外接受模型条款，DeepSeek-VL2 的原生显存要求不适合
 当前 8GB GPU；Janus-Pro-1B 保留为第二后端候选。
 
+### D-006：第二个真实后端使用 SmolVLM2-500M
+
+编号与日期：D-006，2026-07-31。
+
+问题：选择哪个不同模型家族来验证统一 Adapter 和公平比较协议。
+
+可选方案：SmolVLM2-500M/2.2B、Janus-Pro-1B、DeepSeek-VL2-Tiny。
+
+选择：`HuggingFaceTB/SmolVLM2-500M-Video-Instruct`，固定 revision
+`7b375e1b73b11138ff12fe22c8f2822d8fe03467`。
+
+理由：Apache-2.0、Transformers 原生支持，并且官方处理链同时覆盖图片和
+视频，能为后续短视频任务复用。官方模型卡给出的 500M 视频推理显存约
+1.8GB，更符合“普通消费级设备可复现”的项目目标。2.2B 的仓库权重约
+8.6GB，在当前代理环境中首次下载成本过高，不适合作为默认快速开始模型。
+Janus-Pro 更适合作为以后验证自定义运行时的第三后端；DeepSeek-VL2 的原生
+资源要求不适合作为当前 8GB 设备上的低风险选择。
+
+影响：Qwen3-VL 与 SmolVLM2 共用计时、错误分类和结果字段，但各自使用固定
+的原生 processor 和 chat template。Qwen3-VL-2B 与 SmolVLM2-500M 的结果
+用于分析质量、延迟和资源效率权衡，不能表述为同等参数规模下的纯架构对比。
+跨模型 token/s 也必须附带 tokenizer 不可直接等价的限制说明。
+
+何时重新评估：正式 GPU 冒烟出现无法解决的 OOM 或上游不兼容，或视频阶段
+发现当前 Transformers 路径无法提供可审计的帧采样配置时。
+
+一手资料：
+
+- [SmolVLM2-500M-Video-Instruct model card](https://huggingface.co/HuggingFaceTB/SmolVLM2-500M-Video-Instruct)
+- [DeepSeek Janus 官方仓库](https://github.com/deepseek-ai/Janus)
+- [DeepSeek-VL2 官方仓库](https://github.com/deepseek-ai/DeepSeek-VL2)
+
 ## 5. 待确认决策
 
 在第 3 周前确认：
 
-- 第二个真实 VLM；
 - 是否在 Transformers 后端之外增加 llama.cpp 类后端；
 - 正式项目名称和包名。
 

@@ -49,7 +49,10 @@ class ModelAdapter(Protocol):
 - 可区分的模型加载、媒体读取、预处理、TTFT、生成和文本解码时间；
 - 生成吞吐和峰值 CUDA 已分配显存。
 
-资源释放和不同后端的一致契约仍需在接入第二个模型时继续验证。
+Qwen3-VL 与 SmolVLM2 通过共享的 `TransformersImageTextAdapter` 执行
+媒体加载、原生 chat template、确定性生成、CUDA 同步、计时、显存记录、
+输出切片和资源释放。模型文件、固定 revision、依赖提示与加载 dtype 留在
+各自的轻量子类中，避免复制测量逻辑后产生口径漂移。
 
 ## 4. 数据流
 

@@ -4,8 +4,10 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from openmultimodal_lab.manifest import (
+    _package_versions,
     build_run_manifest,
     finalize_run_manifest,
     manifest_path_for,
@@ -15,6 +17,20 @@ from openmultimodal_lab.models import EvaluationTask
 
 
 class RunManifestTests(unittest.TestCase):
+    def test_runtime_inventory_includes_model_loading_dependencies(self) -> None:
+        with patch(
+            "openmultimodal_lab.manifest.importlib.metadata.version",
+            return_value="test-version",
+        ) as version:
+            packages = _package_versions()
+
+        queried = {call.args[0] for call in version.call_args_list}
+        self.assertIn("huggingface-hub", queried)
+        self.assertIn("num2words", queried)
+        self.assertIn("safetensors", queried)
+        self.assertIn("tokenizers", queried)
+        self.assertEqual(packages["num2words"], "test-version")
+
     def test_manifest_hashes_inputs_without_absolute_path_leaks(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

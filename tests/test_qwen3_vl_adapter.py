@@ -10,7 +10,9 @@ from openmultimodal_lab.adapters.errors import AdapterDependencyError
 from openmultimodal_lab.adapters.qwen3_vl import (
     DEFAULT_MODEL_REVISION,
     Qwen3VLAdapter,
-    _Dependencies,
+)
+from openmultimodal_lab.adapters.transformers_image_text import (
+    TransformersDependencies,
 )
 from openmultimodal_lab.models import EvaluationTask
 from openmultimodal_lab.reporting import load_records
@@ -171,7 +173,7 @@ class Qwen3VLAdapterTests(unittest.TestCase):
 
     def test_generates_with_pinned_revision_and_records_configuration(self) -> None:
         image_module = _FakeImageModule()
-        dependencies = _Dependencies(
+        dependencies = TransformersDependencies(
             torch=_FakeTorch(),
             auto_model=_FakeModelLoader,
             auto_processor=_FakeProcessorLoader,
@@ -200,6 +202,10 @@ class Qwen3VLAdapterTests(unittest.TestCase):
         self.assertEqual(output.model_revision, DEFAULT_MODEL_REVISION)
         self.assertEqual(output.usage["input_tokens"], 3)
         self.assertEqual(output.usage["output_tokens"], 2)
+        self.assertEqual(
+            output.usage["input_tensor_shapes"],
+            {"input_ids": [1, 3]},
+        )
         self.assertEqual(output.usage["max_new_tokens"], 16)
         self.assertIsInstance(output.usage["model_load_ms"], float)
         self.assertIsInstance(output.usage["media_load_ms"], float)
@@ -237,7 +243,7 @@ class Qwen3VLAdapterTests(unittest.TestCase):
     def test_cuda_timings_synchronize_and_record_peak_allocated_memory(
         self,
     ) -> None:
-        dependencies = _Dependencies(
+        dependencies = TransformersDependencies(
             torch=_FakeCudaTorch(),
             auto_model=_FakeModelLoader,
             auto_processor=_FakeProcessorLoader,
@@ -327,7 +333,7 @@ class Qwen3VLAdapterTests(unittest.TestCase):
     def test_cuda_out_of_memory_becomes_specific_record(self) -> None:
         image_module = _FakeImageModule()
         _FakeModelLoader.model = _OutOfMemoryModel()
-        dependencies = _Dependencies(
+        dependencies = TransformersDependencies(
             torch=_FakeTorch(),
             auto_model=_FakeModelLoader,
             auto_processor=_FakeProcessorLoader,

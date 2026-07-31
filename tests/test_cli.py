@@ -253,6 +253,52 @@ class DoctorCommandTests(unittest.TestCase):
         self.assertIn("PyTorch CUDA build: none", stdout.getvalue())
         self.assertIn("GPU runtime is not ready", stdout.getvalue())
 
+    def test_smolvlm2_doctor_uses_its_own_install_instructions(self) -> None:
+        stdout = io.StringIO()
+        with (
+            patch(
+                "openmultimodal_lab.cli.importlib.util.find_spec",
+                return_value=None,
+            ),
+            redirect_stdout(stdout),
+        ):
+            exit_code = main(["doctor", "--backend", "smolvlm2"])
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("Missing SmolVLM2 modules", stdout.getvalue())
+        self.assertIn('".[smolvlm2]"', stdout.getvalue())
+
+    def test_smolvlm2_doctor_rejects_gpu_without_bf16(self) -> None:
+        fake_torch = SimpleNamespace(
+            __version__="2.13.0+cu130",
+            version=SimpleNamespace(cuda="13.0"),
+            cuda=SimpleNamespace(
+                is_available=lambda: True,
+                is_bf16_supported=lambda: False,
+            ),
+        )
+        stdout = io.StringIO()
+        with (
+            patch(
+                "openmultimodal_lab.cli._gpu_summary",
+                return_value="NVIDIA Test GPU, 4096 MiB, driver",
+            ),
+            patch(
+                "openmultimodal_lab.cli.importlib.util.find_spec",
+                return_value=object(),
+            ),
+            patch(
+                "openmultimodal_lab.cli.importlib.import_module",
+                return_value=fake_torch,
+            ),
+            redirect_stdout(stdout),
+        ):
+            exit_code = main(["doctor", "--backend", "smolvlm2"])
+
+        self.assertEqual(exit_code, 1)
+        self.assertIn("CUDA BF16 supported: no", stdout.getvalue())
+        self.assertIn("requires native BF16", stdout.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()

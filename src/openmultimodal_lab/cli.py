@@ -164,7 +164,11 @@ def _doctor(backend: str) -> int:
             "Note: the core works on Python 3.13+, but real ML backends target "
             "Python 3.11/3.12."
         )
-    if backend == "qwen3-vl":
+    if backend in {"qwen3-vl", "smolvlm2"}:
+        backend_label = {
+            "qwen3-vl": "Qwen3-VL",
+            "smolvlm2": "SmolVLM2",
+        }[backend]
         required_modules = (
             "torch",
             "torchvision",
@@ -172,23 +176,25 @@ def _doctor(backend: str) -> int:
             "accelerate",
             "PIL",
         )
+        if backend == "smolvlm2":
+            required_modules += ("num2words",)
         missing = [
             module
             for module in required_modules
             if importlib.util.find_spec(module) is None
         ]
         if missing:
-            print(f"Missing Qwen3-VL modules: {', '.join(missing)}")
+            print(f"Missing {backend_label} modules: {', '.join(missing)}")
             print(
-                "Install with: python -m pip install -e \".[qwen3-vl]\""
+                f'Install with: python -m pip install -e ".[{backend}]"'
             )
-            print("Status: Qwen3-VL runtime is not ready.")
+            print(f"Status: {backend_label} runtime is not ready.")
             return 1
         try:
             torch = importlib.import_module("torch")
         except (ImportError, OSError) as exc:
             print(f"Could not import PyTorch: {type(exc).__name__}: {exc}")
-            print("Status: Qwen3-VL runtime is not ready.")
+            print(f"Status: {backend_label} runtime is not ready.")
             return 1
         torch_version = getattr(torch, "__version__", "unknown")
         cuda_version = getattr(getattr(torch, "version", None), "cuda", None)
@@ -201,9 +207,29 @@ def _doctor(backend: str) -> int:
                 "Detected an NVIDIA GPU, but PyTorch cannot use CUDA. "
                 "Install a CUDA-enabled PyTorch wheel."
             )
-            print("Status: Qwen3-VL GPU runtime is not ready.")
+            print(f"Status: {backend_label} GPU runtime is not ready.")
             return 1
-        print("Status: Qwen3-VL runtime dependencies are ready.")
+        if backend == "smolvlm2" and cuda_available:
+            is_bf16_supported = getattr(
+                torch.cuda,
+                "is_bf16_supported",
+                None,
+            )
+            bf16_supported = (
+                callable(is_bf16_supported)
+                and bool(is_bf16_supported())
+            )
+            print(
+                "CUDA BF16 supported: "
+                f"{'yes' if bf16_supported else 'no'}"
+            )
+            if not bf16_supported:
+                print(
+                    "SmolVLM2's verified profile requires native BF16 support."
+                )
+                print("Status: SmolVLM2 GPU runtime is not ready.")
+                return 1
+        print(f"Status: {backend_label} runtime dependencies are ready.")
         return 0
 
     print("Status: core runtime ready.")

@@ -38,6 +38,14 @@ qwen3-vl = [
   "torchvision>=0.21",
   "transformers>=4.57",
 ]
+smolvlm2 = [
+  "accelerate>=1.1",
+  "num2words>=0.5.14",
+  "pillow>=10",
+  "torch>=2.6",
+  "torchvision>=0.21",
+  "transformers>=4.57",
+]
 
 [project.scripts]
 oml = "openmultimodal_lab.cli:main"

@@ -28,6 +28,11 @@ All notable changes to this project will be documented in this file.
 - Portable run manifests with input hashes, model/config identity, environment, Git state, and durable record counts.
 - Median and p95 performance summaries that exclude warm-up attempts.
 - Preserved first protocol-compliant Qwen3-VL performance run, manifest, and evidence report.
+- Pinned SmolVLM2-500M as a second Apache-2.0 model family for accessible GPU evaluation.
+- Shared native Transformers image-text execution, timing, memory, and error contract.
+- Lazy-loaded `smolvlm2` backend with explicit BF16 loading and dependency diagnostics.
+- Model/processor/chat-template metadata and tokenizer-aware comparison guidance.
+- Third-party runtime, model-weight, and synthetic-dataset license inventory.
 
 ### Planned
 
