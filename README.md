@@ -56,6 +56,8 @@ and their manifests.
 - Per-attempt durable JSONL writes and portable experiment manifests.
 - Strict `--resume`, explicit `--overwrite`, output SHA-256, and atomic
   per-record checkpoints.
+- Backend-aware `doctor` checks for Python, CUDA, BF16, optional packages, and
+  available working/model-cache disk without printing the cache path.
 - Python 3.11/3.12 Linux CI, wheel builds, link/JSON/privacy checks, and
   an offline test suite.
 

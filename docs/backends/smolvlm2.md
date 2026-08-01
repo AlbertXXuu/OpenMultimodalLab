@@ -52,6 +52,9 @@ py -3.11 -m venv .venv-ml
 
 The first run downloads about 2 GB of pinned model files from Hugging Face.
 Keep sufficient disk space and do not interrupt the initial download.
+`doctor` reports model-cache disk availability and warns below 4 GiB free,
+while keeping the cache path private. Existing cached weights may still run
+below that recommendation, so the warning does not by itself fail readiness.
 
 ## Smoke run
 
