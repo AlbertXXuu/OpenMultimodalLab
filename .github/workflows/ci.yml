@@ -56,3 +56,20 @@ jobs:
         run: python scripts/check_repository.py
       - name: Build wheel
         run: python -m pip wheel . --no-deps --wheel-dir dist
+      - name: Install wheel in a fresh environment
+        run: |
+          python -m venv "$RUNNER_TEMP/wheel-venv"
+          "$RUNNER_TEMP/wheel-venv/bin/python" -m pip install --no-deps dist/*.whl
+          "$RUNNER_TEMP/wheel-venv/bin/python" -m pip check
+      - name: Smoke-test installed wheel outside checkout
+        working-directory: ${{ runner.temp }}
+        run: |
+          "$RUNNER_TEMP/wheel-venv/bin/oml" doctor
+          "$RUNNER_TEMP/wheel-venv/bin/oml" run \
+            --dataset "$GITHUB_WORKSPACE/examples/tasks/smoke.jsonl" \
+            --media-root "$GITHUB_WORKSPACE" \
+            --output "$RUNNER_TEMP/wheel-smoke.jsonl"
+          "$RUNNER_TEMP/wheel-venv/bin/oml" report \
+            --input "$RUNNER_TEMP/wheel-smoke.jsonl"
+          "$RUNNER_TEMP/wheel-venv/bin/python" -c \
+            "import openmultimodal_lab; from pathlib import Path; location = Path(openmultimodal_lab.__file__).resolve(); workspace = Path('$GITHUB_WORKSPACE').resolve(); assert not location.is_relative_to(workspace), location; print(f'Imported installed package from: {location}')"
