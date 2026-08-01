@@ -53,6 +53,19 @@ Regenerate them with:
 .\.venv\Scripts\python.exe scripts/generate_synthetic_images.py
 ```
 
+`examples/tasks/synthetic-docs-v1.jsonl` adds 32 schema 1.2 tasks over eight
+project-generated images. It covers document OCR, document key-value lookup,
+table QA, and chart QA. Each image supports four tasks, including direct
+reading and derived arithmetic. Regenerate the assets with:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/generate_synthetic_documents.py
+```
+
+The generator uses a bundled bitmap font and Python's standard library, so
+asset bytes do not depend on host fonts or rendering-library versions. The
+task set is released, but no formal real-model result on it is claimed yet.
+
 ## 4. Model identity
 
 Each published run must record:
@@ -163,21 +176,25 @@ case-insensitive phrase coverage:
 matched expected phrases / total expected phrases
 ```
 
-Task schema 1.1 requires an explicit `scoring` object. The current deterministic
-scorers are:
+Task schemas 1.1 and 1.2 require an explicit `scoring` object. The current
+deterministic scorers are:
 
 - `normalized_exact_match` for single digits, one-word choices, and other
   prompts that explicitly constrain the complete answer;
 - `attribute_groups` for locally bound attributes such as color plus shape,
   with optional expected-order enforcement;
+- `numeric_tolerance` in schema 1.2 for a single numeric answer compared with
+  a finite target and non-negative absolute tolerance;
 - `keyword_coverage` only for backward-compatible schema 1.0 tasks.
 
 Attribute groups are matched inside local answer units, not against the whole
 response bag of words. This prevents “red square and blue circle” from
 incorrectly satisfying both “red circle” and “blue square”.
 
-Future document and chart tasks still require structured field scorers. Manual
-review is allowed only when deterministic scoring is impossible.
+The numeric scorer accepts signs, decimals, and comma-grouped numbers. A
+response with zero or multiple numeric candidates scores zero, which prevents
+an answer from passing by listing competing values. Manual review is allowed
+only when deterministic scoring is impossible.
 
 Model-as-judge scoring must never be mixed with deterministic scores without a
 separate label and judge configuration.

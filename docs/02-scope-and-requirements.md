@@ -91,25 +91,27 @@
 
 ```json
 {
-  "schema_version": "1.1",
-  "id": "shapes-001",
-  "prompt": "Describe the shapes and colors in the image.",
-  "media": ["examples/assets/shapes.svg"],
-  "expected_keywords": ["red circle", "blue square"],
+  "schema_version": "1.2",
+  "id": "receipt-total",
+  "prompt": "What is the total? Answer with one number only.",
+  "media": ["examples/assets/synthetic-docs-v1/receipt-cafe.png"],
   "scoring": {
-    "type": "attribute_groups",
-    "groups": [["red", "circle"], ["blue", "square"]],
-    "ordered": false
+    "type": "numeric_tolerance",
+    "target": 8.37,
+    "absolute_tolerance": 0.01
   },
   "metadata": {
-    "dataset_version": "synthetic-v1.1",
-    "category": "image-description",
+    "dataset_version": "synthetic-docs-v1",
+    "category": "document-key-value",
     "language": "en"
   }
 }
 ```
 
-`schema_version: "1.0"` 继续按旧关键词覆盖率读取；`1.1` 必须声明评分器。后续 schema 会增加媒体类型、结构化参考答案和许可证来源，但必须保持版本迁移说明。
+`schema_version: "1.0"` 继续按旧关键词覆盖率读取；`1.1` 开始要求显式评分器；
+`1.2` 增加 `numeric_tolerance`，要求有限数值目标和非负绝对容差，并拒绝包含
+多个候选数字的歧义回答。三个版本均保持可读。媒体类型和更丰富的结构化参考
+答案如需增加，必须使用新版本并提供迁移说明。
 
 ## 6. 隐私与许可证要求
 

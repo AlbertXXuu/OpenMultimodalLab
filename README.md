@@ -15,10 +15,10 @@ adapters, preserves every output and failure as JSONL, applies deterministic
 task-selected scoring, and records enough configuration and environment data
 to rebuild a report without rerunning the model.
 
-> Status: active pre-release development. The image benchmark, two real local
-> backends, formal performance protocol, strict resume, and CI quality gates
-> work today. Document, chart, and short-video coverage are still roadmap
-> items—not completed claims.
+> Status: active pre-release development. Image, document, table, and chart
+> tasks, two real local backends, the formal performance protocol, strict
+> resume, and CI quality gates work today. The new document tasks have not yet
+> been used for a formal real-model comparison; short video remains roadmap.
 
 ## First reproducible comparison
 
@@ -51,7 +51,10 @@ and their manifests.
 - Real, lazy-loaded Qwen3-VL-2B and SmolVLM2-500M Transformers backends.
 - Immutable model revisions and native processor/chat-template metadata.
 - Versioned UTF-8 JSONL tasks with validation and licensed generated media.
-- Exact-match, keyword-coverage, and ordered/unordered attribute-group scoring.
+- Exact-match, numeric-tolerance, keyword-coverage, and ordered/unordered
+  attribute-group scoring through backward-compatible task schemas 1.0–1.2.
+- `synthetic-docs-v1`: 32 licensed tasks over eight reproducible OCR,
+  key-value, table, bar-chart, and line-chart images.
 - Warm-up plus repeated measurement with CUDA-synchronized TTFT, generation
   time, throughput, preprocessing time, and peak allocated memory.
 - Typed model-load, out-of-memory, generation, and evaluation failures.
@@ -197,6 +200,7 @@ equivalent because tokenizers differ.
 | Quality and public-release gates | [Quality standard](docs/06-quality-and-open-source.md) |
 | Fresh wheel installation | [Windows audit and permanent CI gate](docs/reports/2026-08-01-fresh-wheel-install.md) |
 | Dependency supply chain | [Action pinning and update audit](docs/reports/2026-08-01-supply-chain-audit.md) |
+| Document/table/chart task set | [`synthetic-docs-v1` evidence report](docs/reports/2026-08-01-synthetic-docs-v1.md) |
 | First complete experiment | [Step-by-step tutorial](docs/tutorials/first-reproducible-benchmark.md) |
 | Current work | [Task board](TASKS.md) |
 | Third-party licenses | [Third-party notices](THIRD_PARTY_NOTICES.md) |
@@ -206,11 +210,12 @@ equivalent because tokenizers differ.
 | Area | Current state |
 |---|---|
 | Real image backends | Qwen3-VL-2B and SmolVLM2-500M verified locally |
-| Current public task evidence | 10 licensed, deterministic synthetic image tasks |
+| Current versioned task corpus | 42 tasks over 18 licensed, deterministic generated images |
+| Published real-model comparison | 10 synthetic image tasks; new document tasks not benchmarked yet |
 | Performance protocol | Warm-up, three repetitions, TTFT, throughput, latency, peak memory |
 | Reliability | Durable records, strict resume, integrity hashes, typed failures |
 | Automated quality | Offline tests, Python 3.11/3.12 CI, repository audit, fresh-wheel smoke test |
-| Next capability work | Licensed document/OCR/table/chart tasks, then short video |
+| Next capability work | Formal document-task model run, then licensed short video |
 
 The target is at least 100 human-checked tasks across image, document, chart,
 spatial, and short-video capabilities. That target is not yet marked complete.

@@ -191,6 +191,109 @@ class LoadTasksTests(unittest.TestCase):
             with self.assertRaisesRegex(DatasetError, "must have equal length"):
                 load_tasks(dataset)
 
+    def test_loads_schema_v1_2_numeric_tolerance(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dataset = Path(temp_dir) / "tasks.jsonl"
+            dataset.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "1.2",
+                        "id": "numeric",
+                        "prompt": "Return one number.",
+                        "scoring": {
+                            "type": "numeric_tolerance",
+                            "target": 8.37,
+                            "absolute_tolerance": 0.01,
+                        },
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            tasks = load_tasks(dataset)
+
+        self.assertEqual(tasks[0].schema_version, "1.2")
+        self.assertEqual(tasks[0].scoring.target, 8.37)
+        self.assertEqual(tasks[0].scoring.absolute_tolerance, 0.01)
+
+    def test_numeric_tolerance_requires_schema_v1_2(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dataset = Path(temp_dir) / "tasks.jsonl"
+            dataset.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "1.1",
+                        "id": "numeric",
+                        "prompt": "Return one number.",
+                        "scoring": {
+                            "type": "numeric_tolerance",
+                            "target": 8.37,
+                            "absolute_tolerance": 0.01,
+                        },
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(DatasetError, "requires schema_version"):
+                load_tasks(dataset)
+
+    def test_numeric_tolerance_rejects_invalid_reference_fields(self) -> None:
+        invalid_values = (
+            (True, 0.01, "finite number"),
+            (8.37, -0.01, "at least 0"),
+            (8.37, float("inf"), "finite number"),
+        )
+        for target, tolerance, message in invalid_values:
+            with self.subTest(target=target, tolerance=tolerance):
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    dataset = Path(temp_dir) / "tasks.jsonl"
+                    dataset.write_text(
+                        json.dumps(
+                            {
+                                "schema_version": "1.2",
+                                "id": "numeric",
+                                "prompt": "Return one number.",
+                                "scoring": {
+                                    "type": "numeric_tolerance",
+                                    "target": target,
+                                    "absolute_tolerance": tolerance,
+                                },
+                            }
+                        )
+                        + "\n",
+                        encoding="utf-8",
+                    )
+
+                    with self.assertRaisesRegex(DatasetError, message):
+                        load_tasks(dataset)
+
+    def test_numeric_tolerance_rejects_expected_keywords(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dataset = Path(temp_dir) / "tasks.jsonl"
+            dataset.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "1.2",
+                        "id": "numeric",
+                        "prompt": "Return one number.",
+                        "expected_keywords": ["8.37"],
+                        "scoring": {
+                            "type": "numeric_tolerance",
+                            "target": 8.37,
+                            "absolute_tolerance": 0.01,
+                        },
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(DatasetError, "must be empty"):
+                load_tasks(dataset)
+
 
 if __name__ == "__main__":
     unittest.main()
