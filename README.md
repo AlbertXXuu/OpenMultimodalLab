@@ -17,8 +17,9 @@ to rebuild a report without rerunning the model.
 
 > Status: active pre-release development. Image, document, table, and chart
 > tasks, two real local backends, the formal performance protocol, strict
-> resume, and CI quality gates work today. The new document tasks have not yet
-> been used for a formal real-model comparison; short video remains roadmap.
+> resume, bounded retries, cooperative inference deadlines, and CI quality
+> gates work today. The new document tasks have not yet been used for a formal
+> real-model comparison; short video remains roadmap.
 
 ## First reproducible comparison
 
@@ -57,8 +58,9 @@ and their manifests.
   key-value, table, bar-chart, and line-chart images.
 - Warm-up plus repeated measurement with CUDA-synchronized TTFT, generation
   time, throughput, preprocessing time, and peak allocated memory.
-- Typed model-load, out-of-memory, generation, and evaluation failures.
-- Per-attempt durable JSONL writes and portable experiment manifests.
+- Typed model-load, timeout, out-of-memory, generation, and evaluation failures.
+- Run record schema 0.4 with durable invocation indexes, terminal/retryable
+  state, cumulative latency, retry policy, and cooperative deadlines.
 - Strict `--resume`, explicit `--overwrite`, output SHA-256, and atomic
   per-record checkpoints.
 - Backend-aware `doctor` checks for Python, CUDA, BF16, optional packages, and
@@ -171,6 +173,22 @@ count, and the exact attempt prefix before appending anything. Use
 See the [strict resume report](docs/reports/2026-07-31-resumable-runs.md) for
 the crash-consistency model and failure-injection evidence.
 
+For long local runs, bounded retry and timeout policy is explicit:
+
+```powershell
+.\.venv-ml\Scripts\oml.exe run `
+  --backend qwen3-vl `
+  --dataset examples/tasks/synthetic-docs-v1.jsonl `
+  --attempt-timeout-seconds 120 `
+  --max-retries 1 `
+  --output runs/qwen3-vl-docs-001.jsonl
+```
+
+Retries apply only to `timeout` and `generation_error`; invalid input, model
+load failure, and out-of-memory are terminal. Built-in model deadlines are
+cooperative and begin after one-time model loading. They can bound preprocessing
+and Transformers generation, but cannot safely preempt a running CUDA kernel.
+
 ## Reproducibility contract
 
 A publishable run should:
@@ -201,6 +219,7 @@ equivalent because tokenizers differ.
 | Fresh wheel installation | [Windows audit and permanent CI gate](docs/reports/2026-08-01-fresh-wheel-install.md) |
 | Dependency supply chain | [Action pinning and update audit](docs/reports/2026-08-01-supply-chain-audit.md) |
 | Document/table/chart task set | [`synthetic-docs-v1` evidence report](docs/reports/2026-08-01-synthetic-docs-v1.md) |
+| Timeout and retry provenance | [Run record schema 0.4 report](docs/reports/2026-08-01-run-record-0.4.md) |
 | First complete experiment | [Step-by-step tutorial](docs/tutorials/first-reproducible-benchmark.md) |
 | Current work | [Task board](TASKS.md) |
 | Third-party licenses | [Third-party notices](THIRD_PARTY_NOTICES.md) |

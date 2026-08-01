@@ -10,6 +10,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
+from openmultimodal_lab.adapters.errors import AdapterTimeoutError
 from openmultimodal_lab.cli import _hugging_face_cache_path, main
 from openmultimodal_lab.manifest import manifest_path_for
 from openmultimodal_lab.models import ModelOutput
@@ -160,9 +161,89 @@ class RunCommandTests(unittest.TestCase):
         self.assertEqual(manifest["warmup_records"], 1)
         self.assertEqual(manifest["measurement_records"], 6)
         self.assertEqual(manifest["protocol"]["repetitions"], 2)
+        self.assertEqual(manifest["protocol"]["max_retries"], 0)
+        self.assertIsNone(manifest["protocol"]["attempt_timeout_seconds"])
         self.assertEqual(
             manifest["environment"]["gpu"],
             "Test GPU, 8192 MiB, driver",
+        )
+
+    def test_run_persists_retry_and_timeout_configuration(self) -> None:
+        class TimeoutThenSuccessAdapter:
+            name = "mock"
+            revision = "retry-test"
+            model_id = "mock"
+
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def generate(
+                self,
+                task: object,
+                *,
+                timeout_seconds: float | None = None,
+            ) -> ModelOutput:
+                self.calls += 1
+                self.timeout_seconds = timeout_seconds
+                if self.calls == 1:
+                    raise AdapterTimeoutError("injected timeout")
+                return ModelOutput(
+                    text="generated",
+                    backend=self.name,
+                    model_revision=self.revision,
+                )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            dataset = root / "tasks.jsonl"
+            output = root / "run.jsonl"
+            self._write_dataset(dataset)
+            adapter = TimeoutThenSuccessAdapter()
+            with (
+                patch(
+                    "openmultimodal_lab.cli.create_adapter",
+                    return_value=adapter,
+                ),
+                patch(
+                    "openmultimodal_lab.cli._gpu_summary",
+                    return_value="not detected",
+                ),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(io.StringIO()),
+            ):
+                exit_code = main(
+                    [
+                        "run",
+                        "--dataset",
+                        str(dataset),
+                        "--output",
+                        str(output),
+                        "--attempt-timeout-seconds",
+                        "0.25",
+                        "--max-retries",
+                        "1",
+                    ]
+                )
+
+            records = load_records(output)
+            manifest = json.loads(
+                manifest_path_for(output).read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(adapter.calls, 4)
+        self.assertEqual(adapter.timeout_seconds, 0.25)
+        self.assertEqual(len(records), 4)
+        self.assertFalse(records[0]["terminal"])
+        self.assertEqual(records[1]["attempt_index"], 2)
+        self.assertEqual(manifest["records_written"], 4)
+        self.assertEqual(manifest["generation_invocations"], 4)
+        self.assertEqual(manifest["retry_records"], 1)
+        self.assertEqual(manifest["measurement_records"], 3)
+        self.assertEqual(manifest["protocol"]["max_retries"], 1)
+        self.assertEqual(
+            manifest["protocol"]["attempt_timeout_seconds"],
+            0.25,
         )
 
     def test_interrupted_run_manifest_counts_durable_partial_records(self) -> None:

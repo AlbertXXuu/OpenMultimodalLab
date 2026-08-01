@@ -31,3 +31,9 @@ class AdapterOutOfMemoryError(AdapterError):
     """Raised when an adapter exhausts accelerator memory."""
 
     status = "out_of_memory"
+
+
+class AdapterTimeoutError(AdapterError):
+    """Raised when a cooperative adapter exceeds its inference deadline."""
+
+    status = "timeout"

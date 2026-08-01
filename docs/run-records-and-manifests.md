@@ -2,7 +2,7 @@
 
 OpenMultimodalLab keeps two complementary artifacts:
 
-- JSONL run records contain one durable result for every attempted invocation;
+- JSONL run records contain one durable result for every generation invocation;
 - one JSON run manifest describes the complete experiment configuration and
   input identity.
 
@@ -16,9 +16,61 @@ rebuilt without rerunning the model.
 | `0.1` | Initial task output, status, keyword score, and end-to-end latency |
 | `0.2` | Task/dataset versions plus explicit metric identity and details |
 | `0.3` | Warm-up/measurement phase and measured repetition |
+| `0.4` | Durable retry chains, cooperative deadlines, and cumulative latency |
 
 The reporter treats records without `phase` or `repetition` as one measured
-legacy repetition. Existing result files remain readable.
+legacy repetition. Existing result files remain readable. Resume remains
+schema-strict: an interrupted 0.3 run must be finished with its original code
+revision or restarted at a new output path; 0.3 and 0.4 rows are never mixed.
+
+## Invocation and retry state
+
+Schema 0.4 distinguishes a scheduled task measurement from the generation
+invocations used to finish it:
+
+| Field | Meaning |
+|---|---|
+| `attempt_index` | One-based invocation number inside this task/repetition |
+| `terminal` | Whether this record completes the scheduled task attempt |
+| `retryable` | Whether the status belongs to the retryable status class |
+| `latency_ms` | Latency of this invocation only |
+| `cumulative_latency_ms` | Sum of invocation latency for this retry chain |
+| `timeout_seconds` | Configured cooperative deadline, or `null` |
+| `max_retries` | Maximum retries after the first invocation |
+
+A recovered transient error produces two durable lines. The first is written
+and synced before the retry starts:
+
+```json
+{"schema_version":"0.4","task_id":"task-1","attempt_index":1,"status":"generation_error","terminal":false,"retryable":true,"max_retries":1}
+{"schema_version":"0.4","task_id":"task-1","attempt_index":2,"status":"success","terminal":true,"retryable":false,"max_retries":1}
+```
+
+Only `generation_error` and `timeout` are retryable. Invalid tasks, model-load
+failures, out-of-memory, and evaluation failures are terminal immediately.
+When the retry budget is exhausted, the final retryable failure has
+`terminal: true`.
+
+Reports count terminal records as logical warm-up or measurement attempts.
+Non-terminal records appear as retry attempts, and cumulative latency keeps
+their cost in the final task latency. A run that actually retries is not marked
+as a formal performance run because final-attempt usage fields do not represent
+the entire retry chain.
+
+## Cooperative timeout boundary
+
+`--attempt-timeout-seconds` is optional and disabled by default. Built-in
+Transformers adapters start the deadline after one-time model loading and pass
+the remaining budget to `model.generate(max_time=...)`. Media loading,
+preprocessing, generation, synchronization, and text decoding are checked
+against the same budget.
+
+This is cooperative, not a process kill. Transformers checks its deadline
+between generation steps, and an individual CUDA kernel cannot be safely
+preempted by Python. Model download/loading is also not interrupted. A custom
+adapter must accept and honor the `timeout_seconds` keyword to support this
+option. The runner never launches an abandoned background thread that could
+continue mutating GPU state after a timeout record is written.
 
 ## Phase and repetition
 
@@ -26,9 +78,14 @@ Warm-up:
 
 ```json
 {
-  "schema_version": "0.3",
+  "schema_version": "0.4",
   "phase": "warmup",
   "repetition": 1,
+  "attempt_index": 1,
+  "terminal": true,
+  "retryable": false,
+  "timeout_seconds": null,
+  "max_retries": 0,
   "score": null,
   "metric_name": "unscored_warmup"
 }
@@ -38,9 +95,14 @@ Measurement:
 
 ```json
 {
-  "schema_version": "0.3",
+  "schema_version": "0.4",
   "phase": "measurement",
   "repetition": 2,
+  "attempt_index": 1,
+  "terminal": true,
+  "retryable": false,
+  "timeout_seconds": null,
+  "max_retries": 0,
   "score": 1.0,
   "metric_name": "normalized_exact_match"
 }
@@ -89,6 +151,7 @@ The manifest contains:
 - task IDs, dataset versions, categories, and order;
 - backend, model ID/revision, decoding configuration;
 - warm-up and repetition settings;
+- timeout, maximum retry count, retryable statuses, and timeout boundary;
 - timing and memory definitions;
 - OS, Python, packages, CPU/GPU, Git commit and dirty state;
 - output status, durable record counts, byte length, and SHA-256.
@@ -120,11 +183,13 @@ The CLI does not silently replace an existing output or manifest:
    finalized its manifest;
 5. valid UTF-8 JSONL ending on a complete newline-delimited record;
 6. that every existing record is the exact prefix of the requested attempt
-   plan, including phase, repetition, task, backend, revision, schema, and
-   media.
+   plan, including phase, repetition, task, backend, revision, schema, media,
+   retry policy, invocation index, terminal state, and cumulative latency.
 
-Only missing attempts are appended. The original creation time remains in the
-manifest; `resumed_at_utc` and `resume_count` record recovery history. A
+Only missing invocations are appended. If the last durable record is a
+non-terminal retryable failure, resume continues at its next `attempt_index`
+instead of restarting or skipping that task. The original creation time remains
+in the manifest; `resumed_at_utc` and `resume_count` record recovery history. A
 completed run cannot be resumed because an additional experiment should use a
 new output path.
 

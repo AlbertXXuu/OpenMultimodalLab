@@ -102,6 +102,8 @@ class RunManifestTests(unittest.TestCase):
         self.assertNotIn(temp_dir, serialized)
         self.assertEqual(manifest["protocol"]["warmup_attempts"], 1)
         self.assertEqual(manifest["protocol"]["repetitions"], 3)
+        self.assertEqual(manifest["protocol"]["max_retries"], 0)
+        self.assertIsNone(manifest["protocol"]["attempt_timeout_seconds"])
 
     def test_manifest_path_and_atomic_write(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -198,6 +200,18 @@ class RunManifestTests(unittest.TestCase):
             )
             validate_resume_record_count(existing, 0)
             resumed = prepare_resumed_manifest(existing)
+
+            changed_retry_policy = dict(arguments)
+            changed_retry_policy["max_retries"] = 1
+            with self.assertRaisesRegex(
+                ManifestResumeError,
+                "protocol",
+            ):
+                validate_resume_manifest(
+                    existing,
+                    build_run_manifest(**changed_retry_policy),
+                    output_path=output,
+                )
 
             invalid_values = (
                 ("output.sha256", {"output": {"sha256": "not-a-hash"}}),

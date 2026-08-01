@@ -11,7 +11,13 @@ class MockAdapter:
     name = "mock"
     revision = "deterministic-v1"
 
-    def generate(self, task: EvaluationTask) -> ModelOutput:
+    def generate(
+        self,
+        task: EvaluationTask,
+        *,
+        timeout_seconds: float | None = None,
+    ) -> ModelOutput:
+        del timeout_seconds
         if (
             task.scoring.type == "normalized_exact_match"
             and task.expected_keywords

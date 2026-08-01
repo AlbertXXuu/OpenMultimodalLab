@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 from collections.abc import Callable
 from dataclasses import asdict
@@ -17,7 +18,30 @@ from .metrics import score_response
 from .models import EvaluationTask, RunRecord
 
 
-RUN_RECORD_SCHEMA_VERSION = "0.3"
+RUN_RECORD_SCHEMA_VERSION = "0.4"
+RETRYABLE_STATUSES = frozenset({"generation_error", "timeout"})
+
+
+def _normalize_retry_config(
+    max_retries: int,
+    timeout_seconds: float | None,
+) -> tuple[int, float | None]:
+    if (
+        not isinstance(max_retries, int)
+        or isinstance(max_retries, bool)
+        or max_retries < 0
+    ):
+        raise ValueError("max_retries must be at least 0")
+    if timeout_seconds is not None and (
+        not isinstance(timeout_seconds, (int, float))
+        or isinstance(timeout_seconds, bool)
+        or not math.isfinite(float(timeout_seconds))
+        or timeout_seconds <= 0
+    ):
+        raise ValueError("timeout_seconds must be a finite number above 0")
+    return max_retries, (
+        float(timeout_seconds) if timeout_seconds is not None else None
+    )
 
 
 class ResumeError(ValueError):
@@ -107,8 +131,11 @@ def _validate_resume_prefix(
     records: list[RunRecord],
     attempts: list[tuple[str, int, EvaluationTask]],
     adapter: ModelAdapter,
+    *,
+    max_retries: int,
+    timeout_seconds: float | None,
 ) -> None:
-    if len(records) > len(attempts):
+    if len(records) > len(attempts) * (max_retries + 1):
         raise ResumeError(
             "existing output contains more records than the requested run"
         )
@@ -117,10 +144,15 @@ def _validate_resume_prefix(
         getattr(adapter, "name", type(adapter).__name__)
     )
     expected_revision = str(getattr(adapter, "revision", "unknown"))
-    for index, (record, attempt) in enumerate(
-        zip(records, attempts, strict=False),
-        start=1,
-    ):
+    plan_index = 0
+    expected_attempt_index = 1
+    cumulative_latency_ms = 0.0
+    for index, record in enumerate(records, start=1):
+        if plan_index >= len(attempts):
+            raise ResumeError(
+                "existing output contains records after the attempt plan completed"
+            )
+        attempt = attempts[plan_index]
         phase, repetition, task = attempt
         expected_dataset_version = str(
             task.metadata.get("dataset_version", "unspecified")
@@ -161,6 +193,15 @@ def _validate_resume_prefix(
                 task.expected_keywords,
             ),
             "media": (record.media, task.media),
+            "attempt_index": (
+                record.attempt_index,
+                expected_attempt_index,
+            ),
+            "timeout_seconds": (
+                record.timeout_seconds,
+                timeout_seconds,
+            ),
+            "max_retries": (record.max_retries, max_retries),
         }
         different = [
             f"{name}={actual!r} (expected {expected!r})"
@@ -173,6 +214,87 @@ def _validate_resume_prefix(
                 f"prefix: {'; '.join(different)}"
             )
 
+        if (
+            not isinstance(record.attempt_index, int)
+            or isinstance(record.attempt_index, bool)
+            or record.attempt_index < 1
+        ):
+            raise ResumeError(
+                f"existing output record {index} has invalid attempt_index"
+            )
+        if not isinstance(record.terminal, bool):
+            raise ResumeError(
+                f"existing output record {index} has invalid terminal flag"
+            )
+        if not isinstance(record.retryable, bool):
+            raise ResumeError(
+                f"existing output record {index} has invalid retryable flag"
+            )
+        if (
+            not isinstance(record.max_retries, int)
+            or isinstance(record.max_retries, bool)
+            or record.max_retries < 0
+        ):
+            raise ResumeError(
+                f"existing output record {index} has invalid max_retries"
+            )
+        if record.timeout_seconds is not None and (
+            not isinstance(record.timeout_seconds, (int, float))
+            or isinstance(record.timeout_seconds, bool)
+            or not math.isfinite(float(record.timeout_seconds))
+            or record.timeout_seconds <= 0
+        ):
+            raise ResumeError(
+                f"existing output record {index} has invalid timeout_seconds"
+            )
+        if (
+            not isinstance(record.latency_ms, (int, float))
+            or isinstance(record.latency_ms, bool)
+            or not math.isfinite(float(record.latency_ms))
+            or record.latency_ms < 0
+        ):
+            raise ResumeError(
+                f"existing output record {index} has invalid latency_ms"
+            )
+        expected_cumulative = cumulative_latency_ms + record.latency_ms
+        if (
+            record.cumulative_latency_ms is None
+            or not isinstance(record.cumulative_latency_ms, (int, float))
+            or isinstance(record.cumulative_latency_ms, bool)
+            or not math.isfinite(float(record.cumulative_latency_ms))
+            or not math.isclose(
+                record.cumulative_latency_ms,
+                expected_cumulative,
+                rel_tol=1e-12,
+                abs_tol=1e-9,
+            )
+        ):
+            raise ResumeError(
+                f"existing output record {index} has invalid "
+                "cumulative_latency_ms"
+            )
+        expected_retryable = record.status in RETRYABLE_STATUSES
+        expected_terminal = (
+            not expected_retryable
+            or record.attempt_index > max_retries
+        )
+        if record.retryable != expected_retryable:
+            raise ResumeError(
+                f"existing output record {index} has invalid retryable flag"
+            )
+        if record.terminal != expected_terminal:
+            raise ResumeError(
+                f"existing output record {index} has invalid terminal flag"
+            )
+
+        if record.terminal:
+            plan_index += 1
+            expected_attempt_index = 1
+            cumulative_latency_ms = 0.0
+        else:
+            expected_attempt_index += 1
+            cumulative_latency_ms = record.cumulative_latency_ms
+
 
 def validate_resume_output(
     tasks: Iterable[EvaluationTask],
@@ -181,9 +303,15 @@ def validate_resume_output(
     *,
     warmup: int = 0,
     repetitions: int = 1,
+    max_retries: int = 0,
+    timeout_seconds: float | None = None,
 ) -> list[RunRecord]:
     """Validate and return the durable prefix of an interrupted run."""
 
+    max_retries, timeout_seconds = _normalize_retry_config(
+        max_retries,
+        timeout_seconds,
+    )
     destination = Path(output_path)
     if not destination.is_file():
         raise ResumeError(
@@ -195,8 +323,33 @@ def validate_resume_output(
         repetitions=repetitions,
     )
     records = _load_resume_records(destination)
-    _validate_resume_prefix(records, attempts, adapter)
+    _validate_resume_prefix(
+        records,
+        attempts,
+        adapter,
+        max_retries=max_retries,
+        timeout_seconds=timeout_seconds,
+    )
     return records
+
+
+def _resume_cursor(
+    records: list[RunRecord],
+) -> tuple[int, int, float]:
+    """Return plan index, next invocation index, and accumulated latency."""
+
+    plan_index = 0
+    attempt_index = 1
+    cumulative_latency_ms = 0.0
+    for record in records:
+        if record.terminal:
+            plan_index += 1
+            attempt_index = 1
+            cumulative_latency_ms = 0.0
+        else:
+            attempt_index = record.attempt_index + 1
+            cumulative_latency_ms = record.cumulative_latency_ms or 0.0
+    return plan_index, attempt_index, cumulative_latency_ms
 
 
 def _run_once(
@@ -205,6 +358,10 @@ def _run_once(
     *,
     phase: str,
     repetition: int,
+    attempt_index: int,
+    max_retries: int,
+    timeout_seconds: float | None,
+    prior_latency_ms: float,
 ) -> RunRecord:
     started_at = datetime.now(timezone.utc).isoformat()
     start_ns = perf_counter_ns()
@@ -215,9 +372,19 @@ def _run_once(
     )
 
     try:
-        output = adapter.generate(task)
+        if timeout_seconds is None:
+            output = adapter.generate(task)
+        else:
+            output = adapter.generate(
+                task,
+                timeout_seconds=timeout_seconds,
+            )
     except Exception as exc:  # Adapter boundaries must become durable data.
         latency_ms = (perf_counter_ns() - start_ns) / 1_000_000
+        status = (
+            exc.status if isinstance(exc, AdapterError) else "generation_error"
+        )
+        retryable = status in RETRYABLE_STATUSES
         return RunRecord(
             schema_version=RUN_RECORD_SCHEMA_VERSION,
             phase=phase,
@@ -229,9 +396,7 @@ def _run_once(
             backend=getattr(adapter, "name", type(adapter).__name__),
             model_revision=getattr(adapter, "revision", "unknown"),
             timestamp_utc=started_at,
-            status=(
-                exc.status if isinstance(exc, AdapterError) else "generation_error"
-            ),
+            status=status,
             response_text=None,
             latency_ms=latency_ms,
             score=None,
@@ -242,6 +407,12 @@ def _run_once(
             media=task.media,
             usage={},
             error=f"{type(exc).__name__}: {exc}",
+            attempt_index=attempt_index,
+            terminal=not retryable or attempt_index > max_retries,
+            retryable=retryable,
+            cumulative_latency_ms=prior_latency_ms + latency_ms,
+            timeout_seconds=timeout_seconds,
+            max_retries=max_retries,
         )
 
     if phase == "warmup":
@@ -268,6 +439,10 @@ def _run_once(
             media=task.media,
             usage=output.usage,
             error=None,
+            attempt_index=attempt_index,
+            cumulative_latency_ms=prior_latency_ms + latency_ms,
+            timeout_seconds=timeout_seconds,
+            max_retries=max_retries,
         )
 
     try:
@@ -296,6 +471,10 @@ def _run_once(
             media=task.media,
             usage=output.usage,
             error=f"{type(exc).__name__}: {exc}",
+            attempt_index=attempt_index,
+            cumulative_latency_ms=prior_latency_ms + latency_ms,
+            timeout_seconds=timeout_seconds,
+            max_retries=max_retries,
         )
 
     latency_ms = (perf_counter_ns() - start_ns) / 1_000_000
@@ -321,6 +500,10 @@ def _run_once(
         media=task.media,
         usage=output.usage,
         error=None,
+        attempt_index=attempt_index,
+        cumulative_latency_ms=prior_latency_ms + latency_ms,
+        timeout_seconds=timeout_seconds,
+        max_retries=max_retries,
     )
 
 
@@ -331,6 +514,8 @@ def run_benchmark(
     *,
     warmup: int = 0,
     repetitions: int = 1,
+    max_retries: int = 0,
+    timeout_seconds: float | None = None,
     resume: bool = False,
     on_record_persisted: (
         Callable[[tuple[RunRecord, ...]], None] | None
@@ -342,6 +527,10 @@ def run_benchmark(
         raise ValueError("warmup must be at least 0")
     if repetitions < 1:
         raise ValueError("repetitions must be at least 1")
+    max_retries, timeout_seconds = _normalize_retry_config(
+        max_retries,
+        timeout_seconds,
+    )
 
     destination = Path(output_path)
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -358,19 +547,28 @@ def run_benchmark(
             destination,
             warmup=warmup,
             repetitions=repetitions,
+            max_retries=max_retries,
+            timeout_seconds=timeout_seconds,
         )
         mode = "a"
     else:
         records = []
         mode = "w"
 
+    plan_index, attempt_index, cumulative_latency_ms = _resume_cursor(records)
+
     with destination.open(mode, encoding="utf-8", newline="\n") as handle:
-        for phase, repetition, task in attempts[len(records) :]:
+        while plan_index < len(attempts):
+            phase, repetition, task = attempts[plan_index]
             record = _run_once(
                 task,
                 adapter,
                 phase=phase,
                 repetition=repetition,
+                attempt_index=attempt_index,
+                max_retries=max_retries,
+                timeout_seconds=timeout_seconds,
+                prior_latency_ms=cumulative_latency_ms,
             )
             records.append(record)
             handle.write(json.dumps(asdict(record), ensure_ascii=False) + "\n")
@@ -378,5 +576,12 @@ def run_benchmark(
             os.fsync(handle.fileno())
             if on_record_persisted is not None:
                 on_record_persisted(tuple(records))
+            if record.terminal:
+                plan_index += 1
+                attempt_index = 1
+                cumulative_latency_ms = 0.0
+            else:
+                attempt_index += 1
+                cumulative_latency_ms = record.cumulative_latency_ms or 0.0
 
     return records

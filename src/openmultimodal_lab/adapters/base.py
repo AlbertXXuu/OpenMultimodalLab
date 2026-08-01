@@ -12,6 +12,11 @@ class ModelAdapter(Protocol):
 
     name: str
 
-    def generate(self, task: EvaluationTask) -> ModelOutput:
+    def generate(
+        self,
+        task: EvaluationTask,
+        *,
+        timeout_seconds: float | None = None,
+    ) -> ModelOutput:
         """Generate a normalized response for one task."""
         ...

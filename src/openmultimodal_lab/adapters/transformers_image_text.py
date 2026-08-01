@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import Path
@@ -13,6 +14,7 @@ from .errors import (
     AdapterError,
     AdapterInputError,
     AdapterOutOfMemoryError,
+    AdapterTimeoutError,
     ModelLoadError,
 )
 
@@ -241,10 +243,24 @@ class TransformersImageTextAdapter:
             shapes[str(name)] = dimensions
         return shapes
 
-    def generate(self, task: EvaluationTask) -> ModelOutput:
+    def generate(
+        self,
+        task: EvaluationTask,
+        *,
+        timeout_seconds: float | None = None,
+    ) -> ModelOutput:
+        if timeout_seconds is not None and (
+            not isinstance(timeout_seconds, (int, float))
+            or isinstance(timeout_seconds, bool)
+            or not math.isfinite(float(timeout_seconds))
+            or timeout_seconds <= 0
+        ):
+            raise ValueError("timeout_seconds must be a finite number above 0")
+
         media_paths = self._resolve_media(task)
         model_load_ms = self._ensure_loaded()
         assert self._dependencies is not None
+        inference_start_ns = perf_counter_ns()
 
         images: list[Any] = []
         try:
@@ -280,12 +296,26 @@ class TransformersImageTextAdapter:
             self._synchronize_cuda()
             generation_start_ns = perf_counter_ns()
             first_token_timer = FirstTokenTimer(self._synchronize_cuda)
+            generation_arguments: dict[str, Any] = {
+                "max_new_tokens": self.max_new_tokens,
+                "do_sample": False,
+                "logits_processor": [first_token_timer],
+            }
+            if timeout_seconds is not None:
+                elapsed_seconds = (
+                    perf_counter_ns() - inference_start_ns
+                ) / 1_000_000_000
+                remaining_seconds = timeout_seconds - elapsed_seconds
+                if remaining_seconds <= 0:
+                    raise AdapterTimeoutError(
+                        f"inference exceeded {timeout_seconds:g} seconds "
+                        "before generation started"
+                    )
+                generation_arguments["max_time"] = remaining_seconds
             with self._dependencies.torch.inference_mode():
                 generated_ids = self._model.generate(
                     **inputs,
-                    max_new_tokens=self.max_new_tokens,
-                    do_sample=False,
-                    logits_processor=[first_token_timer],
+                    **generation_arguments,
                 )
             self._synchronize_cuda()
             generation_ms = (
@@ -298,6 +328,16 @@ class TransformersImageTextAdapter:
                 else None
             )
             peak_gpu_memory_mb = self._peak_gpu_memory_mb()
+            inference_seconds = (
+                perf_counter_ns() - inference_start_ns
+            ) / 1_000_000_000
+            if (
+                timeout_seconds is not None
+                and inference_seconds >= timeout_seconds
+            ):
+                raise AdapterTimeoutError(
+                    f"inference exceeded {timeout_seconds:g} seconds"
+                )
 
             trimmed_ids = [
                 output_ids[prompt_tokens:] for output_ids in generated_ids
@@ -325,6 +365,17 @@ class TransformersImageTextAdapter:
                 and decode_duration_ms > 0
                 else None
             )
+            inference_seconds = (
+                perf_counter_ns() - inference_start_ns
+            ) / 1_000_000_000
+            if (
+                timeout_seconds is not None
+                and inference_seconds >= timeout_seconds
+            ):
+                raise AdapterTimeoutError(
+                    f"inference exceeded {timeout_seconds:g} seconds "
+                    "during text decoding"
+                )
         except Exception as exc:
             if self._is_out_of_memory(exc):
                 raise AdapterOutOfMemoryError(str(exc)) from exc

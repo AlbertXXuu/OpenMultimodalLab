@@ -255,3 +255,9 @@ class RunRecord:
     media: tuple[str, ...]
     usage: Mapping[str, Any]
     error: str | None
+    attempt_index: int = 1
+    terminal: bool = True
+    retryable: bool = False
+    cumulative_latency_ms: float | None = None
+    timeout_seconds: float | None = None
+    max_retries: int = 0

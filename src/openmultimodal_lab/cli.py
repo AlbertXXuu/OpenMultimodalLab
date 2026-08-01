@@ -6,6 +6,7 @@ import argparse
 import importlib
 import importlib.util
 import json
+import math
 import os
 import platform
 import shutil
@@ -70,6 +71,16 @@ def _non_negative_int(value: str) -> int:
     return parsed
 
 
+def _positive_float(value: str) -> float:
+    try:
+        parsed = float(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("must be a number") from exc
+    if not math.isfinite(parsed) or parsed <= 0:
+        raise argparse.ArgumentTypeError("must be a finite number above 0")
+    return parsed
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="oml",
@@ -129,6 +140,24 @@ def _build_parser() -> argparse.ArgumentParser:
         type=_positive_int,
         default=1,
         help="Measured repetitions of the selected task set (default: 1).",
+    )
+    run_parser.add_argument(
+        "--attempt-timeout-seconds",
+        type=_positive_float,
+        default=None,
+        help=(
+            "Cooperative inference deadline per generation invocation; "
+            "one-time model loading is excluded (default: disabled)."
+        ),
+    )
+    run_parser.add_argument(
+        "--max-retries",
+        type=_non_negative_int,
+        default=0,
+        help=(
+            "Retries after timeout or generation_error; every invocation is "
+            "persisted (default: 0)."
+        ),
     )
     run_parser.add_argument(
         "--category",
@@ -357,6 +386,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 max_new_tokens=args.max_new_tokens,
                 warmup=args.warmup,
                 repetitions=args.repetitions,
+                max_retries=args.max_retries,
+                timeout_seconds=args.attempt_timeout_seconds,
                 categories=args.category,
                 gpu_summary=_gpu_summary(),
                 project_root=Path.cwd(),
@@ -374,6 +405,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                     args.output,
                     warmup=args.warmup,
                     repetitions=args.repetitions,
+                    max_retries=args.max_retries,
+                    timeout_seconds=args.attempt_timeout_seconds,
                 )
                 validate_resume_record_count(
                     existing_manifest,
@@ -425,6 +458,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                     args.output,
                     warmup=args.warmup,
                     repetitions=args.repetitions,
+                    max_retries=args.max_retries,
+                    timeout_seconds=args.attempt_timeout_seconds,
                     resume=args.resume,
                     on_record_persisted=persist_checkpoint,
                 )
