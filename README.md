@@ -37,6 +37,8 @@ produced more complete answers and lower median latency on this small task
 mix. Model sizes and native visual processors differ, and the ten synthetic
 English tasks do not represent broad real-world capability.
 
+![Formal Qwen3-VL-2B and SmolVLM2-500M comparison](docs/assets/model-comparison.svg)
+
 Read the [full comparison](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md)
 or inspect the preserved
 [Qwen JSONL](docs/reports/results/2026-07-31-qwen3-vl-comparison-formal.jsonl),

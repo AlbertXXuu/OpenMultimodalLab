@@ -45,6 +45,7 @@ All notable changes to this project will be documented in this file.
 - Fresh-environment wheel installation and outside-checkout smoke testing in CI.
 - Commit-pinned GitHub Actions, enforced by the repository audit, with grouped weekly Dependabot updates.
 - Privacy-preserving working and Hugging Face model-cache disk checks in `oml doctor`.
+- Deterministic README comparison visual generated from preserved formal JSONL evidence.
 
 ### Planned
 
