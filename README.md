@@ -265,6 +265,7 @@ equivalent because tokenizers differ.
 | First complete experiment | [Step-by-step tutorial](docs/tutorials/first-reproducible-benchmark.md) |
 | Current work | [Task board](TASKS.md) |
 | Third-party licenses | [Third-party notices](THIRD_PARTY_NOTICES.md) |
+| Reproducible license audit | [Package, model, PyAV, and FFmpeg policy](docs/license-audit.md) |
 
 ## Project status
 

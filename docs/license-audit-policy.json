@@ -1,0 +1,203 @@
+{
+  "schema_version": "1.0",
+  "distribution_scope": "source-only-no-runtime-binaries",
+  "python_minors": [
+    "3.11"
+  ],
+  "required_packages": {
+    "accelerate": "1.14.0",
+    "av": "18.0.0",
+    "huggingface-hub": "1.25.1",
+    "num2words": "0.5.14",
+    "numpy": "2.4.6",
+    "pillow": "12.3.0",
+    "safetensors": "0.8.0",
+    "tokenizers": "0.22.2",
+    "torch": "2.13.0+cu130",
+    "torchvision": "0.28.0+cu130",
+    "transformers": "5.14.1"
+  },
+  "allowed_package_license_tiers": [
+    "permissive",
+    "permissive-composite",
+    "weak-copyleft"
+  ],
+  "license_rules": [
+    {
+      "declared_values": [
+        "Apache",
+        "Apache 2.0 License",
+        "Apache Software License",
+        "Apache-2.0"
+      ],
+      "normalized": "Apache-2.0",
+      "tier": "permissive"
+    },
+    {
+      "declared_values": [
+        "MIT",
+        "MIT License"
+      ],
+      "normalized": "MIT",
+      "tier": "permissive"
+    },
+    {
+      "declared_values": [
+        "BSD",
+        "BSD License",
+        "BSD-2-Clause",
+        "BSD-3-Clause"
+      ],
+      "normalized": "BSD-family",
+      "tier": "permissive"
+    },
+    {
+      "declared_values": [
+        "ISC License",
+        "ISC License (ISCL)"
+      ],
+      "normalized": "ISC",
+      "tier": "permissive"
+    },
+    {
+      "declared_values": [
+        "MIT-CMU"
+      ],
+      "normalized": "MIT-CMU",
+      "tier": "permissive"
+    },
+    {
+      "declared_values": [
+        "PSF-2.0"
+      ],
+      "normalized": "PSF-2.0",
+      "tier": "permissive"
+    },
+    {
+      "declared_values": [
+        "Apache-2.0 OR BSD-2-Clause"
+      ],
+      "normalized": "Apache-2.0 OR BSD-2-Clause",
+      "tier": "permissive-composite"
+    },
+    {
+      "declared_values": [
+        "Apache-2.0 AND CNRI-Python"
+      ],
+      "normalized": "Apache-2.0 AND CNRI-Python",
+      "tier": "permissive-composite"
+    },
+    {
+      "declared_values": [
+        "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0"
+      ],
+      "normalized": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0",
+      "tier": "permissive-composite"
+    },
+    {
+      "declared_values": [
+        "Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND MIT"
+      ],
+      "normalized": "PyTorch-composite",
+      "tier": "permissive-composite"
+    },
+    {
+      "declared_values": [
+        "MPL-2.0",
+        "MPL-2.0 AND MIT"
+      ],
+      "normalized": "MPL-2.0",
+      "tier": "weak-copyleft"
+    },
+    {
+      "declared_values": [
+        "GNU Library or Lesser General Public License (LGPL)",
+        "LGPL"
+      ],
+      "normalized": "LGPL-unspecified",
+      "tier": "weak-copyleft"
+    }
+  ],
+  "ffmpeg": {
+    "pyav_version": "18.0.0",
+    "expected_library_versions": {
+      "libavcodec": [
+        62,
+        28,
+        102
+      ],
+      "libavdevice": [
+        62,
+        3,
+        102
+      ],
+      "libavfilter": [
+        11,
+        14,
+        102
+      ],
+      "libavformat": [
+        62,
+        12,
+        102
+      ],
+      "libavutil": [
+        60,
+        26,
+        102
+      ],
+      "libswresample": [
+        6,
+        3,
+        102
+      ],
+      "libswscale": [
+        9,
+        5,
+        102
+      ]
+    },
+    "gpl_binary_markers": [
+      "libx264",
+      "libx265"
+    ],
+    "version3_binary_markers": [
+      "libopencore-amrnb",
+      "libopencore-amrwb"
+    ],
+    "nonfree_binary_markers": [
+      "libfdk"
+    ],
+    "gpl_effective_license": "GPL-3.0-or-later",
+    "bundled_runtime_allowed": false,
+    "official_legal_url": "https://ffmpeg.org/legal.html",
+    "official_license_url": "https://ffmpeg.org/doxygen/trunk/md_LICENSE.html",
+    "pyav_binary_build_source": "https://github.com/PyAV-Org/pyav-ffmpeg/tree/d7a92d1c8149eb47357337b62a0136cd15ae4781"
+  },
+  "models": [
+    {
+      "model_id": "Qwen/Qwen3-VL-2B-Instruct",
+      "revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct"
+    },
+    {
+      "model_id": "HuggingFaceTB/SmolVLM2-500M-Video-Instruct",
+      "revision": "7b375e1b73b11138ff12fe22c8f2822d8fe03467",
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-500M-Video-Instruct"
+    }
+  ],
+  "forbidden_tracked_suffixes": [
+    ".bin",
+    ".dll",
+    ".dylib",
+    ".gguf",
+    ".onnx",
+    ".pt",
+    ".pth",
+    ".safetensors",
+    ".so",
+    ".whl"
+  ]
+}

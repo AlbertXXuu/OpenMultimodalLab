@@ -122,6 +122,13 @@ inventory from the final clean environment, preserve a reproducible baseline
 constraints file, and audit the exact PyAV/FFmpeg build. This remains an open
 public-release gate.
 
+Follow-up on 2026-08-02: `scripts/audit_runtime_licenses.py` now inventories
+installed metadata without terminal-encoding dependence, hashes bundled PyAV
+binaries, detects GPL/version-3/nonfree FFmpeg markers, verifies model pins,
+and emits exact constraints. The preliminary environment passed with the
+expected source-only GPL runtime warning. A clean final-candidate snapshot and
+review report are still required, so SEC-004 remains open for release.
+
 ### SEC-005 — Low — inference timeout is cooperative
 
 Transformers `max_time` and adapter checks cannot safely terminate a CUDA

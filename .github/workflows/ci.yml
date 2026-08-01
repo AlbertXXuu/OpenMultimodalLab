@@ -54,6 +54,8 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Check repository artifacts
         run: python scripts/check_repository.py
+      - name: Validate runtime license audit policy
+        run: python scripts/audit_runtime_licenses.py --validate-policy-only
       - name: Build wheel
         run: python -m pip wheel . --no-deps --wheel-dir dist
       - name: Install wheel in a fresh environment
