@@ -232,6 +232,7 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 | 视觉鲁棒性语料工具链 | [四类压力因素与人工复核流程](docs/robustness-corpus-tooling.md) |
 | 全新 wheel 安装 | [Windows 审计与永久 CI 门禁](docs/reports/2026-08-01-fresh-wheel-install.md) |
 | 依赖供应链 | [Action 固定与更新审计](docs/reports/2026-08-01-supply-chain-audit.md) |
+| 可复现许可证审计 | [Python 包、模型、PyAV 与 FFmpeg 策略](docs/license-audit.md) |
 | 安全审查 | [本地输入边界与路径隐私审计](docs/reports/2026-08-02-security-review.md) |
 | 文档、表格与图表任务集 | [`synthetic-docs-v1` 证据报告](docs/reports/2026-08-01-synthetic-docs-v1.md) |
 | 超时与重试溯源 | [Run record schema 0.4 报告](docs/reports/2026-08-01-run-record-0.4.md) |

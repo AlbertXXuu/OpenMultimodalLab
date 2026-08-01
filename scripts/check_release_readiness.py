@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Iterable
@@ -52,6 +54,7 @@ REQUIRED_DOCUMENTS = (
     "docs/03-architecture.md",
     "docs/06-quality-and-open-source.md",
     "docs/evaluation-protocol.md",
+    "docs/license-audit.md",
     "docs/robustness-corpus-tooling.md",
     "docs/video-corpus-tooling.md",
     "docs/tutorials/first-reproducible-benchmark.md",
@@ -64,6 +67,10 @@ PERFORMANCE_FIELDS = (
     "output_tokens_per_second",
     "peak_gpu_memory_mb",
 )
+MAX_LICENSE_SNAPSHOT_BYTES = 4 * 1024 * 1024
+MAX_LICENSE_REPORT_BYTES = 1024 * 1024
+MAX_CONSTRAINTS_BYTES = 1024 * 1024
+PACKAGE_PIN = re.compile(r"[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?==\S+")
 
 
 @dataclass(frozen=True, slots=True)
@@ -178,6 +185,209 @@ def _formal_result_status(records: list[dict[str, Any]]) -> tuple[bool, str]:
         f"repetitions={len(repetitions)}, successful={len(successful)}, "
         f"failures={len(failures)}, complete_grid={complete_repeat_grid}, "
         f"retries={retries}, measurement_reloads={measurement_reloads}"
+    )
+
+
+def _license_snapshot_status(path: Path) -> tuple[bool, str]:
+    if not path.is_file():
+        return False, "machine-readable runtime license snapshot is missing"
+    with path.open("rb") as handle:
+        raw = handle.read(MAX_LICENSE_SNAPSHOT_BYTES + 1)
+    if len(raw) > MAX_LICENSE_SNAPSHOT_BYTES:
+        return False, "runtime license snapshot exceeds 4 MiB"
+    try:
+        value = json.loads(raw.decode("utf-8"))
+    except (UnicodeError, ValueError):
+        return False, "runtime license snapshot is not valid UTF-8 JSON"
+    if not isinstance(value, dict):
+        return False, "runtime license snapshot must be a JSON object"
+
+    recorded_hash = value.get("snapshot_sha256")
+    hash_input = dict(value)
+    hash_input.pop("snapshot_sha256", None)
+    calculated_hash = hashlib.sha256(
+        json.dumps(
+            hash_input,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    repository = value.get("repository")
+    models = value.get("models")
+    ffmpeg = value.get("ffmpeg")
+    packages = value.get("packages")
+    commit = repository.get("commit") if isinstance(repository, dict) else None
+    immutable_commit = (
+        isinstance(commit, str)
+        and len(commit) == 40
+        and all(character in "0123456789abcdef" for character in commit)
+    )
+    model_records_valid = (
+        isinstance(models, list)
+        and len(models) >= 2
+        and all(
+            isinstance(model, dict)
+            and model.get("license") == "Apache-2.0"
+            and isinstance(model.get("revision"), str)
+            and len(model["revision"]) == 40
+            and all(
+                character in "0123456789abcdef"
+                for character in model["revision"]
+            )
+            for model in models
+        )
+    )
+    package_records_valid = (
+        isinstance(packages, list)
+        and bool(packages)
+        and all(
+            isinstance(package, dict)
+            and isinstance(package.get("name"), str)
+            and bool(package["name"])
+            and isinstance(package.get("versions"), list)
+            and len(package["versions"]) == 1
+            and isinstance(package.get("declared_licenses"), list)
+            and len(package["declared_licenses"]) == 1
+            and isinstance(package.get("license_classifications"), list)
+            and bool(package["license_classifications"])
+            for package in packages
+        )
+    )
+    bundled_binaries = (
+        ffmpeg.get("bundled_binaries", [])
+        if isinstance(ffmpeg, dict)
+        else []
+    )
+    binary_records_valid = (
+        isinstance(bundled_binaries, list)
+        and bool(bundled_binaries)
+        and all(
+            isinstance(binary, dict)
+            and isinstance(binary.get("name"), str)
+            and bool(binary["name"])
+            and isinstance(binary.get("size_bytes"), int)
+            and not isinstance(binary["size_bytes"], bool)
+            and binary["size_bytes"] > 0
+            and isinstance(binary.get("sha256"), str)
+            and len(binary["sha256"]) == 64
+            and all(
+                character in "0123456789abcdef"
+                for character in binary["sha256"]
+            )
+            for binary in bundled_binaries
+        )
+    )
+    ffmpeg_valid = (
+        isinstance(ffmpeg, dict)
+        and ffmpeg.get("bundled_runtime_allowed") is False
+        and set(ffmpeg.get("gpl_markers_found", []))
+        == {"libx264", "libx265"}
+        and set(ffmpeg.get("version3_markers_found", []))
+        == {"libopencore-amrnb", "libopencore-amrwb"}
+        and ffmpeg.get("nonfree_markers_found") == []
+        and ffmpeg.get("effective_ffmpeg_license")
+        == "GPL-3.0-or-later"
+        and binary_records_valid
+    )
+    passed = (
+        value.get("schema_version") == "1.0"
+        and value.get("status") == "PASS"
+        and value.get("distribution_scope")
+        == "source-only-no-runtime-binaries"
+        and value.get("findings") == []
+        and package_records_valid
+        and isinstance(repository, dict)
+        and repository.get("dirty") is False
+        and repository.get("forbidden_runtime_files") == []
+        and immutable_commit
+        and model_records_valid
+        and ffmpeg_valid
+        and isinstance(recorded_hash, str)
+        and recorded_hash == calculated_hash
+    )
+    return passed, (
+        f"status={value.get('status')}, packages="
+        f"{len(packages) if isinstance(packages, list) else 0}, "
+        f"models={len(models) if isinstance(models, list) else 0}, "
+        f"ffmpeg_binaries="
+        f"{len(bundled_binaries)}, "
+        f"clean="
+        f"{repository.get('dirty') is False if isinstance(repository, dict) else False}, "
+        f"hash_match={recorded_hash == calculated_hash}"
+    )
+
+
+def _constraints_status(
+    path: Path,
+    snapshot_path: Path,
+) -> tuple[bool, str]:
+    if not path.is_file():
+        return False, "exact runtime constraints are missing"
+    with path.open("rb") as handle:
+        raw = handle.read(MAX_CONSTRAINTS_BYTES + 1)
+    if len(raw) > MAX_CONSTRAINTS_BYTES:
+        return False, "runtime constraints exceed 1 MiB"
+    try:
+        lines = raw.decode("utf-8").splitlines()
+    except UnicodeError:
+        return False, "runtime constraints are not UTF-8"
+    if not lines or any(not PACKAGE_PIN.fullmatch(line) for line in lines):
+        return False, "runtime constraints are not exact name==version pins"
+    if lines != sorted(lines) or len(lines) != len(set(lines)):
+        return False, "runtime constraints are not sorted and unique"
+    try:
+        snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, ValueError):
+        return False, "runtime snapshot cannot be read for constraints"
+    packages = snapshot.get("packages") if isinstance(snapshot, dict) else None
+    if not isinstance(packages, list):
+        return False, "runtime snapshot package inventory is invalid"
+    expected = sorted(
+        f"{package['name']}=={package['versions'][0]}"
+        for package in packages
+        if isinstance(package, dict)
+        and package.get("name") != "openmultimodal-lab"
+        and isinstance(package.get("versions"), list)
+        and len(package["versions"]) == 1
+    )
+    return lines == expected, (
+        f"pins={len(lines)}, match_snapshot={lines == expected}"
+    )
+
+
+def _license_report_status(
+    path: Path,
+    snapshot_path: Path,
+) -> tuple[bool, str]:
+    if not path.is_file():
+        return False, "signed final license report is missing"
+    with path.open("rb") as handle:
+        raw = handle.read(MAX_LICENSE_REPORT_BYTES + 1)
+    if len(raw) > MAX_LICENSE_REPORT_BYTES:
+        return False, "final license report exceeds 1 MiB"
+    try:
+        text = raw.decode("utf-8")
+        snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, ValueError):
+        return False, "final license report or snapshot is unreadable"
+    snapshot_hash = (
+        snapshot.get("snapshot_sha256")
+        if isinstance(snapshot, dict)
+        else None
+    )
+    markers = (
+        "# Final dependency and license audit",
+        "Outcome: PASS",
+        "Reviewer:",
+        "Review date:",
+        f"Snapshot SHA-256: `{snapshot_hash}`",
+    )
+    missing = [marker for marker in markers if marker not in text]
+    return not missing, (
+        "signed report markers complete"
+        if not missing
+        else f"signed report markers missing={missing}"
     )
 
 
@@ -356,16 +566,42 @@ def audit_release_readiness(root: Path) -> list[ReadinessCheck]:
         )
     )
 
-    final_license_audit = (
+    final_license_report = (
         root / "docs/reports/final-dependency-license-audit.md"
+    )
+    final_license_snapshot = (
+        root / "docs/reports/results/final-runtime-license-audit.json"
+    )
+    final_constraints = (
+        root / "requirements/model-windows-py311-constraints.txt"
+    )
+    license_snapshot_passed, license_snapshot_evidence = (
+        _license_snapshot_status(final_license_snapshot)
+    )
+    constraints_passed, constraints_evidence = _constraints_status(
+        final_constraints,
+        final_license_snapshot,
+    )
+    report_passed, report_evidence = _license_report_status(
+        final_license_report,
+        final_license_snapshot,
+    )
+    final_license_passed = (
+        report_passed and constraints_passed and license_snapshot_passed
     )
     checks.append(
         ReadinessCheck(
             "FINAL-LICENSE-AUDIT",
-            final_license_audit.is_file(),
-            "final dependency, model, media, PyAV, and FFmpeg audit exists"
-            if final_license_audit.is_file()
-            else "final dependency/PyAV-FFmpeg license audit is still required",
+            final_license_passed,
+            (
+                "final report, exact constraints, and verified runtime "
+                f"snapshot exist; {license_snapshot_evidence}; "
+                f"{constraints_evidence}; {report_evidence}"
+                if final_license_passed
+                else "final report, exact constraints, and verified clean "
+                f"runtime snapshot are required; {license_snapshot_evidence}; "
+                f"{constraints_evidence}; {report_evidence}"
+            ),
         )
     )
     final_windows = root / "docs/reports/final-fresh-windows-validation.md"

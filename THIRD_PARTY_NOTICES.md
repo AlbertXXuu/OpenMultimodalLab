@@ -37,10 +37,15 @@ environment; its source is not copied into this repository or linked into a
 redistributed binary. Users who redistribute a bundled application must
 perform their own compliance review.
 
-PyAV binary wheels include or link FFmpeg components. OpenMultimodalLab does
-not vendor or redistribute those wheels. Anyone redistributing a bundled
-runtime must audit the exact PyAV wheel and its FFmpeg build in addition to the
-PyAV BSD-3-Clause package license.
+PyAV binary wheels bundle FFmpeg components. The verified PyAV 18.0.0 Windows
+wheel contains `libx264`, `libx265`, and OpenCORE AMR DLLs. Under FFmpeg's
+published external-library rules, the conservative effective classification
+for this binary combination is `GPL-3.0-or-later`, distinct from PyAV's own
+BSD-3-Clause source license. OpenMultimodalLab does not vendor or redistribute
+the wheel or those DLLs. The public v1.0 must remain source-only; anyone
+redistributing a bundled runtime or executable must perform a separate
+compliance review. The exact binaries, versions, and hashes are captured by
+[`scripts/audit_runtime_licenses.py`](scripts/audit_runtime_licenses.py).
 
 ## Model weights and processors
 

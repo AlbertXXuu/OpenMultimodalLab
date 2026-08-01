@@ -42,7 +42,7 @@ make CI green.
 | Local Python 3.11/3.13 | Complete suites pass locally | Proven for current commit; rerun on final candidate |
 | Fresh Windows environment | Prior wheel audit exists | Must be repeated on final candidate |
 | Security | Bounded-input/path-privacy review plus automated regression tests | Proven for current scope; dependency residuals remain |
-| Code/model/data licenses | Apache-2.0 project/models/media and installed-package inventory | Final dependency/PyAV-FFmpeg audit open |
+| Code/model/data licenses | Apache-2.0 project/models/media plus a machine-verifiable package/PyAV-FFmpeg policy and audit tool | Tooling proven; final clean snapshot, constraints, and signed report open |
 | Project/package/CLI/dataset/public version names | `docs/release-approvals.json` intentionally contains no inferred approval | Owner decision required |
 | Repository visibility and formal Release | Current visibility is recorded separately from the unapproved target; repository remains private | Owner decision required |
 | Star/user claims | README explicitly refuses fabricated adoption claims | Proven truthful |
