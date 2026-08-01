@@ -64,7 +64,8 @@ reading and derived arithmetic. Regenerate the assets with:
 
 The generator uses a bundled bitmap font and Python's standard library, so
 asset bytes do not depend on host fonts or rendering-library versions. The
-task set is released, but no formal real-model result on it is claimed yet.
+task set is released, and a same-commit formal two-model result is preserved
+in the [document comparison report](reports/2026-08-02-document-model-comparison.md).
 
 ## 4. Model identity
 
@@ -91,7 +92,27 @@ A model family name without a revision is insufficient.
 
 Backend-required formatting differences are allowed only when documented.
 
-### 5.1 Short-video preprocessing
+### 5.1 Local-input safety limits
+
+The built-in local adapters reject inputs outside these fixed pre-release
+boundaries:
+
+| Input | Limit |
+|---|---:|
+| Dataset JSONL | 16 MiB total, 1 MiB per line |
+| Result JSONL used by `report`/`--resume` | 256 MiB total, 4 MiB per record |
+| Resume manifest | 8 MiB |
+| Image | 32 MiB file, 40 million decoded pixels |
+| Short video | 256 MiB file, 60 seconds, 3,600 source frames, 3840×2160 pixels/frame |
+
+These are secure defaults and experiment boundaries, not claims about maximum
+backend capability. They reject unexpectedly large local inputs before model
+generation and reduce compressed-media resource exhaustion. Native Pillow,
+PyAV, FFmpeg, PyTorch, and Transformers code is not sandboxed; untrusted files
+still belong in a disposable environment. Successful real-model records retain
+the effective media limits in `usage.media_limits`.
+
+### 5.2 Short-video preprocessing
 
 Local video files are decoded before the native processor through PyAV. The
 default bounded profile samples eight frames uniformly over the full clip and
@@ -107,6 +128,11 @@ different experiment configuration and must not be merged into the same
 formal comparison. The eight-frame default is a bounded 8 GB baseline, not a
 claim that eight frames are optimal for every video task.
 
+Durable records keep relative media references. If a caller supplies an
+absolute media path, the record stores only its basename and redacts Windows,
+UNC, and POSIX local paths from error text; the manifest retains a
+content hash for identity.
+
 ## 6. Generation configuration
 
 The default deterministic profile is:
@@ -115,6 +141,7 @@ The default deterministic profile is:
 temperature = 0
 do_sample = false
 max_new_tokens = task-specific, fixed before the run
+pad_token_id = pinned processor tokenizer value
 batch_size = 1
 ```
 
@@ -131,7 +158,9 @@ not equivalent to a clean invocation.
 
 ## 7. Repetition and warm-up
 
-- Use `--warmup 1` or more before performance measurement.
+- For the comparable formal profile, use exactly `--warmup 1` before
+  performance measurement. Additional warm-ups define a different profile and
+  must not be mixed into the published comparison.
 - Use `--repetitions 3` or more for every formal configuration.
 - Keep task order fixed unless the run manifest records a seeded shuffle.
 - Report medians for central tendency and p95 for latency tails.

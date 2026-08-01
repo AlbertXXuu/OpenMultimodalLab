@@ -16,10 +16,13 @@ from .adapters.base import ModelAdapter
 from .adapters.errors import AdapterError
 from .metrics import score_response
 from .models import EvaluationTask, RunRecord
+from .privacy import portable_media_references, redact_local_paths
 
 
 RUN_RECORD_SCHEMA_VERSION = "0.4"
 RETRYABLE_STATUSES = frozenset({"generation_error", "timeout"})
+MAX_RESUME_OUTPUT_BYTES = 256 * 1024 * 1024
+MAX_RESUME_RECORD_BYTES = 4 * 1024 * 1024
 
 
 def _normalize_retry_config(
@@ -92,13 +95,34 @@ def _record_from_mapping(
 
 
 def _load_resume_records(path: Path) -> list[RunRecord]:
-    raw = path.read_bytes()
+    if path.stat().st_size > MAX_RESUME_OUTPUT_BYTES:
+        raise ResumeError(
+            f"existing output exceeds the "
+            f"{MAX_RESUME_OUTPUT_BYTES // (1024 * 1024)} MiB safety limit"
+        )
+    with path.open("rb") as handle:
+        raw = handle.read(MAX_RESUME_OUTPUT_BYTES + 1)
+    if len(raw) > MAX_RESUME_OUTPUT_BYTES:
+        raise ResumeError(
+            f"existing output exceeds the "
+            f"{MAX_RESUME_OUTPUT_BYTES // (1024 * 1024)} MiB safety limit"
+        )
     if not raw:
         return []
     if not raw.endswith(b"\n"):
         raise ResumeError(
             "existing output does not end at a durable JSONL record boundary"
         )
+    for line_number, raw_line in enumerate(
+        raw.splitlines(keepends=True),
+        start=1,
+    ):
+        if len(raw_line) > MAX_RESUME_RECORD_BYTES:
+            raise ResumeError(
+                f"existing output line {line_number} exceeds the "
+                f"{MAX_RESUME_RECORD_BYTES // (1024 * 1024)} MiB record "
+                "safety limit"
+            )
     try:
         text = raw.decode("utf-8")
     except UnicodeDecodeError as exc:
@@ -192,7 +216,10 @@ def _validate_resume_prefix(
                 record.expected_keywords,
                 task.expected_keywords,
             ),
-            "media": (record.media, task.media),
+            "media": (
+                record.media,
+                portable_media_references(task.media),
+            ),
             "attempt_index": (
                 record.attempt_index,
                 expected_attempt_index,
@@ -370,6 +397,7 @@ def _run_once(
     metric_name = (
         "unscored_warmup" if phase == "warmup" else task.scoring.type
     )
+    record_media = portable_media_references(task.media)
 
     try:
         if timeout_seconds is None:
@@ -404,9 +432,11 @@ def _run_once(
             metric_details={},
             matched_keywords=(),
             expected_keywords=task.expected_keywords,
-            media=task.media,
+            media=record_media,
             usage={},
-            error=f"{type(exc).__name__}: {exc}",
+            error=(
+                f"{type(exc).__name__}: {redact_local_paths(exc)}"
+            ),
             attempt_index=attempt_index,
             terminal=not retryable or attempt_index > max_retries,
             retryable=retryable,
@@ -436,7 +466,7 @@ def _run_once(
             metric_details={},
             matched_keywords=(),
             expected_keywords=task.expected_keywords,
-            media=task.media,
+            media=record_media,
             usage=output.usage,
             error=None,
             attempt_index=attempt_index,
@@ -468,9 +498,11 @@ def _run_once(
             metric_details={},
             matched_keywords=(),
             expected_keywords=task.expected_keywords,
-            media=task.media,
+            media=record_media,
             usage=output.usage,
-            error=f"{type(exc).__name__}: {exc}",
+            error=(
+                f"{type(exc).__name__}: {redact_local_paths(exc)}"
+            ),
             attempt_index=attempt_index,
             cumulative_latency_ms=prior_latency_ms + latency_ms,
             timeout_seconds=timeout_seconds,
@@ -497,7 +529,7 @@ def _run_once(
         metric_details=metric.details,
         matched_keywords=metric.matched,
         expected_keywords=task.expected_keywords,
-        media=task.media,
+        media=record_media,
         usage=output.usage,
         error=None,
         attempt_index=attempt_index,

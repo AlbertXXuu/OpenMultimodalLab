@@ -84,6 +84,8 @@ Qwen 总体及表格/图表任务更强；SmolVLM2 在 OCR 子集得到 `1.000`�
 - 严格 `--resume`、显式 `--overwrite`、SHA-256 和原子检查点。
 - 后端感知 `doctor` 检查 Python、CUDA、BF16、可选包和工作/模型缓存磁盘
   空间，但不打印缓存路径。
+- 对任务/结果 JSONL、图片和短视频设置本地输入上限，并在持久化错误中使用
+  可移植媒体引用和路径脱敏。
 - Python 3.11/3.12 Linux CI、wheel 构建、仓库审计和离线测试集。
 
 ## 架构
@@ -220,9 +222,11 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 | 32 条文档任务对比 | [Qwen3-VL 与 SmolVLM2 文档评测](docs/reports/2026-08-02-document-model-comparison.md) |
 | 性能方法 | [Qwen 正式性能基线](docs/reports/2026-07-31-qwen3-vl-formal-performance.md) |
 | 质量与公开门槛 | [质量标准](docs/06-quality-and-open-source.md) |
+| 实时公开准备状态 | [证据矩阵与严格验收命令](docs/public-release-readiness.md) |
 | 真实短视频运行冒烟 | [两个后端的 Windows GPU 证据](docs/reports/2026-08-02-video-runtime-smoke.md) |
 | 全新 wheel 安装 | [Windows 审计与永久 CI 门禁](docs/reports/2026-08-01-fresh-wheel-install.md) |
 | 依赖供应链 | [Action 固定与更新审计](docs/reports/2026-08-01-supply-chain-audit.md) |
+| 安全审查 | [本地输入边界与路径隐私审计](docs/reports/2026-08-02-security-review.md) |
 | 文档、表格与图表任务集 | [`synthetic-docs-v1` 证据报告](docs/reports/2026-08-01-synthetic-docs-v1.md) |
 | 超时与重试溯源 | [Run record schema 0.4 报告](docs/reports/2026-08-01-run-record-0.4.md) |
 | 第一份完整实验 | [分步教程（英文）](docs/tutorials/first-reproducible-benchmark.md) |
@@ -252,6 +256,7 @@ revision、许可证、安装路径、已验证硬件、Adapter 契约测试和�
 ```powershell
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 .\.venv\Scripts\python.exe scripts/check_repository.py
+.\.venv\Scripts\python.exe scripts/check_release_readiness.py
 ```
 
 完整要求见 [CONTRIBUTING.md](CONTRIBUTING.md)。

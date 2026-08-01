@@ -35,10 +35,21 @@ public disclosure.
 - Model downloads use the repositories and immutable revisions documented by
   each backend.
 - User outputs and model caches are excluded from Git.
+- Dataset JSONL is limited to 16 MiB with 1 MiB per line; report JSONL is
+  limited to 256 MiB with 4 MiB per record; resume manifests are limited to
+  8 MiB.
+- Images are limited to 32 MiB and 40 million decoded pixels. Videos are
+  limited to 256 MiB, 60 seconds, 3,600 source frames, and 3840×2160 pixels
+  per frame before the fixed eight-frame sample is decoded.
+- Durable run records keep relative media references and reduce absolute media
+  paths to basenames. Windows drive, UNC, and POSIX absolute paths are redacted
+  from persisted error text.
 - The repository audit detects common credentials and personal paths, but it
   is not a complete secret-scanning or malware-analysis system.
-- Images and future document/video inputs must still be treated as untrusted
-  files; size, parser, and processing-time limits remain required roadmap work.
+- Images, documents, and videos remain untrusted native-parser inputs. The
+  limits reduce resource-exhaustion exposure but do not sandbox Pillow, PyAV,
+  FFmpeg, PyTorch, or Transformers. Use current dependency builds and process
+  untrusted files in a disposable environment.
 
 ## Safe public bug reports
 

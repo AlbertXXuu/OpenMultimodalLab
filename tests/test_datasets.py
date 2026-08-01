@@ -4,11 +4,55 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from openmultimodal_lab.datasets import DatasetError, load_tasks
 
 
 class LoadTasksTests(unittest.TestCase):
+    def test_rejects_dataset_above_safety_limit(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dataset = Path(temp_dir) / "oversized.jsonl"
+            dataset.write_bytes(b"x" * 11)
+
+            with patch(
+                "openmultimodal_lab.datasets.MAX_DATASET_BYTES",
+                10,
+            ), self.assertRaisesRegex(DatasetError, "safety limit"):
+                load_tasks(dataset)
+
+    def test_rejects_oversized_jsonl_line(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dataset = Path(temp_dir) / "long-line.jsonl"
+            dataset.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "1.0",
+                        "id": "long",
+                        "prompt": "x" * 100,
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            with patch(
+                "openmultimodal_lab.datasets.MAX_JSONL_LINE_BYTES",
+                32,
+            ), self.assertRaisesRegex(DatasetError, "JSONL line exceeds"):
+                load_tasks(dataset)
+
+    def test_rejects_non_utf8_with_line_number(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dataset = Path(temp_dir) / "encoding.jsonl"
+            dataset.write_bytes(b"{}\n\xff\n")
+
+            with self.assertRaisesRegex(
+                DatasetError,
+                r"encoding\.jsonl:2: dataset is not valid UTF-8",
+            ):
+                load_tasks(dataset)
+
     def test_loads_valid_task(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

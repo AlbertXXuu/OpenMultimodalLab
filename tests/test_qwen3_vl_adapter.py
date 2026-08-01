@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from contextlib import nullcontext
 from pathlib import Path
+from types import ModuleType
 from unittest.mock import patch
 
 from openmultimodal_lab.adapters.errors import (
@@ -51,6 +52,8 @@ class _FakeImage:
 
 
 class _FakeImageSource:
+    size = (16, 16)
+
     def __init__(self, converted: _FakeImage) -> None:
         self.converted = converted
 
@@ -80,22 +83,54 @@ class _FakeVideo:
     shape = (8, 16, 16, 3)
 
 
+class _FakeVideoMetadata:
+    total_num_frames = 16
+    fps = 8.0
+    duration = 2.0
+    width = 16
+    height = 16
+
+
+class _FakeNumpyArray(list[int]):
+    def tolist(self) -> list[int]:
+        return list(self)
+
+
+def _fake_numpy_module() -> ModuleType:
+    module = ModuleType("numpy")
+
+    def asarray(values: object, *, dtype: type[int]) -> _FakeNumpyArray:
+        return _FakeNumpyArray(dtype(value) for value in values)
+
+    module.asarray = asarray  # type: ignore[attr-defined]
+    return module
+
+
 class _FakeVideoLoader:
     def __init__(self) -> None:
         self.call: tuple[str, dict[str, object]] | None = None
         self.video = _FakeVideo()
-        self.metadata = object()
+        self.metadata = _FakeVideoMetadata()
+        self.sampled_indices: tuple[int, ...] = ()
 
     def __call__(self, path: str, **kwargs: object) -> tuple[_FakeVideo, object]:
         self.call = (path, kwargs)
+        sampler = kwargs["sample_indices_fn"]
+        self.sampled_indices = tuple(
+            int(index) for index in sampler(self.metadata)
+        )
         return self.video, self.metadata
 
 
 class _FakeProcessor:
+    class _Tokenizer:
+        pad_token_id = 42
+
     def __init__(self) -> None:
         self.messages: object = None
         self.template_kwargs: dict[str, object] = {}
         self.inputs = _FakeInputs()
+        self.tokenizer = self._Tokenizer()
 
     def apply_chat_template(self, messages: object, **kwargs: object) -> _FakeInputs:
         self.messages = messages
@@ -254,6 +289,11 @@ class Qwen3VLAdapterTests(unittest.TestCase):
             _FakeModelLoader.model.generation_kwargs["do_sample"],
             False,
         )
+        self.assertEqual(
+            _FakeModelLoader.model.generation_kwargs["pad_token_id"],
+            42,
+        )
+        self.assertEqual(output.usage["pad_token_id"], 42)
         self.assertGreater(
             _FakeModelLoader.model.generation_kwargs["max_time"],
             0,
@@ -297,7 +337,7 @@ class Qwen3VLAdapterTests(unittest.TestCase):
             with patch(
                 "openmultimodal_lab.adapters.qwen3_vl._load_dependencies",
                 return_value=dependencies,
-            ):
+            ), patch.dict("sys.modules", {"numpy": _fake_numpy_module()}):
                 output = adapter.generate(task)
 
         content = _FakeProcessorLoader.processor.messages[0]["content"]
@@ -315,20 +355,95 @@ class Qwen3VLAdapterTests(unittest.TestCase):
             _FakeProcessorLoader.processor.template_kwargs["video_metadata"],
             [video_loader.metadata],
         )
-        self.assertEqual(
-            video_loader.call,
-            (
-                str(video.resolve()),
-                {"num_frames": 8, "backend": "pyav"},
-            ),
-        )
+        self.assertEqual(video_loader.call[0], str(video.resolve()))
+        self.assertEqual(video_loader.call[1]["num_frames"], 8)
+        self.assertEqual(video_loader.call[1]["backend"], "pyav")
+        self.assertTrue(callable(video_loader.call[1]["sample_indices_fn"]))
+        self.assertEqual(video_loader.sampled_indices, tuple(range(0, 16, 2)))
         self.assertIsNone(image_module.opened_path)
         self.assertEqual(output.usage["media_types"], ["video"])
         self.assertEqual(output.usage["image_count"], 0)
         self.assertEqual(output.usage["video_count"], 1)
         self.assertEqual(output.usage["video_num_frames"], 8)
         self.assertEqual(output.usage["video_frame_counts"], [8])
+        self.assertEqual(
+            output.usage["video_sampling"][0]["sampled_indices"],
+            list(range(0, 16, 2)),
+        )
+        self.assertEqual(
+            output.usage["video_sampling"][0]["dimensions"],
+            [16, 16],
+        )
         self.assertIsInstance(output.usage["video_decode_ms"], float)
+        self.assertEqual(
+            output.usage["media_limits"]["max_video_duration_seconds"],
+            60.0,
+        )
+
+    def test_rejects_video_outside_short_input_limits(self) -> None:
+        video_loader = _FakeVideoLoader()
+        video_loader.metadata.total_num_frames = 3601
+        dependencies = TransformersDependencies(
+            torch=_FakeTorch(),
+            auto_model=_FakeModelLoader,
+            auto_processor=_FakeProcessorLoader,
+            image_module=_FakeImageModule(),
+            video_loader=video_loader,
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "clip.mp4").write_bytes(b"video")
+            task = EvaluationTask(
+                id="long-video",
+                prompt="Describe.",
+                media=("clip.mp4",),
+            )
+            adapter = Qwen3VLAdapter(media_root=root)
+            with patch(
+                "openmultimodal_lab.adapters.qwen3_vl._load_dependencies",
+                return_value=dependencies,
+            ):
+                with self.assertRaisesRegex(
+                    AdapterInputError,
+                    "video frame count must be 1-3600",
+                ):
+                    adapter.generate(task)
+
+    def test_fractional_video_sampling_remains_uniform(self) -> None:
+        metadata = _FakeVideoMetadata()
+        metadata.total_num_frames = 12
+        adapter = Qwen3VLAdapter(video_num_frames=8)
+
+        with patch.dict("sys.modules", {"numpy": _fake_numpy_module()}):
+            indices = adapter._sample_video_indices(metadata).tolist()
+
+        self.assertEqual(indices, [0, 1, 3, 4, 6, 7, 9, 10])
+
+    def test_rejects_oversized_media_before_model_load(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            video = root / "oversized.mp4"
+            video.write_bytes(b"x" * 1025)
+            task = EvaluationTask(
+                id="oversized-video",
+                prompt="Describe.",
+                media=("oversized.mp4",),
+            )
+            adapter = Qwen3VLAdapter(media_root=root)
+            with patch(
+                "openmultimodal_lab.adapters.transformers_image_text."
+                "MAX_VIDEO_FILE_BYTES",
+                1024,
+            ), patch(
+                "openmultimodal_lab.adapters.qwen3_vl._load_dependencies",
+            ) as dependency_loader:
+                with self.assertRaisesRegex(
+                    AdapterInputError,
+                    "exceeds the .* safety limit",
+                ):
+                    adapter.generate(task)
+
+        dependency_loader.assert_not_called()
 
     def test_rejects_unknown_visual_media_extension_before_model_load(
         self,

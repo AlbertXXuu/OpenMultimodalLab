@@ -19,6 +19,7 @@ Python 3.11 model environment:
 | [`av`](https://github.com/PyAV-Org/PyAV) | 18.0.0 | BSD-3-Clause | Deterministic local video decoding |
 | `huggingface-hub` | 1.25.1 | Apache-2.0 | Pinned model download and cache |
 | `num2words` | 0.5.14 | LGPL | SmolVLM2 processor |
+| `numpy` | 2.4.6 | BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0 | Bounded video sampling and array runtime |
 | `pillow` | 12.3.0 | MIT-CMU | Image loading |
 | `safetensors` | 0.8.0 | Apache | Model-weight loading |
 | `tokenizers` | 0.22.2 | Apache | Native tokenizer runtime |

@@ -59,6 +59,7 @@ class RunManifestTests(unittest.TestCase):
         self.assertIn("av", queried)
         self.assertIn("huggingface-hub", queried)
         self.assertIn("num2words", queried)
+        self.assertIn("numpy", queried)
         self.assertIn("safetensors", queried)
         self.assertIn("tokenizers", queried)
         self.assertEqual(packages["num2words"], "test-version")
@@ -138,6 +139,43 @@ class RunManifestTests(unittest.TestCase):
             )
 
         self.assertEqual(manifest["generation"]["video_num_frames"], 8)
+
+    def test_manifest_rejects_media_above_hashing_limit(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            dataset = root / "tasks.jsonl"
+            dataset.write_text('{"id":"task-1"}\n', encoding="utf-8")
+            media = root / "large.bin"
+            media.write_bytes(b"12345")
+            task = EvaluationTask(
+                id="task-1",
+                prompt="Describe.",
+                media=("large.bin",),
+                metadata={"dataset_version": "test-v1"},
+            )
+
+            with patch(
+                "openmultimodal_lab.manifest.MAX_HASHED_MEDIA_BYTES",
+                4,
+            ), self.assertRaisesRegex(
+                ManifestResumeError,
+                "media input exceeds",
+            ):
+                build_run_manifest(
+                    dataset_path=dataset,
+                    output_path=root / "result.jsonl",
+                    media_root=root,
+                    tasks=[task],
+                    backend="mock",
+                    model_id="mock",
+                    model_revision="deterministic-v1",
+                    max_new_tokens=32,
+                    warmup=0,
+                    repetitions=1,
+                    categories=[],
+                    gpu_summary="not detected",
+                    project_root=root,
+                )
 
     def test_manifest_path_and_atomic_write(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -312,6 +350,19 @@ class RunManifestTests(unittest.TestCase):
                 "manifest does not exist",
             ):
                 load_run_manifest(missing)
+
+    def test_manifest_loader_rejects_oversized_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            manifest = Path(temp_dir) / "oversized.manifest.json"
+            manifest.write_bytes(b"x" * 11)
+            with patch(
+                "openmultimodal_lab.manifest.MAX_MANIFEST_BYTES",
+                10,
+            ), self.assertRaisesRegex(
+                ManifestResumeError,
+                "manifest exceeds the .* safety limit",
+            ):
+                load_run_manifest(manifest)
 
 
 if __name__ == "__main__":

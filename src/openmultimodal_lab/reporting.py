@@ -8,6 +8,12 @@ import statistics
 from pathlib import Path
 from typing import Any
 
+from .privacy import portable_path_reference
+
+
+MAX_RESULT_FILE_BYTES = 256 * 1024 * 1024
+MAX_RESULT_LINE_BYTES = 4 * 1024 * 1024
+
 
 class ReportError(ValueError):
     """Raised when raw run records cannot be summarized."""
@@ -15,27 +21,57 @@ class ReportError(ValueError):
 
 def load_records(path: str | Path) -> list[dict[str, Any]]:
     source = Path(path)
+    source_label = portable_path_reference(str(source))
     if not source.is_file():
-        raise ReportError(f"Run record file does not exist: {source}")
+        raise ReportError(f"Run record file does not exist: {source_label}")
+    if source.stat().st_size > MAX_RESULT_FILE_BYTES:
+        raise ReportError(
+            f"Run record file exceeds the "
+            f"{MAX_RESULT_FILE_BYTES // (1024 * 1024)} MiB safety limit: "
+            f"{source_label}"
+        )
 
     records: list[dict[str, Any]] = []
-    with source.open("r", encoding="utf-8") as handle:
+    total_bytes = 0
+    with source.open("rb") as handle:
         for line_number, raw_line in enumerate(handle, start=1):
-            line = raw_line.strip()
+            total_bytes += len(raw_line)
+            if total_bytes > MAX_RESULT_FILE_BYTES:
+                raise ReportError(
+                    f"Run record file exceeds the "
+                    f"{MAX_RESULT_FILE_BYTES // (1024 * 1024)} MiB safety "
+                    f"limit: {source_label}"
+                )
+            if len(raw_line) > MAX_RESULT_LINE_BYTES:
+                raise ReportError(
+                    f"{source_label}:{line_number}: record exceeds the "
+                    f"{MAX_RESULT_LINE_BYTES // (1024 * 1024)} MiB "
+                    "line safety limit"
+                )
+            try:
+                line = raw_line.decode("utf-8").strip()
+            except UnicodeDecodeError as exc:
+                raise ReportError(
+                    f"{source_label}:{line_number}: record is not valid UTF-8"
+                ) from exc
             if not line:
                 continue
             try:
                 value = json.loads(line)
             except json.JSONDecodeError as exc:
                 raise ReportError(
-                    f"{source}:{line_number}: invalid JSON: {exc.msg}"
+                    f"{source_label}:{line_number}: invalid JSON: {exc.msg}"
                 ) from exc
             if not isinstance(value, dict):
-                raise ReportError(f"{source}:{line_number}: record must be an object")
+                raise ReportError(
+                    f"{source_label}:{line_number}: record must be an object"
+                )
             records.append(value)
 
     if not records:
-        raise ReportError(f"Run record file contains no records: {source}")
+        raise ReportError(
+            f"Run record file contains no records: {source_label}"
+        )
     return records
 
 

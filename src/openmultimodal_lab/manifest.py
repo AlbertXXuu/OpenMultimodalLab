@@ -14,19 +14,36 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 from .models import EvaluationTask, RunRecord
+from .privacy import portable_path_reference
 
 
 MANIFEST_SCHEMA_VERSION = "1.0"
+MAX_MANIFEST_BYTES = 8 * 1024 * 1024
+MAX_MANIFEST_DATASET_BYTES = 16 * 1024 * 1024
+MAX_HASHED_MEDIA_BYTES = 256 * 1024 * 1024
 
 
 class ManifestResumeError(ValueError):
     """Raised when a stored manifest is incompatible with a resumed run."""
 
 
-def _sha256(path: Path) -> str:
+def _sha256(
+    path: Path,
+    *,
+    max_bytes: int | None = None,
+    input_kind: str = "file",
+) -> str:
     digest = hashlib.sha256()
+    total_bytes = 0
     with path.open("rb") as handle:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            total_bytes += len(chunk)
+            if max_bytes is not None and total_bytes > max_bytes:
+                raise ManifestResumeError(
+                    f"{input_kind} exceeds the "
+                    f"{max_bytes // (1024 * 1024)} MiB manifest hashing "
+                    f"limit: {portable_path_reference(str(path))}"
+                )
             digest.update(chunk)
     return digest.hexdigest()
 
@@ -89,6 +106,7 @@ def _package_versions() -> dict[str, str]:
         "av",
         "huggingface-hub",
         "num2words",
+        "numpy",
         "pillow",
         "safetensors",
         "tokenizers",
@@ -109,15 +127,33 @@ def load_run_manifest(path: str | Path) -> dict[str, Any]:
     """Load one run manifest as a JSON object."""
 
     source = Path(path)
+    source_label = portable_path_reference(str(source))
     if not source.is_file():
         raise ManifestResumeError(
-            f"cannot resume because manifest does not exist: {source}"
+            f"cannot resume because manifest does not exist: {source_label}"
+        )
+    if source.stat().st_size > MAX_MANIFEST_BYTES:
+        raise ManifestResumeError(
+            f"cannot resume because manifest exceeds the "
+            f"{MAX_MANIFEST_BYTES // (1024 * 1024)} MiB safety limit: "
+            f"{source_label}"
         )
     try:
-        value = json.loads(source.read_text(encoding="utf-8"))
+        with source.open("rb") as handle:
+            raw = handle.read(MAX_MANIFEST_BYTES + 1)
+        if len(raw) > MAX_MANIFEST_BYTES:
+            raise ManifestResumeError(
+                f"cannot resume because manifest exceeds the "
+                f"{MAX_MANIFEST_BYTES // (1024 * 1024)} MiB safety limit: "
+                f"{source_label}"
+            )
+        value = json.loads(raw.decode("utf-8"))
+    except ManifestResumeError:
+        raise
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise ManifestResumeError(
-            f"cannot resume because manifest is unreadable: {source}: {exc}"
+            f"cannot resume because manifest is unreadable: {source_label}: "
+            f"{type(exc).__name__}"
         ) from exc
     if not isinstance(value, dict):
         raise ManifestResumeError("run manifest must be a JSON object")
@@ -347,7 +383,11 @@ def build_run_manifest(
             media_entries.append(
                 {
                     "path": _portable_path(resolved, root),
-                    "sha256": _sha256(resolved),
+                    "sha256": _sha256(
+                        resolved,
+                        max_bytes=MAX_HASHED_MEDIA_BYTES,
+                        input_kind="media input",
+                    ),
                 }
             )
 
@@ -371,7 +411,11 @@ def build_run_manifest(
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "dataset": {
             "path": _portable_path(dataset, root),
-            "sha256": _sha256(dataset.resolve()),
+            "sha256": _sha256(
+                dataset.resolve(),
+                max_bytes=MAX_MANIFEST_DATASET_BYTES,
+                input_kind="dataset input",
+            ),
             "versions": dataset_versions,
             "task_ids": [task.id for task in task_list],
             "media": media_entries,

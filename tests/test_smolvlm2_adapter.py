@@ -5,6 +5,7 @@ import unittest
 from contextlib import nullcontext
 from dataclasses import dataclass
 from pathlib import Path
+from types import ModuleType
 from unittest.mock import patch
 
 from openmultimodal_lab.adapters.factory import create_adapter
@@ -40,6 +41,8 @@ class _Image:
 
 
 class _ImageSource:
+    size = (16, 16)
+
     def __enter__(self) -> "_ImageSource":
         return self
 
@@ -62,18 +65,49 @@ class _Video:
     shape = (8, 16, 16, 3)
 
 
+class _VideoMetadata:
+    total_num_frames = 16
+    fps = 8.0
+    duration = 2.0
+    width = 16
+    height = 16
+
+
+class _FakeNumpyArray(list[int]):
+    def tolist(self) -> list[int]:
+        return list(self)
+
+
+def _fake_numpy_module() -> ModuleType:
+    module = ModuleType("numpy")
+
+    def asarray(values: object, *, dtype: type[int]) -> _FakeNumpyArray:
+        return _FakeNumpyArray(dtype(value) for value in values)
+
+    module.asarray = asarray  # type: ignore[attr-defined]
+    return module
+
+
 class _VideoLoader:
     def __init__(self) -> None:
         self.call: tuple[str, dict[str, object]] | None = None
         self.video = _Video()
-        self.metadata = object()
+        self.metadata = _VideoMetadata()
+        self.sampled_indices: tuple[int, ...] = ()
 
     def __call__(self, path: str, **kwargs: object) -> tuple[_Video, object]:
         self.call = (path, kwargs)
+        sampler = kwargs["sample_indices_fn"]
+        self.sampled_indices = tuple(
+            int(index) for index in sampler(self.metadata)
+        )
         return self.video, self.metadata
 
 
 class _Processor:
+    class _Tokenizer:
+        pad_token_id = 2
+
     @dataclass
     class _Size:
         longest_edge: int
@@ -91,6 +125,7 @@ class _Processor:
         self.processor_kwargs: dict[str, object] = {}
         self.image_processor = self._ImageProcessor()
         self.image_processor.size = self._Size(longest_edge=384)
+        self.tokenizer = self._Tokenizer()
 
     def apply_chat_template(
         self,
@@ -126,12 +161,14 @@ class _TokenRow(list[int]):
 class _Model:
     device = "cpu"
     dtype = "torch.float32"
+    generation_kwargs: dict[str, object] | None = None
 
     def eval(self) -> "_Model":
         return self
 
-    @staticmethod
-    def generate(**kwargs: object) -> list[_TokenRow]:
+    @classmethod
+    def generate(cls, **kwargs: object) -> list[_TokenRow]:
+        cls.generation_kwargs = kwargs
         for processor in kwargs["logits_processor"]:
             processor(None, None)
         return [_TokenRow([1, 2, 3, 7])]
@@ -160,6 +197,7 @@ class SmolVLM2AdapterTests(unittest.TestCase):
         _ProcessorLoader.processor = _Processor()
         _ProcessorLoader.call = None
         _ModelLoader.model = _Model()
+        _Model.generation_kwargs = None
         _ModelLoader.call = None
 
     def test_factory_uses_pinned_official_checkpoint(self) -> None:
@@ -194,6 +232,8 @@ class SmolVLM2AdapterTests(unittest.TestCase):
         self.assertEqual(output.text, "2")
         self.assertEqual(output.backend, "smolvlm2")
         self.assertEqual(output.model_revision, DEFAULT_MODEL_REVISION)
+        self.assertEqual(output.usage["pad_token_id"], 2)
+        self.assertEqual(_Model.generation_kwargs["pad_token_id"], 2)
         self.assertEqual(
             _ModelLoader.call,
             (
@@ -268,7 +308,7 @@ class SmolVLM2AdapterTests(unittest.TestCase):
             with patch(
                 "openmultimodal_lab.adapters.smolvlm2._load_dependencies",
                 return_value=dependencies,
-            ):
+            ), patch.dict("sys.modules", {"numpy": _fake_numpy_module()}):
                 output = adapter.generate(task)
 
         content = _ProcessorLoader.processor.messages[0]["content"]
@@ -290,17 +330,19 @@ class SmolVLM2AdapterTests(unittest.TestCase):
             "do_sample_frames",
             _ProcessorLoader.processor.template_kwargs,
         )
-        self.assertEqual(
-            video_loader.call,
-            (
-                str(video.resolve()),
-                {"num_frames": 8, "backend": "pyav"},
-            ),
-        )
+        self.assertEqual(video_loader.call[0], str(video.resolve()))
+        self.assertEqual(video_loader.call[1]["num_frames"], 8)
+        self.assertEqual(video_loader.call[1]["backend"], "pyav")
+        self.assertTrue(callable(video_loader.call[1]["sample_indices_fn"]))
+        self.assertEqual(video_loader.sampled_indices, tuple(range(0, 16, 2)))
         self.assertEqual(output.usage["media_types"], ["video"])
         self.assertEqual(output.usage["video_count"], 1)
         self.assertEqual(output.usage["video_num_frames"], 8)
         self.assertEqual(output.usage["video_frame_counts"], [8])
+        self.assertEqual(
+            output.usage["video_sampling"][0]["sampled_indices"],
+            list(range(0, 16, 2)),
+        )
 
 
 if __name__ == "__main__":

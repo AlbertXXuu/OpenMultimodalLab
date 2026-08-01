@@ -282,6 +282,7 @@ def _doctor(backend: str) -> int:
             )
         required_modules = (
             "av",
+            "numpy",
             "torch",
             "torchvision",
             "transformers",
