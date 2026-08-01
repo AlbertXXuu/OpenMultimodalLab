@@ -18,8 +18,9 @@ to rebuild a report without rerunning the model.
 > Status: active pre-release development. Image, document, table, and chart
 > tasks, two real local backends, the formal performance protocol, strict
 > resume, bounded retries, cooperative inference deadlines, and CI quality
-> gates work today. The new document tasks have not yet been used for a formal
-> real-model comparison; short video remains roadmap.
+> gates work today. Both real adapters now decode local short video through a
+> bounded eight-frame path. The licensed video task set and formal document/
+> video comparisons remain roadmap work.
 
 ## First reproducible comparison
 
@@ -56,6 +57,9 @@ and their manifests.
   attribute-group scoring through backward-compatible task schemas 1.0–1.2.
 - `synthetic-docs-v1`: 32 licensed tasks over eight reproducible OCR,
   key-value, table, bar-chart, and line-chart images.
+- A shared local-video path for both real backends: PyAV decoding, eight
+  uniformly sampled frames, preserved sampling metadata, and no hidden
+  processor resampling. The formal licensed video dataset is not yet present.
 - Warm-up plus repeated measurement with CUDA-synchronized TTFT, generation
   time, throughput, preprocessing time, and peak allocated memory.
 - Typed model-load, timeout, out-of-memory, generation, and evaluation failures.
@@ -216,6 +220,7 @@ equivalent because tokenizers differ.
 | Two-model formal result | [Qwen3-VL vs SmolVLM2](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md) |
 | Performance methodology | [Qwen formal performance baseline](docs/reports/2026-07-31-qwen3-vl-formal-performance.md) |
 | Quality and public-release gates | [Quality standard](docs/06-quality-and-open-source.md) |
+| Real short-video runtime smoke | [Two-backend Windows GPU evidence](docs/reports/2026-08-02-video-runtime-smoke.md) |
 | Fresh wheel installation | [Windows audit and permanent CI gate](docs/reports/2026-08-01-fresh-wheel-install.md) |
 | Dependency supply chain | [Action pinning and update audit](docs/reports/2026-08-01-supply-chain-audit.md) |
 | Document/table/chart task set | [`synthetic-docs-v1` evidence report](docs/reports/2026-08-01-synthetic-docs-v1.md) |
@@ -234,7 +239,7 @@ equivalent because tokenizers differ.
 | Performance protocol | Warm-up, three repetitions, TTFT, throughput, latency, peak memory |
 | Reliability | Durable records, strict resume, integrity hashes, typed failures |
 | Automated quality | Offline tests, Python 3.11/3.12 CI, repository audit, fresh-wheel smoke test |
-| Next capability work | Formal document-task model run, then licensed short video |
+| Next capability work | Formal document-task run, then the licensed short-video task set and run |
 
 The target is at least 100 human-checked tasks across image, document, chart,
 spatial, and short-video capabilities. That target is not yet marked complete.

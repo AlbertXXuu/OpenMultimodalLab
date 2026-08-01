@@ -5,8 +5,8 @@ licensed under Apache-2.0. Real-model support is optional and installs
 independent third-party packages and model weights under their own terms.
 
 This file records the dependency and model-license evidence reviewed for the
-local baseline environment on 2026-07-31. It is an engineering inventory, not
-legal advice. The project does not vendor these packages or model weights.
+local baseline environment through 2026-08-02. It is an engineering inventory,
+not legal advice. The project does not vendor these packages or model weights.
 
 ## Optional Python runtime
 
@@ -16,6 +16,7 @@ Python 3.11 model environment:
 | Package | Verified version | Declared license metadata | Used by |
 |---|---:|---|---|
 | `accelerate` | 1.14.0 | Apache | Both real backends |
+| [`av`](https://github.com/PyAV-Org/PyAV) | 18.0.0 | BSD-3-Clause | Deterministic local video decoding |
 | `huggingface-hub` | 1.25.1 | Apache-2.0 | Pinned model download and cache |
 | `num2words` | 0.5.14 | LGPL | SmolVLM2 processor |
 | `pillow` | 12.3.0 | MIT-CMU | Image loading |
@@ -35,6 +36,11 @@ environment; its source is not copied into this repository or linked into a
 redistributed binary. Users who redistribute a bundled application must
 perform their own compliance review.
 
+PyAV binary wheels include or link FFmpeg components. OpenMultimodalLab does
+not vendor or redistribute those wheels. Anyone redistributing a bundled
+runtime must audit the exact PyAV wheel and its FFmpeg build in addition to the
+PyAV BSD-3-Clause package license.
+
 ## Model weights and processors
 
 Model files are downloaded separately from their upstream repositories and
@@ -50,7 +56,8 @@ acceptable-use terms, and laws applicable to their inputs and outputs.
 
 ## Dataset and media
 
-The committed `synthetic-v1` and `synthetic-v1.1` tasks and PNG files are
-project-generated and declare `license: "Apache-2.0"` in every task. The
-generator and byte-for-byte regeneration test are included in the repository.
-No third-party image is copied into these datasets.
+The committed `synthetic-v1`, `synthetic-v1.1`, and `synthetic-docs-v1` tasks
+and PNG files are project-generated and declare `license: "Apache-2.0"` in
+every task. Their generators and byte-for-byte regeneration tests are included
+in the repository. No third-party image or video is copied into these
+datasets. A licensed short-video dataset has not yet been committed.

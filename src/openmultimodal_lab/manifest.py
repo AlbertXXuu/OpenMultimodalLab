@@ -86,6 +86,7 @@ def _package_versions() -> dict[str, str]:
         "torchvision",
         "transformers",
         "accelerate",
+        "av",
         "huggingface-hub",
         "num2words",
         "pillow",
@@ -322,6 +323,7 @@ def build_run_manifest(
     categories: Iterable[str],
     gpu_summary: str,
     project_root: str | Path,
+    video_num_frames: int | None = None,
 ) -> dict[str, Any]:
     """Build a manifest without leaking user-specific absolute paths."""
 
@@ -356,6 +358,13 @@ def build_run_manifest(
             for task in task_list
         }
     )
+    generation: dict[str, Any] = {
+        "do_sample": False,
+        "max_new_tokens": max_new_tokens,
+        "batch_size": 1,
+    }
+    if video_num_frames is not None:
+        generation["video_num_frames"] = video_num_frames
     return {
         "schema_version": MANIFEST_SCHEMA_VERSION,
         "status": "started",
@@ -373,11 +382,7 @@ def build_run_manifest(
             "model_id": model_id,
             "model_revision": model_revision,
         },
-        "generation": {
-            "do_sample": False,
-            "max_new_tokens": max_new_tokens,
-            "batch_size": 1,
-        },
+        "generation": generation,
         "protocol": {
             "warmup_attempts": warmup,
             "repetitions": repetitions,

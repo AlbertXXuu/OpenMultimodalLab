@@ -16,6 +16,7 @@ from .smolvlm2 import (
     DEFAULT_MODEL_REVISION as SMOLVLM2_MODEL_REVISION,
     SmolVLM2Adapter,
 )
+from .transformers_image_text import DEFAULT_VIDEO_NUM_FRAMES
 
 BACKEND_NAMES = ("mock", "qwen3-vl", "smolvlm2")
 
@@ -27,6 +28,7 @@ def create_adapter(
     model_id: str | None = None,
     revision: str | None = None,
     max_new_tokens: int = 128,
+    video_num_frames: int = DEFAULT_VIDEO_NUM_FRAMES,
 ) -> ModelAdapter:
     """Create one built-in adapter without eagerly loading model weights."""
 
@@ -38,6 +40,7 @@ def create_adapter(
             model_id=model_id or QWEN3_VL_MODEL_ID,
             revision=revision or QWEN3_VL_MODEL_REVISION,
             max_new_tokens=max_new_tokens,
+            video_num_frames=video_num_frames,
         )
     if backend == "smolvlm2":
         return SmolVLM2Adapter(
@@ -45,5 +48,6 @@ def create_adapter(
             model_id=model_id or SMOLVLM2_MODEL_ID,
             revision=revision or SMOLVLM2_MODEL_REVISION,
             max_new_tokens=max_new_tokens,
+            video_num_frames=video_num_frames,
         )
     raise ValueError(f"Unsupported backend: {backend}")

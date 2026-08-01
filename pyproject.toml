@@ -33,6 +33,7 @@ dependencies = []
 [project.optional-dependencies]
 qwen3-vl = [
   "accelerate>=1.1",
+  "av>=14",
   "pillow>=10",
   "torch>=2.6",
   "torchvision>=0.21",
@@ -40,6 +41,7 @@ qwen3-vl = [
 ]
 smolvlm2 = [
   "accelerate>=1.1",
+  "av>=14",
   "num2words>=0.5.14",
   "pillow>=10",
   "torch>=2.6",

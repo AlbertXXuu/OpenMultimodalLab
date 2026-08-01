@@ -58,6 +58,21 @@ class _ImageModule:
         return _ImageSource()
 
 
+class _Video:
+    shape = (8, 16, 16, 3)
+
+
+class _VideoLoader:
+    def __init__(self) -> None:
+        self.call: tuple[str, dict[str, object]] | None = None
+        self.video = _Video()
+        self.metadata = object()
+
+    def __call__(self, path: str, **kwargs: object) -> tuple[_Video, object]:
+        self.call = (path, kwargs)
+        return self.video, self.metadata
+
+
 class _Processor:
     @dataclass
     class _Size:
@@ -72,11 +87,21 @@ class _Processor:
     def __init__(self) -> None:
         self.inputs = _Inputs()
         self.messages: object = None
+        self.template_kwargs: dict[str, object] = {}
+        self.processor_kwargs: dict[str, object] = {}
         self.image_processor = self._ImageProcessor()
         self.image_processor.size = self._Size(longest_edge=384)
 
-    def apply_chat_template(self, messages: object, **kwargs: object) -> _Inputs:
+    def apply_chat_template(
+        self,
+        messages: object,
+        *,
+        processor_kwargs: dict[str, object] | None = None,
+        **kwargs: object,
+    ) -> _Inputs:
         self.messages = messages
+        self.template_kwargs = kwargs
+        self.processor_kwargs = processor_kwargs or {}
         return self.inputs
 
     @staticmethod
@@ -217,6 +242,65 @@ class SmolVLM2AdapterTests(unittest.TestCase):
             "output_tokens_per_second",
         ):
             self.assertIsInstance(output.usage[key], float, key)
+
+    def test_video_uses_the_same_bounded_frame_contract(self) -> None:
+        video_loader = _VideoLoader()
+        dependencies = TransformersDependencies(
+            torch=_Torch(),
+            auto_model=_ModelLoader,
+            auto_processor=_ProcessorLoader,
+            image_module=_ImageModule(),
+            video_loader=video_loader,
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            video = root / "clip.webm"
+            video.write_bytes(b"video placeholder handled by fake processor")
+            task = EvaluationTask(
+                id="scene-change-1",
+                prompt="What changes?",
+                media=("clip.webm",),
+            )
+            adapter = SmolVLM2Adapter(
+                media_root=root,
+                video_num_frames=8,
+            )
+            with patch(
+                "openmultimodal_lab.adapters.smolvlm2._load_dependencies",
+                return_value=dependencies,
+            ):
+                output = adapter.generate(task)
+
+        content = _ProcessorLoader.processor.messages[0]["content"]
+        self.assertEqual(content[0]["type"], "video")
+        self.assertIs(content[0]["video"], video_loader.video)
+        self.assertEqual(
+            content[1],
+            {"type": "text", "text": "What changes?"},
+        )
+        self.assertEqual(
+            _ProcessorLoader.processor.processor_kwargs["do_sample_frames"],
+            False,
+        )
+        self.assertEqual(
+            _ProcessorLoader.processor.processor_kwargs["video_metadata"],
+            [video_loader.metadata],
+        )
+        self.assertNotIn(
+            "do_sample_frames",
+            _ProcessorLoader.processor.template_kwargs,
+        )
+        self.assertEqual(
+            video_loader.call,
+            (
+                str(video.resolve()),
+                {"num_frames": 8, "backend": "pyav"},
+            ),
+        )
+        self.assertEqual(output.usage["media_types"], ["video"])
+        self.assertEqual(output.usage["video_count"], 1)
+        self.assertEqual(output.usage["video_num_frames"], 8)
+        self.assertEqual(output.usage["video_frame_counts"], [8])
 
 
 if __name__ == "__main__":

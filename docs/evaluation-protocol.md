@@ -91,6 +91,22 @@ A model family name without a revision is insufficient.
 
 Backend-required formatting differences are allowed only when documented.
 
+### 5.1 Short-video preprocessing
+
+Local video files are decoded before the native processor through PyAV. The
+default bounded profile samples eight frames uniformly over the full clip and
+passes the decoded frames plus source metadata to each processor. Native
+processor frame sampling is disabled so Qwen3-VL and SmolVLM2 receive the same
+temporal observations. Each successful record retains the requested frame
+count, actual frame count, source FPS, duration, sampled indices, decoder, and
+input tensor shapes. The adjacent manifest records `video_num_frames` whenever
+the selected task set contains video.
+
+Changing the frame count, selection policy, clip bounds, or decoder creates a
+different experiment configuration and must not be merged into the same
+formal comparison. The eight-frame default is a bounded 8 GB baseline, not a
+claim that eight frames are optimal for every video task.
+
 ## 6. Generation configuration
 
 The default deterministic profile is:
@@ -130,13 +146,14 @@ three-run model reporting because they do not measure a real model.
 
 ## 8. Timing boundaries
 
-The native Transformers image-text adapters record the same fields:
+The native Transformers visual-text adapters record the same fields:
 
 - `model_load_ms`: dependency, processor, and weight loading;
-- `media_load_ms`: opening media and converting it to RGB;
+- `media_load_ms`: opening images or decoding the bounded video frames;
+- `video_decode_ms`: the video-only subset of `media_load_ms`;
 - `preprocessing_ms`: chat-template processing, tokenization, tensor creation,
   and device transfer;
-- `input_tensor_shapes` and serializable native image-processor settings:
+- `input_tensor_shapes` and serializable native image/video-processor settings:
   auditable evidence of the effective model input representation;
 - `ttft_ms`: synchronized `model.generate` start to completion of the first
   generated-token logits;

@@ -102,6 +102,8 @@ Every successful record includes:
   decoding time;
 - generated-token and decode-only throughput;
 - maximum allocated CUDA memory during generation.
+- media types plus requested/actual video-frame counts, decoder metadata, and
+  video decoding time when the input is a local short video.
 
 Every CLI run also writes a portable manifest beside the JSONL output. The
 manifest hashes the task file and media and records the effective environment,
@@ -113,7 +115,10 @@ without evidence.
 
 ## Current limits
 
-- Only image media is validated by this first slice.
+- Images and local short videos use one Adapter contract, but the formal
+  licensed video task set and full-model video result are not yet published.
+- Video uses a fixed eight-frame uniform sample selected before the native
+  processor; changing that policy requires a distinct recorded experiment.
 - The adapter uses batch size 1 and greedy decoding.
 - TTFT marks completion of first-token logits inside local generation; it is
   not application streaming latency.

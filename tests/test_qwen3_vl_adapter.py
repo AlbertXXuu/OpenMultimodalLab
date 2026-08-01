@@ -6,7 +6,10 @@ from contextlib import nullcontext
 from pathlib import Path
 from unittest.mock import patch
 
-from openmultimodal_lab.adapters.errors import AdapterDependencyError
+from openmultimodal_lab.adapters.errors import (
+    AdapterDependencyError,
+    AdapterInputError,
+)
 from openmultimodal_lab.adapters.qwen3_vl import (
     DEFAULT_MODEL_REVISION,
     Qwen3VLAdapter,
@@ -73,13 +76,30 @@ class _FakeImageModule:
         return _FakeImageSource(self.converted)
 
 
+class _FakeVideo:
+    shape = (8, 16, 16, 3)
+
+
+class _FakeVideoLoader:
+    def __init__(self) -> None:
+        self.call: tuple[str, dict[str, object]] | None = None
+        self.video = _FakeVideo()
+        self.metadata = object()
+
+    def __call__(self, path: str, **kwargs: object) -> tuple[_FakeVideo, object]:
+        self.call = (path, kwargs)
+        return self.video, self.metadata
+
+
 class _FakeProcessor:
     def __init__(self) -> None:
         self.messages: object = None
+        self.template_kwargs: dict[str, object] = {}
         self.inputs = _FakeInputs()
 
     def apply_chat_template(self, messages: object, **kwargs: object) -> _FakeInputs:
         self.messages = messages
+        self.template_kwargs = kwargs
         if kwargs["tokenize"] is not True:
             raise AssertionError("chat template should tokenize")
         return self.inputs
@@ -247,6 +267,91 @@ class Qwen3VLAdapterTests(unittest.TestCase):
             "cuda:0",
         )
         self.assertTrue(image_module.converted.closed)
+
+    def test_video_uses_bounded_uniform_frame_preprocessing(self) -> None:
+        image_module = _FakeImageModule()
+        video_loader = _FakeVideoLoader()
+        dependencies = TransformersDependencies(
+            torch=_FakeTorch(),
+            auto_model=_FakeModelLoader,
+            auto_processor=_FakeProcessorLoader,
+            image_module=image_module,
+            video_loader=video_loader,
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            video = root / "clip.mp4"
+            video.write_bytes(b"video placeholder handled by fake processor")
+            task = EvaluationTask(
+                id="event-order-1",
+                prompt="What happens first?",
+                media=("clip.mp4",),
+            )
+            adapter = Qwen3VLAdapter(
+                media_root=root,
+                max_new_tokens=16,
+                video_num_frames=8,
+            )
+
+            with patch(
+                "openmultimodal_lab.adapters.qwen3_vl._load_dependencies",
+                return_value=dependencies,
+            ):
+                output = adapter.generate(task)
+
+        content = _FakeProcessorLoader.processor.messages[0]["content"]
+        self.assertEqual(content[0]["type"], "video")
+        self.assertIs(content[0]["video"], video_loader.video)
+        self.assertEqual(
+            content[1],
+            {"type": "text", "text": "What happens first?"},
+        )
+        self.assertEqual(
+            _FakeProcessorLoader.processor.template_kwargs["do_sample_frames"],
+            False,
+        )
+        self.assertEqual(
+            _FakeProcessorLoader.processor.template_kwargs["video_metadata"],
+            [video_loader.metadata],
+        )
+        self.assertEqual(
+            video_loader.call,
+            (
+                str(video.resolve()),
+                {"num_frames": 8, "backend": "pyav"},
+            ),
+        )
+        self.assertIsNone(image_module.opened_path)
+        self.assertEqual(output.usage["media_types"], ["video"])
+        self.assertEqual(output.usage["image_count"], 0)
+        self.assertEqual(output.usage["video_count"], 1)
+        self.assertEqual(output.usage["video_num_frames"], 8)
+        self.assertEqual(output.usage["video_frame_counts"], [8])
+        self.assertIsInstance(output.usage["video_decode_ms"], float)
+
+    def test_rejects_unknown_visual_media_extension_before_model_load(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "media.bin").write_bytes(b"unknown")
+            task = EvaluationTask(
+                id="unknown-media",
+                prompt="Describe.",
+                media=("media.bin",),
+            )
+            adapter = Qwen3VLAdapter(media_root=root)
+            with patch(
+                "openmultimodal_lab.adapters.qwen3_vl._load_dependencies",
+            ) as dependency_loader:
+                with self.assertRaisesRegex(
+                    AdapterInputError,
+                    "unsupported extension '.bin'",
+                ):
+                    adapter.generate(task)
+
+        dependency_loader.assert_not_called()
 
     def test_cuda_timings_synchronize_and_record_peak_allocated_memory(
         self,
