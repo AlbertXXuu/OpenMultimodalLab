@@ -15,11 +15,27 @@ from openmultimodal_lab.models import (
     ModelOutput,
     ScoringConfig,
 )
-from openmultimodal_lab.reporting import load_records, summarize
+from openmultimodal_lab.reporting import ReportError, load_records, summarize
 from openmultimodal_lab.runner import ResumeError, run_benchmark
 
 
 class RunnerAndReportingTests(unittest.TestCase):
+    def test_report_rejects_oversized_or_non_utf8_records(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            oversized = root / "oversized.jsonl"
+            oversized.write_bytes(b"{\"value\": 1}\n")
+            with patch(
+                "openmultimodal_lab.reporting.MAX_RESULT_LINE_BYTES",
+                5,
+            ), self.assertRaisesRegex(ReportError, "line safety limit"):
+                load_records(oversized)
+
+            invalid = root / "invalid.jsonl"
+            invalid.write_bytes(b"\xff\n")
+            with self.assertRaisesRegex(ReportError, "not valid UTF-8"):
+                load_records(invalid)
+
     def test_end_to_end_mock_run(self) -> None:
         tasks = [
             EvaluationTask(
@@ -464,6 +480,23 @@ class RunnerAndReportingTests(unittest.TestCase):
                 ResumeError,
                 "durable JSONL record boundary",
             ):
+                run_benchmark(
+                    [task],
+                    MockAdapter(),
+                    output,
+                    resume=True,
+                )
+
+    def test_resume_rejects_oversized_record(self) -> None:
+        task = EvaluationTask(id="task-1", prompt="First.")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "run.jsonl"
+            run_benchmark([task], MockAdapter(), output)
+
+            with patch(
+                "openmultimodal_lab.runner.MAX_RESUME_RECORD_BYTES",
+                4,
+            ), self.assertRaisesRegex(ResumeError, "record safety limit"):
                 run_benchmark(
                     [task],
                     MockAdapter(),

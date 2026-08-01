@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "project_name": null,
+  "package_name": null,
+  "cli_name": null,
+  "dataset_names": [],
+  "public_version": null,
+  "current_repository_visibility": "private",
+  "target_repository_visibility": null,
+  "make_repository_public": false,
+  "formal_release_authorized": false,
+  "note": "Null and false values are intentional until the repository owner explicitly approves each external decision."
+}

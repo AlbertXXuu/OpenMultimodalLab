@@ -93,6 +93,8 @@ and their manifests.
   per-record checkpoints.
 - Backend-aware `doctor` checks for Python, CUDA, BF16, optional packages, and
   available working/model-cache disk without printing the cache path.
+- Bounded local input parsing for dataset/result JSONL, images, and short video,
+  plus portable media references and path-redacted durable errors.
 - Python 3.11/3.12 Linux CI, wheel builds, link/JSON/privacy checks, and
   an offline test suite.
 
@@ -245,9 +247,11 @@ equivalent because tokenizers differ.
 | 32-task document comparison | [Qwen3-VL vs SmolVLM2 on documents](docs/reports/2026-08-02-document-model-comparison.md) |
 | Performance methodology | [Qwen formal performance baseline](docs/reports/2026-07-31-qwen3-vl-formal-performance.md) |
 | Quality and public-release gates | [Quality standard](docs/06-quality-and-open-source.md) |
+| Live public-release status | [Evidence matrix and strict readiness check](docs/public-release-readiness.md) |
 | Real short-video runtime smoke | [Two-backend Windows GPU evidence](docs/reports/2026-08-02-video-runtime-smoke.md) |
 | Fresh wheel installation | [Windows audit and permanent CI gate](docs/reports/2026-08-01-fresh-wheel-install.md) |
 | Dependency supply chain | [Action pinning and update audit](docs/reports/2026-08-01-supply-chain-audit.md) |
+| Security review | [Bounded local-input and privacy audit](docs/reports/2026-08-02-security-review.md) |
 | Document/table/chart task set | [`synthetic-docs-v1` evidence report](docs/reports/2026-08-01-synthetic-docs-v1.md) |
 | Timeout and retry provenance | [Run record schema 0.4 report](docs/reports/2026-08-01-run-record-0.4.md) |
 | First complete experiment | [Step-by-step tutorial](docs/tutorials/first-reproducible-benchmark.md) |
@@ -279,6 +283,7 @@ limitations.
 ```powershell
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 .\.venv\Scripts\python.exe scripts/check_repository.py
+.\.venv\Scripts\python.exe scripts/check_release_readiness.py
 ```
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) for the full checklist.

@@ -11,6 +11,7 @@ from time import perf_counter_ns
 from typing import Any, Callable
 
 from ..models import EvaluationTask, ModelOutput
+from ..privacy import portable_path_reference, redact_local_paths
 from .errors import (
     AdapterError,
     AdapterInputError,
@@ -21,6 +22,12 @@ from .errors import (
 
 
 DEFAULT_VIDEO_NUM_FRAMES = 8
+MAX_IMAGE_FILE_BYTES = 32 * 1024 * 1024
+MAX_IMAGE_PIXELS = 40_000_000
+MAX_VIDEO_FILE_BYTES = 256 * 1024 * 1024
+MAX_VIDEO_DURATION_SECONDS = 60.0
+MAX_VIDEO_TOTAL_FRAMES = 3600
+MAX_VIDEO_PIXELS = 3840 * 2160
 SUPPORTED_IMAGE_SUFFIXES = frozenset(
     {".bmp", ".gif", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".webp"}
 )
@@ -133,7 +140,8 @@ class TransformersImageTextAdapter:
             raise
         except Exception as exc:
             error = ModelLoadError(
-                f"Could not load {self.model_id} at revision {self.revision}: {exc}"
+                f"Could not load {self.model_id} at revision {self.revision}: "
+                f"{type(exc).__name__}: {redact_local_paths(exc)}"
             )
             self._load_error = error
             raise error from exc
@@ -183,9 +191,10 @@ class TransformersImageTextAdapter:
         for item in task.media:
             path = Path(item)
             path = path if path.is_absolute() else self.media_root / path
+            label = portable_path_reference(item)
             if not path.is_file():
                 raise AdapterInputError(
-                    f"media for task '{task.id}' does not exist: {path}"
+                    f"media for task '{task.id}' does not exist: {label}"
                 )
             resolved_path = path.resolve()
             suffix = resolved_path.suffix.casefold()
@@ -195,8 +204,20 @@ class TransformersImageTextAdapter:
                 )
                 raise AdapterInputError(
                     f"media for task '{task.id}' has unsupported extension "
-                    f"'{suffix or '<none>'}': {resolved_path}; supported: "
+                    f"'{suffix or '<none>'}': {label}; supported: "
                     f"{supported}"
+                )
+            size_bytes = resolved_path.stat().st_size
+            size_limit = (
+                MAX_VIDEO_FILE_BYTES
+                if suffix in SUPPORTED_VIDEO_SUFFIXES
+                else MAX_IMAGE_FILE_BYTES
+            )
+            if size_bytes > size_limit:
+                raise AdapterInputError(
+                    f"media for task '{task.id}' exceeds the "
+                    f"{size_limit // (1024 * 1024)} MiB safety limit: "
+                    f"{label}"
                 )
             resolved.append(resolved_path)
         return resolved
@@ -222,22 +243,32 @@ class TransformersImageTextAdapter:
         self,
         task: EvaluationTask,
         path: Path,
-    ) -> tuple[Any, int, Any]:
+    ) -> tuple[Any, int, Any, list[int]]:
         assert self._dependencies is not None
         if self._dependencies.video_loader is None:
             raise AdapterInputError(
                 f"video decoding is unavailable for task '{task.id}'; "
                 "install the backend's optional dependencies"
             )
+        sampled_indices: list[int] | None = None
+
+        def bounded_sample_indices(metadata: Any, **kwargs: Any) -> Any:
+            nonlocal sampled_indices
+            indices = self._sample_video_indices(metadata, **kwargs)
+            sampled_indices = [int(index) for index in indices]
+            return indices
+
         try:
             decoded = self._dependencies.video_loader(
                 str(path),
                 num_frames=self.video_num_frames,
                 backend="pyav",
+                sample_indices_fn=bounded_sample_indices,
             )
         except Exception as exc:
             raise AdapterInputError(
-                f"could not decode video for task '{task.id}': {path}: {exc}"
+                f"could not decode video for task '{task.id}': {path.name}: "
+                f"{type(exc).__name__}: {redact_local_paths(exc)}"
             ) from exc
         if not isinstance(decoded, tuple) or len(decoded) != 2:
             raise AdapterInputError(
@@ -258,7 +289,99 @@ class TransformersImageTextAdapter:
                 f"video decoder returned no frames for task '{task.id}': "
                 f"{path}"
             )
-        return frames, frame_count, metadata
+        if sampled_indices is None:
+            raise AdapterInputError(
+                f"video decoder did not invoke bounded sampling for task "
+                f"'{task.id}': {path.name}"
+            )
+        return frames, frame_count, metadata, sampled_indices
+
+    def _video_sampling_provenance(
+        self,
+        metadata: Any,
+        sampled_indices: list[int],
+        decoded_frame_count: int,
+    ) -> dict[str, Any]:
+        sampling = self._json_compatible(metadata)
+        if not isinstance(sampling, dict):
+            sampling = {}
+        sampling.update(
+            {
+                "source_frame_count": int(metadata.total_num_frames),
+                "fps": float(metadata.fps),
+                "duration_seconds": float(metadata.duration),
+                "dimensions": [int(metadata.width), int(metadata.height)],
+                "sampled_indices": sampled_indices,
+                "decoded_frame_count": decoded_frame_count,
+            }
+        )
+        return sampling
+
+    def _sample_video_indices(
+        self,
+        metadata: Any,
+        **_: Any,
+    ) -> Any:
+        """Validate short-video metadata before bounded uniform decoding."""
+
+        try:
+            total_frames = int(metadata.total_num_frames)
+            fps = float(metadata.fps)
+            duration = float(metadata.duration)
+            width = int(metadata.width)
+            height = int(metadata.height)
+        except (AttributeError, TypeError, ValueError) as exc:
+            raise ValueError("video metadata is incomplete") from exc
+        if total_frames < 1 or total_frames > MAX_VIDEO_TOTAL_FRAMES:
+            raise ValueError(
+                f"video frame count must be 1-{MAX_VIDEO_TOTAL_FRAMES}; "
+                f"received {total_frames}"
+            )
+        if not math.isfinite(fps) or fps <= 0:
+            raise ValueError("video FPS must be a finite number above 0")
+        if not math.isfinite(duration) or duration < 0:
+            raise ValueError(
+                "video duration must be a finite non-negative number"
+            )
+        effective_duration = max(duration, total_frames / fps)
+        if effective_duration > MAX_VIDEO_DURATION_SECONDS:
+            raise ValueError(
+                f"video duration exceeds the "
+                f"{MAX_VIDEO_DURATION_SECONDS:g} second safety limit"
+            )
+        if width < 1 or height < 1 or width * height > MAX_VIDEO_PIXELS:
+            raise ValueError(
+                f"video dimensions must contain 1-{MAX_VIDEO_PIXELS} "
+                f"pixels per frame; received {width}x{height}"
+            )
+        import numpy as np
+
+        return np.asarray(
+            [
+                index * total_frames // self.video_num_frames
+                for index in range(self.video_num_frames)
+            ],
+            dtype=int,
+        )
+
+    @staticmethod
+    def _validate_image_dimensions(
+        task: EvaluationTask,
+        source: Any,
+    ) -> None:
+        try:
+            width, height = source.size
+            width = int(width)
+            height = int(height)
+        except (AttributeError, TypeError, ValueError) as exc:
+            raise AdapterInputError(
+                f"image metadata is incomplete for task '{task.id}'"
+            ) from exc
+        if width < 1 or height < 1 or width * height > MAX_IMAGE_PIXELS:
+            raise AdapterInputError(
+                f"image for task '{task.id}' must contain "
+                f"1-{MAX_IMAGE_PIXELS} pixels; received {width}x{height}"
+            )
 
     def _processor_usage(self) -> dict[str, Any]:
         image_processor = getattr(self._processor, "image_processor", None)
@@ -345,6 +468,15 @@ class TransformersImageTextAdapter:
             shapes[str(name)] = dimensions
         return shapes
 
+    def _processor_pad_token_id(self) -> int | None:
+        """Prefer the pinned tokenizer over inconsistent top-level configs."""
+
+        tokenizer = getattr(self._processor, "tokenizer", None)
+        value = getattr(tokenizer, "pad_token_id", None)
+        if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+            return value
+        return None
+
     def generate(
         self,
         task: EvaluationTask,
@@ -382,7 +514,12 @@ class TransformersImageTextAdapter:
             ):
                 if media_type == "video":
                     video_decode_start_ns = perf_counter_ns()
-                    frames, frame_count, metadata = self._decode_video(
+                    (
+                        frames,
+                        frame_count,
+                        metadata,
+                        sampled_indices,
+                    ) = self._decode_video(
                         task,
                         path,
                     )
@@ -391,15 +528,29 @@ class TransformersImageTextAdapter:
                     ) / 1_000_000
                     video_frame_counts.append(frame_count)
                     video_metadata.append(metadata)
-                    sampling = self._json_compatible(metadata)
-                    if isinstance(sampling, dict):
-                        video_sampling.append(sampling)
+                    video_sampling.append(
+                        self._video_sampling_provenance(
+                            metadata,
+                            sampled_indices,
+                            frame_count,
+                        )
+                    )
                     content.append({"type": "video", "video": frames})
                     continue
-                with self._dependencies.image_module.open(path) as source:
-                    image = source.convert("RGB")
-                    images.append(image)
-                    content.append({"type": "image", "image": image})
+                try:
+                    with self._dependencies.image_module.open(path) as source:
+                        self._validate_image_dimensions(task, source)
+                        image = source.convert("RGB")
+                        images.append(image)
+                        content.append({"type": "image", "image": image})
+                except AdapterInputError:
+                    raise
+                except Exception as exc:
+                    raise AdapterInputError(
+                        f"could not load image for task '{task.id}': "
+                        f"{path.name}: {type(exc).__name__}: "
+                        f"{redact_local_paths(exc)}"
+                    ) from exc
             media_load_ms = (perf_counter_ns() - media_start_ns) / 1_000_000
 
             preprocess_start_ns = perf_counter_ns()
@@ -436,6 +587,7 @@ class TransformersImageTextAdapter:
             ) / 1_000_000
             prompt_tokens = int(inputs["input_ids"].shape[-1])
             input_tensor_shapes = self._input_tensor_shapes(inputs)
+            pad_token_id = self._processor_pad_token_id()
 
             self._reset_peak_gpu_memory()
             self._synchronize_cuda()
@@ -446,6 +598,8 @@ class TransformersImageTextAdapter:
                 "do_sample": False,
                 "logits_processor": [first_token_timer],
             }
+            if pad_token_id is not None:
+                generation_arguments["pad_token_id"] = pad_token_id
             if timeout_seconds is not None:
                 elapsed_seconds = (
                     perf_counter_ns() - inference_start_ns
@@ -523,7 +677,9 @@ class TransformersImageTextAdapter:
                 )
         except Exception as exc:
             if self._is_out_of_memory(exc):
-                raise AdapterOutOfMemoryError(str(exc)) from exc
+                raise AdapterOutOfMemoryError(
+                    redact_local_paths(exc)
+                ) from exc
             raise
         finally:
             for image in images:
@@ -537,6 +693,7 @@ class TransformersImageTextAdapter:
             "dtype": str(getattr(self._model, "dtype", "auto")),
             "do_sample": False,
             "max_new_tokens": self.max_new_tokens,
+            "pad_token_id": pad_token_id,
             "media_types": media_types,
             "image_count": image_count,
             "video_count": video_count,
@@ -545,6 +702,14 @@ class TransformersImageTextAdapter:
             ),
             "video_frame_counts": video_frame_counts,
             "video_sampling": video_sampling,
+            "media_limits": {
+                "max_image_file_bytes": MAX_IMAGE_FILE_BYTES,
+                "max_image_pixels": MAX_IMAGE_PIXELS,
+                "max_video_file_bytes": MAX_VIDEO_FILE_BYTES,
+                "max_video_duration_seconds": MAX_VIDEO_DURATION_SECONDS,
+                "max_video_total_frames": MAX_VIDEO_TOTAL_FRAMES,
+                "max_video_pixels_per_frame": MAX_VIDEO_PIXELS,
+            },
             "input_tokens": prompt_tokens,
             "output_tokens": output_tokens,
             "input_tensor_shapes": input_tensor_shapes,

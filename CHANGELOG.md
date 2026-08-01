@@ -52,6 +52,8 @@ All notable changes to this project will be documented in this file.
 - Shared PyAV short-video decoding for both real backends with fixed eight-frame sampling and auditable source metadata.
 - Preserved same-commit, 32-task document/table/chart comparison for Qwen3-VL-2B and SmolVLM2-500M.
 - Formal-run validation that rejects measurement-phase model reloads after a process restart.
+- Bounded dataset, result, manifest, image, and short-video inputs with recorded effective limits.
+- Portable run-record media references and Windows/UNC/POSIX absolute-path redaction in durable errors.
 
 ### Planned
 
