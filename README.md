@@ -222,6 +222,8 @@ limitations.
 ```
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) for the full checklist.
+Sensitive vulnerabilities follow [SECURITY.md](SECURITY.md), not a public bug
+report.
 
 ## License
 

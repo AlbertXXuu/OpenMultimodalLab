@@ -1,0 +1,82 @@
+name: Dataset or task proposal
+description: Propose licensed, reproducible tasks or a deterministic scoring improvement.
+title: "[Tasks]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Public benchmark tasks must have stable IDs, reviewable references,
+        deterministic scoring, and media that can legally remain in the repository.
+
+  - type: dropdown
+    id: contribution
+    attributes:
+      label: Proposal type
+      options:
+        - New project-generated tasks
+        - Tasks derived from a licensed source
+        - Scoring improvement
+        - Annotation correction
+        - Dataset tooling
+    validations:
+      required: true
+
+  - type: textarea
+    id: capability
+    attributes:
+      label: Capability and gap
+      description: Explain which model behavior this tests and why existing tasks do not cover it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: provenance
+    attributes:
+      label: Source, provenance, and license
+      description: Cite primary license/source evidence and explain any transformation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: media
+    attributes:
+      label: Media generation or acquisition
+      description: Explain how files are created, regenerated, sized, and checked for private data.
+    validations:
+      required: true
+
+  - type: textarea
+    id: tasks
+    attributes:
+      label: Proposed task design
+      value: |
+        - Approximate task count:
+        - Categories:
+        - Languages:
+        - Difficulty range:
+        - Answer formats:
+        - Human review plan:
+    validations:
+      required: true
+
+  - type: textarea
+    id: scoring
+    attributes:
+      label: Deterministic scoring contract
+      description: Describe references, normalization, tolerances, partial credit, and adversarial cases.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Publication checks
+      options:
+        - label: Every media item will have documented source and license metadata.
+          required: true
+        - label: No private, biometric, credential, or sensitive user data is included.
+          required: true
+        - label: Task IDs and released task semantics will remain stable.
+          required: true
+        - label: Generator output or source integrity will be covered by tests.
+          required: true

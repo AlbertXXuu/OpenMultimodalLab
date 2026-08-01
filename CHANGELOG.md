@@ -40,6 +40,8 @@ All notable changes to this project will be documented in this file.
 - Non-duplicated CI with compile, dependency, repository-quality, and wheel-build gates.
 - Result-first English project homepage with a complete Simplified Chinese counterpart.
 - Copyable first-benchmark tutorial from offline smoke to formal real-model evidence.
+- Structured GitHub forms for bugs, model adapters, and dataset/task proposals.
+- Pull-request checklist and pre-release security reporting policy.
 
 ### Planned
 
