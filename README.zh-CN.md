@@ -199,6 +199,8 @@ revision、许可证、安装路径、已验证硬件、Adapter 契约测试和�
 ```
 
 完整要求见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+安全漏洞按 [SECURITY.md](SECURITY.md) 建立私密渠道，不在公开 Bug 中粘贴
+敏感细节。
 
 ## 许可证
 

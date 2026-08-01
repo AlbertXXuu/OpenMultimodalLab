@@ -71,6 +71,13 @@ class RepositoryCheckTests(unittest.TestCase):
                 '{"valid": true}\nnot-json\n',
                 encoding="utf-8",
             )
+            issue_forms = root / ".github" / "ISSUE_TEMPLATE"
+            issue_forms.mkdir(parents=True)
+            (issue_forms / "broken.yml").write_text(
+                "name: Broken form\n"
+                "description: Missing its body definition.\n",
+                encoding="utf-8",
+            )
 
             result = self._run_checker(root)
 
@@ -78,6 +85,7 @@ class RepositoryCheckTests(unittest.TestCase):
         self.assertIn("broken local link", result.stderr)
         self.assertIn("possible Windows absolute path", result.stderr)
         self.assertIn("invalid JSONL", result.stderr)
+        self.assertIn("requires top-level 'body'", result.stderr)
 
     def test_current_repository_passes(self) -> None:
         result = self._run_checker(PROJECT_ROOT)

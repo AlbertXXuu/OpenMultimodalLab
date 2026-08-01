@@ -1,0 +1,86 @@
+name: Model adapter proposal
+description: Propose or implement a reproducible backend for another model family.
+title: "[Adapter]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A model name alone is not enough. A useful proposal needs an immutable
+        revision, license evidence, runtime boundary, hardware evidence, and a
+        plan for the existing adapter contract.
+
+  - type: input
+    id: model
+    attributes:
+      label: Model repository or identifier
+      placeholder: organization/model-name
+    validations:
+      required: true
+
+  - type: input
+    id: revision
+    attributes:
+      label: Immutable revision
+      description: Provide a commit SHA or another immutable identifier, not main.
+    validations:
+      required: true
+
+  - type: input
+    id: license
+    attributes:
+      label: Primary license source
+      description: Link directly to the official model card, repository, or license.
+      placeholder: https://...
+    validations:
+      required: true
+
+  - type: textarea
+    id: value
+    attributes:
+      label: Why this model adds value
+      description: Explain the distinct capability, runtime, or hardware question it tests.
+    validations:
+      required: true
+
+  - type: textarea
+    id: runtime
+    attributes:
+      label: Proposed runtime and preprocessing boundary
+      description: Describe packages, chat template, processor, dtype, quantization, and device placement.
+    validations:
+      required: true
+
+  - type: textarea
+    id: hardware
+    attributes:
+      label: Verified or target hardware
+      value: |
+        - OS:
+        - Python:
+        - GPU/CPU:
+        - Available memory:
+        - Weight/download size:
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification plan
+      description: List doctor checks, contract tests, smoke tasks, failure cases, and formal comparison boundaries.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Contribution constraints
+      options:
+        - label: The proposal does not commit model weights or private media.
+          required: true
+        - label: The model and runtime licenses are identified from primary sources.
+          required: true
+        - label: Published results will pin revisions and include limitations.
+          required: true
+        - label: The backend will keep the offline mock test path working.
+          required: true

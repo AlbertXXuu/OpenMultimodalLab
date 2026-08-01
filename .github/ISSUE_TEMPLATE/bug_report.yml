@@ -1,0 +1,92 @@
+name: Bug report
+description: Report a reproducible defect in the CLI, runner, adapters, scoring, or docs.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve OpenMultimodalLab. Do not attach secrets,
+        private media, model weights, or logs containing personal paths.
+
+  - type: checkboxes
+    id: existing
+    attributes:
+      label: Existing report
+      options:
+        - label: I searched the existing issues for the same behavior.
+          required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior and why it is incorrect.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+      description: Provide the smallest safe sequence that reproduces the problem.
+      placeholder: |
+        1. Create a clean environment.
+        2. Run ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: backend
+    attributes:
+      label: Backend
+      options:
+        - mock
+        - qwen3-vl
+        - smolvlm2
+        - not backend-specific
+        - other
+    validations:
+      required: true
+
+  - type: textarea
+    id: command
+    attributes:
+      label: Exact command
+      description: Redact secrets and replace personal paths with placeholders.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include information needed to reproduce the behavior.
+      value: |
+        - OS:
+        - Python:
+        - OpenMultimodalLab commit:
+        - Backend/model revision:
+        - PyTorch/Transformers:
+        - GPU/driver:
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Safe logs or evidence
+      description: Paste the smallest redacted traceback, manifest excerpt, or output.
+      render: text
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Data safety
+      options:
+        - label: I removed credentials, private media, model weights, and personal paths.
+          required: true
+        - label: I understand that mock output is not evidence of real-model quality.
+          required: true

@@ -225,6 +225,96 @@ def _check_json(
     return issues
 
 
+def _check_issue_form(path: Path, root: Path, text: str) -> list[Issue]:
+    relative = path.relative_to(root).as_posix()
+    if (
+        not relative.startswith(".github/ISSUE_TEMPLATE/")
+        or path.suffix.casefold() not in {".yml", ".yaml"}
+        or path.name == "config.yml"
+    ):
+        return []
+
+    issues: list[Issue] = []
+    for key in ("name", "description"):
+        if not re.search(rf"(?m)^{key}:\s*\S", text):
+            issues.append(
+                Issue(path, 1, f"issue form requires top-level '{key}'")
+            )
+    if not re.search(r"(?m)^body:\s*$", text):
+        issues.append(
+            Issue(path, 1, "issue form requires top-level 'body'")
+        )
+
+    element_pattern = re.compile(
+        r"(?m)^  - type:\s*(\S+)\s*$"
+    )
+    elements = list(element_pattern.finditer(text))
+    if not elements:
+        issues.append(Issue(path, 1, "issue form body has no elements"))
+        return issues
+
+    allowed_types = {
+        "checkboxes",
+        "dropdown",
+        "input",
+        "markdown",
+        "textarea",
+    }
+    ids: set[str] = set()
+    for index, element in enumerate(elements):
+        element_type = element.group(1)
+        block_end = (
+            elements[index + 1].start()
+            if index + 1 < len(elements)
+            else len(text)
+        )
+        block = text[element.start() : block_end]
+        line_number = _line_number(text, element.start())
+        if element_type not in allowed_types:
+            issues.append(
+                Issue(
+                    path,
+                    line_number,
+                    f"unsupported issue form element type: {element_type}",
+                )
+            )
+        if not re.search(r"(?m)^    attributes:\s*$", block):
+            issues.append(
+                Issue(
+                    path,
+                    line_number,
+                    "issue form element requires 'attributes'",
+                )
+            )
+        identifier_match = re.search(
+            r"(?m)^    id:\s*([A-Za-z0-9_-]+)\s*$",
+            block,
+        )
+        if element_type == "markdown":
+            continue
+        if identifier_match is None:
+            issues.append(
+                Issue(
+                    path,
+                    line_number,
+                    "interactive issue form element requires an id",
+                )
+            )
+            continue
+        identifier = identifier_match.group(1)
+        if identifier in ids:
+            issues.append(
+                Issue(
+                    path,
+                    line_number,
+                    f"duplicate issue form id: {identifier}",
+                )
+            )
+        ids.add(identifier)
+
+    return issues
+
+
 def check_repository(root: Path) -> tuple[list[Issue], Statistics]:
     """Run all repository checks and return findings plus coverage counts."""
 
@@ -275,6 +365,7 @@ def check_repository(root: Path) -> tuple[list[Issue], Statistics]:
                 )
             )
         issues.extend(_check_json(path, text, statistics))
+        issues.extend(_check_issue_form(path, resolved_root, text))
 
     return issues, statistics
 
