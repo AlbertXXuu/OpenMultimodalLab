@@ -42,6 +42,7 @@ All notable changes to this project will be documented in this file.
 - Copyable first-benchmark tutorial from offline smoke to formal real-model evidence.
 - Structured GitHub forms for bugs, model adapters, and dataset/task proposals.
 - Pull-request checklist and pre-release security reporting policy.
+- Fresh-environment wheel installation and outside-checkout smoke testing in CI.
 
 ### Planned
 

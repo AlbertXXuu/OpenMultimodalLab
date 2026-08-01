@@ -191,6 +191,7 @@ equivalent because tokenizers differ.
 | Two-model formal result | [Qwen3-VL vs SmolVLM2](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md) |
 | Performance methodology | [Qwen formal performance baseline](docs/reports/2026-07-31-qwen3-vl-formal-performance.md) |
 | Quality and public-release gates | [Quality standard](docs/06-quality-and-open-source.md) |
+| Fresh wheel installation | [Windows audit and permanent CI gate](docs/reports/2026-08-01-fresh-wheel-install.md) |
 | First complete experiment | [Step-by-step tutorial](docs/tutorials/first-reproducible-benchmark.md) |
 | Current work | [Task board](TASKS.md) |
 | Third-party licenses | [Third-party notices](THIRD_PARTY_NOTICES.md) |
@@ -203,7 +204,7 @@ equivalent because tokenizers differ.
 | Current public task evidence | 10 licensed, deterministic synthetic image tasks |
 | Performance protocol | Warm-up, three repetitions, TTFT, throughput, latency, peak memory |
 | Reliability | Durable records, strict resume, integrity hashes, typed failures |
-| Automated quality | Offline tests, Python 3.11/3.12 CI, wheel and repository audit |
+| Automated quality | Offline tests, Python 3.11/3.12 CI, repository audit, fresh-wheel smoke test |
 | Next capability work | Licensed document/OCR/table/chart tasks, then short video |
 
 The target is at least 100 human-checked tasks across image, document, chart,
