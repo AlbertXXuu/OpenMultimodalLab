@@ -192,6 +192,7 @@ equivalent because tokenizers differ.
 | Performance methodology | [Qwen formal performance baseline](docs/reports/2026-07-31-qwen3-vl-formal-performance.md) |
 | Quality and public-release gates | [Quality standard](docs/06-quality-and-open-source.md) |
 | Fresh wheel installation | [Windows audit and permanent CI gate](docs/reports/2026-08-01-fresh-wheel-install.md) |
+| Dependency supply chain | [Action pinning and update audit](docs/reports/2026-08-01-supply-chain-audit.md) |
 | First complete experiment | [Step-by-step tutorial](docs/tutorials/first-reproducible-benchmark.md) |
 | Current work | [Task board](TASKS.md) |
 | Third-party licenses | [Third-party notices](THIRD_PARTY_NOTICES.md) |

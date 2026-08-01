@@ -26,6 +26,7 @@
 - [x] 增加 Bug、模型 Adapter、数据任务 Issue Form 和 PR 模板。
 - [x] 增加不公开泄漏漏洞细节的安全报告策略。
 - [x] 在全新 Windows Python 3.11 环境安装 wheel，并把仓库外冒烟测试加入 CI。
+- [x] 固定 GitHub Actions 完整提交哈希，并配置每周分组依赖更新。
 
 ## Completed：第 1 周
 

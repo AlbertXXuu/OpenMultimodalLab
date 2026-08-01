@@ -46,6 +46,14 @@ class RepositoryCheckTests(unittest.TestCase):
                 '{"id": 1}\n{"id": 2}\n',
                 encoding="utf-8",
             )
+            workflows = root / ".github" / "workflows"
+            workflows.mkdir(parents=True)
+            (workflows / "safe.yml").write_text(
+                "steps:\n"
+                "  - uses: actions/checkout@"
+                "d23441a48e516b6c34aea4fa41551a30e30af803 # v6\n",
+                encoding="utf-8",
+            )
 
             result = self._run_checker(root)
 
@@ -78,6 +86,13 @@ class RepositoryCheckTests(unittest.TestCase):
                 "description: Missing its body definition.\n",
                 encoding="utf-8",
             )
+            workflows = root / ".github" / "workflows"
+            workflows.mkdir(parents=True)
+            (workflows / "unsafe.yml").write_text(
+                "steps:\n"
+                "  - uses: actions/checkout@v6\n",
+                encoding="utf-8",
+            )
 
             result = self._run_checker(root)
 
@@ -86,6 +101,7 @@ class RepositoryCheckTests(unittest.TestCase):
         self.assertIn("possible Windows absolute path", result.stderr)
         self.assertIn("invalid JSONL", result.stderr)
         self.assertIn("requires top-level 'body'", result.stderr)
+        self.assertIn("must be pinned to a full commit SHA", result.stderr)
 
     def test_current_repository_passes(self) -> None:
         result = self._run_checker(PROJECT_ROOT)

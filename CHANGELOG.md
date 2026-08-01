@@ -43,6 +43,7 @@ All notable changes to this project will be documented in this file.
 - Structured GitHub forms for bugs, model adapters, and dataset/task proposals.
 - Pull-request checklist and pre-release security reporting policy.
 - Fresh-environment wheel installation and outside-checkout smoke testing in CI.
+- Commit-pinned GitHub Actions, enforced by the repository audit, with grouped weekly Dependabot updates.
 
 ### Planned
 

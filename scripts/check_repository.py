@@ -54,6 +54,9 @@ REFERENCE_LINK_PATTERN = re.compile(
     r"^\[[^\]]+\]:\s*(\S+)",
     flags=re.MULTILINE,
 )
+WORKFLOW_ACTION_PATTERN = re.compile(
+    r"(?m)^[ \t]*-[ \t]*uses:[ \t]*(\S+?)[ \t]*(?:#.*)?\r?$"
+)
 SCHEME_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 SENSITIVE_PATTERNS = (
     (
@@ -315,6 +318,44 @@ def _check_issue_form(path: Path, root: Path, text: str) -> list[Issue]:
     return issues
 
 
+def _check_workflow_action_pins(
+    path: Path,
+    root: Path,
+    text: str,
+) -> list[Issue]:
+    relative = path.relative_to(root).as_posix()
+    if (
+        not relative.startswith(".github/workflows/")
+        or path.suffix.casefold() not in {".yml", ".yaml"}
+    ):
+        return []
+
+    issues: list[Issue] = []
+    for match in WORKFLOW_ACTION_PATTERN.finditer(text):
+        action = match.group(1)
+        if action.startswith(("./", "docker://")):
+            continue
+        if "@" not in action:
+            issues.append(
+                Issue(
+                    path,
+                    _line_number(text, match.start()),
+                    "remote workflow action requires an immutable ref",
+                )
+            )
+            continue
+        _, reference = action.rsplit("@", maxsplit=1)
+        if not re.fullmatch(r"[0-9a-fA-F]{40}", reference):
+            issues.append(
+                Issue(
+                    path,
+                    _line_number(text, match.start()),
+                    "remote workflow action must be pinned to a full commit SHA",
+                )
+            )
+    return issues
+
+
 def check_repository(root: Path) -> tuple[list[Issue], Statistics]:
     """Run all repository checks and return findings plus coverage counts."""
 
@@ -366,6 +407,9 @@ def check_repository(root: Path) -> tuple[list[Issue], Statistics]:
             )
         issues.extend(_check_json(path, text, statistics))
         issues.extend(_check_issue_form(path, resolved_root, text))
+        issues.extend(
+            _check_workflow_action_pins(path, resolved_root, text)
+        )
 
     return issues, statistics
 
