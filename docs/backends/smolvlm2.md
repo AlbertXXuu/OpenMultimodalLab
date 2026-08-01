@@ -96,7 +96,9 @@ limit, warm-up count, and repetitions as the Qwen3-VL baseline:
 The adapter records the model and processor classes, native chat-template path,
 model/processor revision, dtype, device, input tensor shapes, image-processor
 settings, token counts, load/media/preprocessing times, synchronized TTFT,
-generation time, throughput, and peak allocated CUDA memory.
+generation time, throughput, and peak allocated CUDA memory. Video records
+also include the requested/actual frame counts, PyAV sampling metadata, video
+decode time, and native video-processor settings.
 
 ## Comparison boundary
 
@@ -113,9 +115,10 @@ repeated measurements of that model.
 
 ## Current limitations
 
-- The adapter currently accepts still images only even though the model can
-  process video. Video frame sampling and schema support must be specified
-  before that path is enabled.
+- The Adapter accepts images and local short videos through the same task
+  media field. Video is uniformly sampled to eight frames before the native
+  processor so both model families observe the same frames. The formal
+  licensed video task set and full-model video result are still pending.
 - It uses native, unquantized BF16 loading so the repository's FP32 storage
   dtype does not force CPU offload on the 8 GB target. Quantized runs would be
   a separate configuration and cannot be mixed into the native comparison.

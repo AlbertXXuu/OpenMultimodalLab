@@ -17,6 +17,7 @@ from typing import Any, Sequence
 
 from . import __version__
 from .adapters import BACKEND_NAMES, create_adapter
+from .adapters.transformers_image_text import SUPPORTED_VIDEO_SUFFIXES
 from .datasets import (
     DatasetError,
     available_categories,
@@ -280,6 +281,7 @@ def _doctor(backend: str) -> int:
                 f"only {model_cache_free:.1f} GiB is available."
             )
         required_modules = (
+            "av",
             "torch",
             "torchvision",
             "transformers",
@@ -391,6 +393,17 @@ def main(argv: Sequence[str] | None = None) -> int:
                 categories=args.category,
                 gpu_summary=_gpu_summary(),
                 project_root=Path.cwd(),
+                video_num_frames=(
+                    int(adapter.video_num_frames)
+                    if hasattr(adapter, "video_num_frames")
+                    and any(
+                        Path(media).suffix.casefold()
+                        in SUPPORTED_VIDEO_SUFFIXES
+                        for task in tasks
+                        for media in task.media
+                    )
+                    else None
+                ),
             )
             if args.resume:
                 existing_manifest = load_run_manifest(manifest_path)

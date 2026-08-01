@@ -56,6 +56,7 @@ class RunManifestTests(unittest.TestCase):
             packages = _package_versions()
 
         queried = {call.args[0] for call in version.call_args_list}
+        self.assertIn("av", queried)
         self.assertIn("huggingface-hub", queried)
         self.assertIn("num2words", queried)
         self.assertIn("safetensors", queried)
@@ -104,6 +105,39 @@ class RunManifestTests(unittest.TestCase):
         self.assertEqual(manifest["protocol"]["repetitions"], 3)
         self.assertEqual(manifest["protocol"]["max_retries"], 0)
         self.assertIsNone(manifest["protocol"]["attempt_timeout_seconds"])
+
+    def test_video_sampling_configuration_is_explicit_when_used(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            dataset = root / "video-tasks.jsonl"
+            dataset.write_text('{"id":"video-1"}\n', encoding="utf-8")
+            video = root / "clip.mp4"
+            video.write_bytes(b"video")
+            task = EvaluationTask(
+                id="video-1",
+                prompt="What changes?",
+                media=("clip.mp4",),
+                metadata={"dataset_version": "test-video"},
+            )
+
+            manifest = build_run_manifest(
+                dataset_path=dataset,
+                output_path=root / "result.jsonl",
+                media_root=root,
+                tasks=[task],
+                backend="qwen3-vl",
+                model_id="model",
+                model_revision="revision",
+                max_new_tokens=32,
+                warmup=1,
+                repetitions=3,
+                categories=[],
+                gpu_summary="test gpu",
+                project_root=root,
+                video_num_frames=8,
+            )
+
+        self.assertEqual(manifest["generation"]["video_num_frames"], 8)
 
     def test_manifest_path_and_atomic_write(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
