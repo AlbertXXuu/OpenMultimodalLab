@@ -663,9 +663,12 @@ def write_review_template(
     dataset_version: str,
     tasks: Sequence[dict[str, Any]],
 ) -> None:
+    version = dataset_version.strip()
+    if not version:
+        raise ValueError("dataset_version must be a non-empty string")
     template = {
         "schema_version": "1.0",
-        "dataset_version": dataset_version,
+        "dataset_version": version,
         "dataset_sha256": _sha256(dataset_path),
         "sampled_frame_indices": list(SAMPLED_FRAME_INDICES),
         "contact_sheet_order": [0, 5, 10, 15],

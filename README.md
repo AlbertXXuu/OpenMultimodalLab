@@ -87,6 +87,9 @@ and their manifests.
 - Name-neutral deterministic tooling can generate and hash-bind a 24-task
   short-video draft for human review; canonical dataset output still waits for
   owner naming approval.
+- A second name-neutral generator prepares 36 controlled visual-robustness
+  tasks across small objects, low contrast, clutter, and partial occlusion;
+  these drafts are likewise excluded from canonical counts until approval.
 - Warm-up plus repeated measurement with CUDA-synchronized TTFT, generation
   time, throughput, preprocessing time, and peak allocated memory.
 - Typed model-load, timeout, out-of-memory, generation, and evaluation failures.
@@ -253,6 +256,7 @@ equivalent because tokenizers differ.
 | Live public-release status | [Evidence matrix and strict readiness check](docs/public-release-readiness.md) |
 | Real short-video runtime smoke | [Two-backend Windows GPU evidence](docs/reports/2026-08-02-video-runtime-smoke.md) |
 | Short-video corpus tooling | [Deterministic generation and human-review workflow](docs/video-corpus-tooling.md) |
+| Visual-robustness corpus tooling | [Four-factor deterministic draft and review workflow](docs/robustness-corpus-tooling.md) |
 | Fresh wheel installation | [Windows audit and permanent CI gate](docs/reports/2026-08-01-fresh-wheel-install.md) |
 | Dependency supply chain | [Action pinning and update audit](docs/reports/2026-08-01-supply-chain-audit.md) |
 | Security review | [Bounded local-input and privacy audit](docs/reports/2026-08-02-security-review.md) |

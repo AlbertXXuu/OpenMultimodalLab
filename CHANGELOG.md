@@ -55,6 +55,7 @@ All notable changes to this project will be documented in this file.
 - Bounded dataset, result, manifest, image, and short-video inputs with recorded effective limits.
 - Portable run-record media references and Windows/UNC/POSIX absolute-path redaction in durable errors.
 - Name-neutral, byte-stable AVI generation for a 24-task short-video draft, with contact sheets and SHA-bound per-task human review validation.
+- Name-neutral, byte-stable PNG generation for a 36-task visual-robustness draft covering small objects, low contrast, clutter, and partial occlusion.
 
 ### Planned
 
