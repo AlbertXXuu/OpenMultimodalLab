@@ -46,6 +46,8 @@ All notable changes to this project will be documented in this file.
 - Commit-pinned GitHub Actions, enforced by the repository audit, with grouped weekly Dependabot updates.
 - Privacy-preserving working and Hugging Face model-cache disk checks in `oml doctor`.
 - Deterministic README comparison visual generated from preserved formal JSONL evidence.
+- Task schema 1.2 with strict, single-answer numeric tolerance scoring.
+- Reproducible `synthetic-docs-v1` with 32 OCR, key-value, table, and chart tasks over eight generated PNGs.
 
 ### Planned
 

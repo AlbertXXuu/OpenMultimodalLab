@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import re
 from dataclasses import dataclass
 from typing import Any, Mapping
@@ -75,6 +76,46 @@ def normalized_exact_match(
         details={
             "normalized_response": normalized_response,
             "accepted_references": normalized_references,
+        },
+    )
+
+
+_NUMERIC_TOKEN = re.compile(
+    r"(?<!\w)[-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?!\w)"
+)
+
+
+def numeric_tolerance_score(
+    response: str,
+    target: float,
+    absolute_tolerance: float,
+) -> EvaluationScore:
+    """Compare one unambiguous numeric answer with an absolute tolerance."""
+
+    candidates = tuple(
+        float(match.group(0).replace(",", ""))
+        for match in _NUMERIC_TOKEN.finditer(response)
+    )
+    absolute_error = (
+        abs(candidates[0] - target) if len(candidates) == 1 else None
+    )
+    is_match = len(candidates) == 1 and math.isclose(
+        candidates[0],
+        target,
+        rel_tol=0.0,
+        abs_tol=absolute_tolerance,
+    )
+    return EvaluationScore(
+        score=1.0 if is_match else 0.0,
+        matched=(str(target),) if is_match else (),
+        name="numeric_tolerance",
+        details={
+            "target": target,
+            "absolute_tolerance": absolute_tolerance,
+            "candidates": candidates,
+            "candidate_count": len(candidates),
+            "absolute_error": absolute_error,
+            "ambiguous": len(candidates) > 1,
         },
     )
 
@@ -186,4 +227,15 @@ def score_response(task: EvaluationTask, response: str) -> EvaluationScore:
         return normalized_exact_match(response, task.expected_keywords)
     if task.scoring.type == "attribute_groups":
         return attribute_group_score(task, response)
+    if task.scoring.type == "numeric_tolerance":
+        if (
+            task.scoring.target is None
+            or task.scoring.absolute_tolerance is None
+        ):
+            raise ValueError("numeric tolerance scorer is missing its reference")
+        return numeric_tolerance_score(
+            response,
+            task.scoring.target,
+            task.scoring.absolute_tolerance,
+        )
     raise ValueError(f"unsupported scoring type '{task.scoring.type}'")

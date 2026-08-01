@@ -2,17 +2,28 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from typing import Any, Mapping
 
 
 LEGACY_TASK_SCHEMA_VERSION = "1.0"
-CURRENT_TASK_SCHEMA_VERSION = "1.1"
+STRUCTURED_TASK_SCHEMA_VERSION = "1.1"
+CURRENT_TASK_SCHEMA_VERSION = "1.2"
 SUPPORTED_TASK_SCHEMA_VERSIONS = frozenset(
-    {LEGACY_TASK_SCHEMA_VERSION, CURRENT_TASK_SCHEMA_VERSION}
+    {
+        LEGACY_TASK_SCHEMA_VERSION,
+        STRUCTURED_TASK_SCHEMA_VERSION,
+        CURRENT_TASK_SCHEMA_VERSION,
+    }
 )
 SUPPORTED_SCORER_TYPES = frozenset(
-    {"keyword_coverage", "normalized_exact_match", "attribute_groups"}
+    {
+        "keyword_coverage",
+        "normalized_exact_match",
+        "attribute_groups",
+        "numeric_tolerance",
+    }
 )
 
 
@@ -23,12 +34,16 @@ class ScoringConfig:
     type: str = "keyword_coverage"
     groups: tuple[tuple[str, ...], ...] = ()
     ordered: bool = False
+    target: float | None = None
+    absolute_tolerance: float | None = None
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, Any]) -> "ScoringConfig":
         scorer_type = value.get("type")
         groups = value.get("groups", [])
         ordered = value.get("ordered", False)
+        target = value.get("target")
+        absolute_tolerance = value.get("absolute_tolerance")
 
         if not isinstance(scorer_type, str) or not scorer_type.strip():
             raise ValueError("'scoring.type' must be a non-empty string")
@@ -40,6 +55,42 @@ class ScoringConfig:
             )
         if not isinstance(ordered, bool):
             raise ValueError("'scoring.ordered' must be a boolean")
+        if scorer_type == "numeric_tolerance":
+            if groups:
+                raise ValueError(
+                    "'scoring.groups' is only supported by 'attribute_groups'"
+                )
+            if ordered:
+                raise ValueError(
+                    "'scoring.ordered' is only supported by 'attribute_groups'"
+                )
+            for field_name, field_value in (
+                ("target", target),
+                ("absolute_tolerance", absolute_tolerance),
+            ):
+                if (
+                    not isinstance(field_value, (int, float))
+                    or isinstance(field_value, bool)
+                    or not math.isfinite(float(field_value))
+                ):
+                    raise ValueError(
+                        f"'scoring.{field_name}' must be a finite number"
+                    )
+            if float(absolute_tolerance) < 0:
+                raise ValueError(
+                    "'scoring.absolute_tolerance' must be at least 0"
+                )
+            return cls(
+                type=scorer_type,
+                target=float(target),
+                absolute_tolerance=float(absolute_tolerance),
+            )
+
+        if "target" in value or "absolute_tolerance" in value:
+            raise ValueError(
+                "'scoring.target' and 'scoring.absolute_tolerance' are only "
+                "supported by 'numeric_tolerance'"
+            )
         if scorer_type != "attribute_groups":
             if groups:
                 raise ValueError(
@@ -115,19 +166,28 @@ class EvaluationTask:
             raise ValueError("'expected_keywords' must be a list of non-empty strings")
         if not isinstance(metadata, dict):
             raise ValueError("'metadata' must be an object")
-        if schema_version == CURRENT_TASK_SCHEMA_VERSION:
+        if schema_version != LEGACY_TASK_SCHEMA_VERSION:
             if not isinstance(scoring, dict):
                 raise ValueError(
-                    f"'scoring' must be an object for schema {CURRENT_TASK_SCHEMA_VERSION}"
+                    f"'scoring' must be an object for schema {schema_version}"
                 )
             scoring_config = ScoringConfig.from_mapping(scoring)
         else:
             if scoring is not None:
                 raise ValueError(
                     "'scoring' requires schema_version "
-                    f"'{CURRENT_TASK_SCHEMA_VERSION}'"
+                    f"'{STRUCTURED_TASK_SCHEMA_VERSION}' or newer"
                 )
             scoring_config = ScoringConfig()
+
+        if (
+            scoring_config.type == "numeric_tolerance"
+            and schema_version != CURRENT_TASK_SCHEMA_VERSION
+        ):
+            raise ValueError(
+                "'numeric_tolerance' requires schema_version "
+                f"'{CURRENT_TASK_SCHEMA_VERSION}'"
+            )
 
         if (
             scoring_config.type in {"normalized_exact_match", "attribute_groups"}
@@ -142,6 +202,11 @@ class EvaluationTask:
         ):
             raise ValueError(
                 "'expected_keywords' and 'scoring.groups' must have equal length"
+            )
+        if scoring_config.type == "numeric_tolerance" and expected_keywords:
+            raise ValueError(
+                "'expected_keywords' must be empty for 'numeric_tolerance'; "
+                "use 'scoring.target' as the numeric reference"
             )
 
         return cls(

@@ -29,6 +29,8 @@
 - [x] 固定 GitHub Actions 完整提交哈希，并配置每周分组依赖更新。
 - [x] `doctor` 检测工作目录与模型缓存磁盘余量，并对真实后端给出空间预警。
 - [x] 从正式 JSONL 结果生成 README 双模型对比图，并用测试防止图文漂移。
+- [x] 发布 Task Schema 1.2，增加单数值答案的确定性容差评分。
+- [x] 发布 `synthetic-docs-v1`：32 条 OCR、键值、表格和图表任务、8 张可复现媒体。
 
 ## Completed：第 1 周
 
@@ -57,7 +59,8 @@
 ## Later
 
 - [x] `doctor` 检测并输出可用磁盘。
-- [ ] 制作文档、视频和图表任务集。
+- [x] 制作文档、表格和图表任务集。
+- [ ] 制作可复现短视频任务集。
 - [ ] 邀请外部试用者。
 
 ## 本周出口条件
@@ -79,3 +82,5 @@ python -m unittest discover -s tests -v
 第一周实际结果见：[docs/reports/2026-07-28-week-01.md](docs/reports/2026-07-28-week-01.md)。
 
 合成图片任务结果见：[docs/reports/2026-07-29-synthetic-v1.md](docs/reports/2026-07-29-synthetic-v1.md)。
+
+文档、表格和图表任务集见：[docs/reports/2026-08-01-synthetic-docs-v1.md](docs/reports/2026-08-01-synthetic-docs-v1.md)。

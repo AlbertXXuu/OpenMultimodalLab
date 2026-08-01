@@ -17,6 +17,11 @@ class MockAdapter:
             and task.expected_keywords
         ):
             response = task.expected_keywords[0]
+        elif (
+            task.scoring.type == "numeric_tolerance"
+            and task.scoring.target is not None
+        ):
+            response = str(task.scoring.target)
         elif task.expected_keywords:
             response = "Mock observation: " + ", ".join(task.expected_keywords) + "."
         else:

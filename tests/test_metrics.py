@@ -4,6 +4,7 @@ import unittest
 
 from openmultimodal_lab.metrics import (
     keyword_score,
+    numeric_tolerance_score,
     normalized_exact_match,
     score_response,
 )
@@ -89,6 +90,35 @@ class DeterministicMetricTests(unittest.TestCase):
 
         self.assertEqual(result.score, 1 / 3)
         self.assertEqual(result.matched, ("blue circle",))
+
+    def test_numeric_tolerance_accepts_value_at_boundary(self) -> None:
+        result = numeric_tolerance_score("$1,234.51", 1234.5, 0.01)
+
+        self.assertEqual(result.score, 1.0)
+        self.assertEqual(result.details["candidate_count"], 1)
+
+    def test_numeric_tolerance_accepts_negative_value(self) -> None:
+        result = numeric_tolerance_score("-20", -20.0, 0.0)
+
+        self.assertEqual(result.score, 1.0)
+
+    def test_numeric_tolerance_rejects_value_outside_tolerance(self) -> None:
+        result = numeric_tolerance_score("8.39", 8.37, 0.01)
+
+        self.assertEqual(result.score, 0.0)
+        self.assertAlmostEqual(result.details["absolute_error"], 0.02)
+
+    def test_numeric_tolerance_rejects_multiple_candidates(self) -> None:
+        result = numeric_tolerance_score("It is 8.37, not 8.36.", 8.37, 0.01)
+
+        self.assertEqual(result.score, 0.0)
+        self.assertTrue(result.details["ambiguous"])
+
+    def test_numeric_tolerance_rejects_response_without_number(self) -> None:
+        result = numeric_tolerance_score("unknown", 8.37, 0.01)
+
+        self.assertEqual(result.score, 0.0)
+        self.assertEqual(result.details["candidate_count"], 0)
 
 
 if __name__ == "__main__":

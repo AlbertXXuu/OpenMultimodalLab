@@ -44,7 +44,7 @@ class RunnerAndReportingTests(unittest.TestCase):
         self.assertTrue(all(record.phase == "measurement" for record in records))
         self.assertTrue(all(record.repetition == 1 for record in records))
         self.assertEqual(records[0].metric_name, "keyword_coverage")
-        self.assertEqual(records[0].task_schema_version, "1.1")
+        self.assertEqual(records[0].task_schema_version, "1.2")
 
     def test_adapter_failure_is_recorded(self) -> None:
         class FailingAdapter:
