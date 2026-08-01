@@ -171,6 +171,7 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 | 性能方法 | [Qwen 正式性能基线](docs/reports/2026-07-31-qwen3-vl-formal-performance.md) |
 | 质量与公开门槛 | [质量标准](docs/06-quality-and-open-source.md) |
 | 全新 wheel 安装 | [Windows 审计与永久 CI 门禁](docs/reports/2026-08-01-fresh-wheel-install.md) |
+| 依赖供应链 | [Action 固定与更新审计](docs/reports/2026-08-01-supply-chain-audit.md) |
 | 第一份完整实验 | [分步教程（英文）](docs/tutorials/first-reproducible-benchmark.md) |
 | 当前工作 | [任务清单](TASKS.md) |
 | 第三方许可证 | [Third-party notices](THIRD_PARTY_NOTICES.md) |

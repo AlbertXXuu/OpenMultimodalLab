@@ -9,7 +9,10 @@
 - 新增真实后端时必须保留 `mock` 离线测试路径。
 - 修改数据格式时必须增加 `schema_version` 和迁移说明。
 - PR 的 Python 3.11/3.12 矩阵必须通过测试、字节码编译和依赖一致性检查。
-- 独立质量任务必须通过仓库文本/链接/JSON/隐私审计并成功构建 wheel。
+- 独立质量任务必须通过仓库文本/链接/JSON/隐私审计，成功构建 wheel，
+  并在仓库外的新环境运行已安装 CLI。
+- 远程 GitHub Actions 必须固定完整提交哈希；Dependabot 只提更新 PR，
+  不绕过测试、人工审查或自动合并。
 
 ## 2. 实验质量
 
@@ -93,8 +96,12 @@ Release Notes 包括：
 - 受支持文本是否为 UTF-8、无 BOM/尾随空格并以换行结束；
 - Markdown 本地链接是否存在且没有越出仓库；
 - JSON 与逐行 JSONL 是否能解析，JSONL 顶层是否为对象；
+- GitHub Issue Form 是否包含必要结构；
+- 远程 GitHub Actions 是否固定完整提交哈希；
 - 常见 GitHub/OpenAI/AWS 凭据、私钥头和个人主目录路径。
 
 CI 只在 `main` push 和 pull request 上触发，避免功能分支同时产生 push 与
 PR 两份重复运行。并发组会取消同一 PR 的旧运行。质量任务与 Python
 3.11/3.12 测试矩阵分离，使构建或仓库审计失败不会伪装成单元测试失败。
+质量任务还会构建 wheel、在新虚拟环境安装，并从仓库外执行完整离线冒烟
+路径。Python 与 GitHub Actions 依赖按上海时区每周检查并分组提交更新。
