@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
+  <title id="title">Formal Qwen3-VL-2B and SmolVLM2-500M comparison</title>
+  <desc id="description">Qwen has higher mean task score and lower median latency. SmolVLM2 uses substantially less peak GPU memory on the same 32-task local benchmark.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="1" stop-color="#0c1d32"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.82" cy="0.05" r="0.8">
+      <stop offset="0" stop-color="#244d72" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#07111f" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      text { font-family: Inter, "Segoe UI", Arial, sans-serif; }
+      .eyebrow { font-size: 15px; font-weight: 600; letter-spacing: 2.2px; fill: #7f96ad; }
+      .title { font-size: 42px; font-weight: 700; fill: #f4f8fc; }
+      .subtitle { font-size: 18px; font-weight: 400; fill: #9fb2c7; }
+      .metric { font-size: 16px; font-weight: 700; letter-spacing: 1.2px; fill: #dce8f3; }
+      .scale { font-size: 13px; font-weight: 400; fill: #7890a8; }
+      .model { font-size: 16px; font-weight: 600; fill: #dce8f3; }
+      .value { font-size: 14px; font-weight: 700; }
+      .takeaway { font-size: 17px; font-weight: 600; fill: #f4f8fc; }
+      .protocol { font-size: 14px; font-weight: 400; fill: #8fa4b9; }
+      .limit { font-size: 13px; font-weight: 600; fill: #6f879f; letter-spacing: 0.4px; }
+    </style>
+  </defs>
+  <rect width="1200" height="630" fill="url(#background)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <text x="64" y="55" class="eyebrow">OPENMULTIMODALLAB · FORMAL LOCAL COMPARISON</text>
+  <text x="64" y="111" class="title">Quality and speed vs. memory</text>
+  <text x="64" y="146" class="subtitle">Same tasks, prompts, protocol, commit, and RTX 4060 Laptop GPU</text>
+
+  <circle cx="795" cy="142" r="7" fill="#58b8ff"/>
+  <text x="811" y="148" class="model">Qwen3-VL-2B</text>
+  <circle cx="995" cy="142" r="7" fill="#ffb45e"/>
+  <text x="1011" y="148" class="model">SmolVLM2-500M</text>
+
+  <line x1="64" y1="178" x2="1136" y2="178" stroke="#27415c"/>
+
+  <text x="64" y="224" class="metric">MEAN TASK SCORE ↑</text>
+  <text x="1090" y="224" text-anchor="end" class="scale">0–1 · higher is better</text>
+    <rect x="255" y="239" width="835" height="20" rx="10" fill="#172a40"/>
+    <rect x="255" y="239" width="600.2" height="20" rx="10" fill="#58b8ff"/>
+    <text x="867.2" y="254" text-anchor="start" class="value" fill="#f4f8fc">0.719</text>
+    <rect x="255" y="268" width="835" height="20" rx="10" fill="#172a40"/>
+    <rect x="255" y="268" width="521.9" height="20" rx="10" fill="#ffb45e"/>
+    <text x="788.9" y="283" text-anchor="start" class="value" fill="#f4f8fc">0.625</text>
+
+  <text x="64" y="344" class="metric">MEDIAN TASK LATENCY ↓</text>
+  <text x="1090" y="344" text-anchor="end" class="scale">0–600 ms · lower is better</text>
+    <rect x="255" y="359" width="835" height="20" rx="10" fill="#172a40"/>
+    <rect x="255" y="359" width="491.7" height="20" rx="10" fill="#58b8ff"/>
+    <text x="758.7" y="374" text-anchor="start" class="value" fill="#f4f8fc">353 ms</text>
+    <rect x="255" y="388" width="835" height="20" rx="10" fill="#172a40"/>
+    <rect x="255" y="388" width="786.9" height="20" rx="10" fill="#ffb45e"/>
+    <text x="1029.9" y="403" text-anchor="end" class="value" fill="#07111f">565 ms</text>
+
+  <text x="64" y="464" class="metric">PEAK ALLOCATED GPU MEMORY ↓</text>
+  <text x="1090" y="464" text-anchor="end" class="scale">0–4,500 MiB · lower is better</text>
+    <rect x="255" y="479" width="835" height="20" rx="10" fill="#172a40"/>
+    <rect x="255" y="479" width="775.7" height="20" rx="10" fill="#58b8ff"/>
+    <text x="1018.7" y="494" text-anchor="end" class="value" fill="#07111f">4,180 MiB</text>
+    <rect x="255" y="508" width="835" height="20" rx="10" fill="#172a40"/>
+    <rect x="255" y="508" width="234.8" height="20" rx="10" fill="#ffb45e"/>
+    <text x="501.8" y="523" text-anchor="start" class="value" fill="#f4f8fc">1,265 MiB</text>
+
+  <line x1="64" y1="548" x2="1136" y2="548" stroke="#27415c"/>
+  <circle cx="71" cy="572" r="5" fill="#58b8ff"/>
+  <text x="86" y="578" class="takeaway">Qwen: +0.094 score and 38% lower median latency</text>
+  <circle cx="639" cy="572" r="5" fill="#ffb45e"/>
+  <text x="654" y="578" class="takeaway">SmolVLM2: 70% lower peak memory</text>
+
+  <text x="64" y="605" class="protocol">32 generated tasks · 1 warm-up + 3 measured repeats · greedy decoding · 96/96 successful measurements each</text>
+  <text x="1136" y="605" text-anchor="end" class="limit">SMALL SYNTHETIC SET · NOT A UNIVERSAL RANKING</text>
+</svg>

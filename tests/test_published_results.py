@@ -28,6 +28,18 @@ COMPARISON_SMOL_RESULT = (
 COMPARISON_SMOL_MANIFEST = (
     RESULTS_ROOT / "2026-07-31-smolvlm2-500m-comparison-formal.manifest.json"
 )
+DOCUMENT_QWEN_RESULT = (
+    RESULTS_ROOT / "2026-08-02-qwen3-vl-docs-formal.jsonl"
+)
+DOCUMENT_QWEN_MANIFEST = (
+    RESULTS_ROOT / "2026-08-02-qwen3-vl-docs-formal.manifest.json"
+)
+DOCUMENT_SMOL_RESULT = (
+    RESULTS_ROOT / "2026-08-02-smolvlm2-500m-docs-formal.jsonl"
+)
+DOCUMENT_SMOL_MANIFEST = (
+    RESULTS_ROOT / "2026-08-02-smolvlm2-500m-docs-formal.manifest.json"
+)
 
 
 def _sha256(path: Path) -> str:
@@ -197,6 +209,120 @@ class PublishedResultTests(unittest.TestCase):
 
         self.assertEqual(manifests[1]["dataset"], reference_dataset)
         self.assertEqual(len(reference_dataset["task_ids"]), 10)
+
+        dataset_path = PROJECT_ROOT / reference_dataset["path"]
+        self.assertEqual(
+            hashlib.sha256(dataset_path.read_bytes()).hexdigest(),
+            reference_dataset["sha256"],
+        )
+        for media in reference_dataset["media"]:
+            media_path = PROJECT_ROOT / media["path"]
+            self.assertEqual(
+                hashlib.sha256(media_path.read_bytes()).hexdigest(),
+                media["sha256"],
+            )
+
+    def test_document_comparison_is_complete_and_unchanged(self) -> None:
+        cases = (
+            {
+                "result": DOCUMENT_QWEN_RESULT,
+                "manifest": DOCUMENT_QWEN_MANIFEST,
+                "result_sha256": (
+                    "1B0655EE19C1CD6C635A15D66ABE90BC"
+                    "4F44BB06EDDA8E13EFA808F27BE2AC17"
+                ),
+                "manifest_sha256": (
+                    "38AEE214B5288F14AC5E0BC8FBCF9F8C"
+                    "AB9A332C93E6321B48485F8A1DFFF60E"
+                ),
+                "backend": "qwen3-vl",
+                "mean_score": 0.71875,
+                "median_latency_ms": 353.30185,
+                "median_ttft_ms": 184.24155,
+                "peak_gpu_memory_mb": 4180.35400390625,
+            },
+            {
+                "result": DOCUMENT_SMOL_RESULT,
+                "manifest": DOCUMENT_SMOL_MANIFEST,
+                "result_sha256": (
+                    "63C979BE02E3E99400C45B4ECF8D2CA7"
+                    "97B5EAEC0FF512B23FDED5F7D50471DF"
+                ),
+                "manifest_sha256": (
+                    "F61E5FA8C4690A97119E6185F82212C7"
+                    "39A78604170100420E3F7186F8567B2A"
+                ),
+                "backend": "smolvlm2",
+                "mean_score": 0.625,
+                "median_latency_ms": 565.4402,
+                "median_ttft_ms": 307.582,
+                "peak_gpu_memory_mb": 1265.25,
+            },
+        )
+
+        for case in cases:
+            with self.subTest(backend=case["backend"]):
+                records = load_records(case["result"])
+                summary = summarize(records)
+                manifest_text = case["manifest"].read_text(encoding="utf-8")
+                manifest = json.loads(manifest_text)
+
+                self.assertEqual(_sha256(case["result"]), case["result_sha256"])
+                self.assertEqual(
+                    _sha256(case["manifest"]),
+                    case["manifest_sha256"],
+                )
+                self.assertEqual(summary["total_records"], 97)
+                self.assertEqual(summary["warmup_attempts"], 1)
+                self.assertEqual(summary["total_tasks"], 96)
+                self.assertEqual(summary["unique_tasks"], 32)
+                self.assertEqual(summary["repetitions"], 3)
+                self.assertEqual(summary["measurement_model_reloads"], 0)
+                self.assertTrue(summary["formal_performance_run"])
+                self.assertEqual(summary["successful_tasks"], 96)
+                self.assertEqual(summary["failures"], {})
+                self.assertAlmostEqual(
+                    summary["mean_score"],
+                    case["mean_score"],
+                )
+                self.assertAlmostEqual(
+                    summary["median_latency_ms"],
+                    case["median_latency_ms"],
+                )
+                self.assertAlmostEqual(
+                    summary["median_ttft_ms"],
+                    case["median_ttft_ms"],
+                )
+                self.assertAlmostEqual(
+                    summary["peak_gpu_memory_mb"],
+                    case["peak_gpu_memory_mb"],
+                )
+
+                self.assertEqual(manifest["backend"]["name"], case["backend"])
+                self.assertEqual(manifest["status"], "completed")
+                self.assertEqual(manifest["records_written"], 97)
+                self.assertEqual(manifest["measurement_records"], 96)
+                self.assertFalse(manifest["environment"]["git"]["dirty"])
+                self.assertEqual(
+                    manifest["environment"]["git"]["commit"],
+                    "2ba683fe0d3cff65e502ae9e9f5d559d180b5398",
+                )
+                self.assertNotRegex(manifest_text, r"(?i)[a-z]:[\\/]")
+                self.assertNotRegex(
+                    manifest_text,
+                    r"(?i)/(?:home|users)/[^/\s]+/",
+                )
+
+    def test_document_manifests_share_current_dataset_and_media(self) -> None:
+        manifests = [
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in (DOCUMENT_QWEN_MANIFEST, DOCUMENT_SMOL_MANIFEST)
+        ]
+        reference_dataset = manifests[0]["dataset"]
+
+        self.assertEqual(manifests[1]["dataset"], reference_dataset)
+        self.assertEqual(len(reference_dataset["task_ids"]), 32)
+        self.assertEqual(reference_dataset["versions"], ["synthetic-docs-v1"])
 
         dataset_path = PROJECT_ROOT / reference_dataset["path"]
         self.assertEqual(

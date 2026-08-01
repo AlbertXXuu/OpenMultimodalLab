@@ -19,8 +19,9 @@ to rebuild a report without rerunning the model.
 > tasks, two real local backends, the formal performance protocol, strict
 > resume, bounded retries, cooperative inference deadlines, and CI quality
 > gates work today. Both real adapters now decode local short video through a
-> bounded eight-frame path. The licensed video task set and formal document/
-> video comparisons remain roadmap work.
+> bounded eight-frame path. A formal 32-task document comparison is preserved
+> below; the licensed video task set and formal video comparison remain
+> roadmap work.
 
 ## First reproducible comparison
 
@@ -45,6 +46,29 @@ Read the [full comparison](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md)
 or inspect the preserved
 [Qwen JSONL](docs/reports/results/2026-07-31-qwen3-vl-comparison-formal.jsonl),
 [SmolVLM2 JSONL](docs/reports/results/2026-07-31-smolvlm2-500m-comparison-formal.jsonl),
+and their manifests.
+
+## Broader document benchmark
+
+The same two backends also completed all 96 measured attempts on 32 OCR,
+key-value, table, and chart tasks:
+
+| Model | Mean task score | Median TTFT | Median task latency | Peak allocated GPU memory | Runtime failures |
+|---|---:|---:|---:|---:|---:|
+| Qwen3-VL-2B | 0.719 | 184.2 ms | 353.3 ms | 4,180.4 MiB | 0/96 |
+| SmolVLM2-500M | 0.625 | 307.6 ms | 565.4 ms | 1,265.3 MiB | 0/96 |
+
+Qwen was stronger overall and on table/chart questions. SmolVLM2 achieved
+`1.000` on the OCR subset and used about 70% less peak allocated memory. All
+32 responses/model were stable across three repetitions. This remains a
+generated English benchmark, not a general document-understanding ranking.
+
+![Formal document-task comparison](docs/assets/document-comparison.svg)
+
+Read the [document comparison report](docs/reports/2026-08-02-document-model-comparison.md)
+or inspect the preserved
+[Qwen JSONL](docs/reports/results/2026-08-02-qwen3-vl-docs-formal.jsonl),
+[SmolVLM2 JSONL](docs/reports/results/2026-08-02-smolvlm2-500m-docs-formal.jsonl),
 and their manifests.
 
 ## What is already implemented
@@ -218,6 +242,7 @@ equivalent because tokenizers differ.
 | Experiment rules | [Evaluation protocol](docs/evaluation-protocol.md) |
 | Run records, manifests, and resume | [Artifact contract](docs/run-records-and-manifests.md) |
 | Two-model formal result | [Qwen3-VL vs SmolVLM2](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md) |
+| 32-task document comparison | [Qwen3-VL vs SmolVLM2 on documents](docs/reports/2026-08-02-document-model-comparison.md) |
 | Performance methodology | [Qwen formal performance baseline](docs/reports/2026-07-31-qwen3-vl-formal-performance.md) |
 | Quality and public-release gates | [Quality standard](docs/06-quality-and-open-source.md) |
 | Real short-video runtime smoke | [Two-backend Windows GPU evidence](docs/reports/2026-08-02-video-runtime-smoke.md) |
@@ -235,11 +260,11 @@ equivalent because tokenizers differ.
 |---|---|
 | Real image backends | Qwen3-VL-2B and SmolVLM2-500M verified locally |
 | Current versioned task corpus | 42 tasks over 18 licensed, deterministic generated images |
-| Published real-model comparison | 10 synthetic image tasks; new document tasks not benchmarked yet |
+| Preserved real-model comparison | 10 image tasks plus a separate 32-task document/table/chart comparison |
 | Performance protocol | Warm-up, three repetitions, TTFT, throughput, latency, peak memory |
 | Reliability | Durable records, strict resume, integrity hashes, typed failures |
 | Automated quality | Offline tests, Python 3.11/3.12 CI, repository audit, fresh-wheel smoke test |
-| Next capability work | Formal document-task run, then the licensed short-video task set and run |
+| Next capability work | Licensed short-video task set and formal two-model run |
 
 The target is at least 100 human-checked tasks across image, document, chart,
 spatial, and short-video capabilities. That target is not yet marked complete.

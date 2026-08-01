@@ -695,6 +695,49 @@ class RunnerAndReportingTests(unittest.TestCase):
         self.assertTrue(summary["performance_metrics_complete"])
         self.assertTrue(summary["formal_performance_run"])
 
+    def test_summary_rejects_measurement_model_reload_as_formal(self) -> None:
+        def usage(*, model_load_ms: float) -> dict[str, float]:
+            return {
+                "model_load_ms": model_load_ms,
+                "preprocessing_ms": 5,
+                "ttft_ms": 10,
+                "generation_ms": 20,
+                "output_tokens_per_second": 30,
+                "peak_gpu_memory_mb": 4000,
+            }
+
+        records = [
+            {
+                "phase": "warmup",
+                "repetition": 1,
+                "task_id": "task-1",
+                "status": "success",
+                "latency_ms": 100,
+                "score": None,
+                "usage": usage(model_load_ms=12000),
+            },
+            *[
+                {
+                    "phase": "measurement",
+                    "repetition": repetition,
+                    "task_id": "task-1",
+                    "status": "success",
+                    "latency_ms": 25,
+                    "score": 1,
+                    "usage": usage(
+                        model_load_ms=5000 if repetition == 2 else 0
+                    ),
+                }
+                for repetition in (1, 2, 3)
+            ],
+        ]
+
+        summary = summarize(records)
+
+        self.assertTrue(summary["performance_metrics_complete"])
+        self.assertEqual(summary["measurement_model_reloads"], 1)
+        self.assertFalse(summary["formal_performance_run"])
+
 
 if __name__ == "__main__":
     unittest.main()
