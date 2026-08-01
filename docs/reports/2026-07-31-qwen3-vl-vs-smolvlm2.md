@@ -24,6 +24,18 @@ This is a resource-efficiency comparison between a 2B and a 500M model, not a
 same-size architecture comparison and not a claim about general multimodal
 quality.
 
+![Formal quality, latency, and memory comparison](../assets/model-comparison.svg)
+
+The visual is generated from the preserved JSONL, not maintained as a separate
+set of hand-entered numbers:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\generate_comparison_chart.py
+```
+
+An automated test regenerates it in a temporary directory and requires an
+exact byte match with the committed SVG.
+
 ## Formal protocol
 
 Both configurations used:

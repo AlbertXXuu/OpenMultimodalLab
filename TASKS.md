@@ -28,6 +28,7 @@
 - [x] 在全新 Windows Python 3.11 环境安装 wheel，并把仓库外冒烟测试加入 CI。
 - [x] 固定 GitHub Actions 完整提交哈希，并配置每周分组依赖更新。
 - [x] `doctor` 检测工作目录与模型缓存磁盘余量，并对真实后端给出空间预警。
+- [x] 从正式 JSONL 结果生成 README 双模型对比图，并用测试防止图文漂移。
 
 ## Completed：第 1 周
 

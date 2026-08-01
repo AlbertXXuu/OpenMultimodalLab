@@ -33,6 +33,8 @@ JSONL，按任务选择确定性评分规则，并记录模型、环境、输入
 Qwen 在这组任务上回答更完整且中位延迟更低。两者参数规模和原生视觉处理器
 不同，10 条英文合成任务也不能代表广泛真实能力。
 
+![Qwen3-VL-2B 与 SmolVLM2-500M 正式对比](docs/assets/model-comparison.svg)
+
 完整解释见
 [正式对比报告](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md)，原始
 [Qwen JSONL](docs/reports/results/2026-07-31-qwen3-vl-comparison-formal.jsonl)
