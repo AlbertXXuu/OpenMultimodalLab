@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -20,6 +21,7 @@ class ModelResult:
     peak_gpu_memory_mb: float
     successful_tasks: int
     total_tasks: int
+    unique_tasks: int
 
 
 def _number(summary: dict[str, Any], key: str) -> float:
@@ -42,6 +44,7 @@ def _load_result(path: Path, *, label: str, color: str) -> ModelResult:
         peak_gpu_memory_mb=_number(summary, "peak_gpu_memory_mb"),
         successful_tasks=int(summary["successful_tasks"]),
         total_tasks=int(summary["total_tasks"]),
+        unique_tasks=int(summary["unique_tasks"]),
     )
 
 
@@ -73,6 +76,8 @@ def _bar(
 def render_chart(qwen: ModelResult, smol: ModelResult) -> str:
     if qwen.total_tasks != smol.total_tasks:
         raise ValueError("comparison runs do not contain the same attempt count")
+    if qwen.unique_tasks != smol.unique_tasks:
+        raise ValueError("comparison runs do not contain the same task count")
     if qwen.successful_tasks != qwen.total_tasks:
         raise ValueError("Qwen comparison contains failed measurements")
     if smol.successful_tasks != smol.total_tasks:
@@ -88,6 +93,16 @@ def render_chart(qwen: ModelResult, smol: ModelResult) -> str:
         (qwen.peak_gpu_memory_mb - smol.peak_gpu_memory_mb)
         / qwen.peak_gpu_memory_mb
         * 100
+    )
+    latency_maximum = max(
+        450.0,
+        math.ceil(
+            max(qwen.median_latency_ms, smol.median_latency_ms) / 50.0
+        )
+        * 50.0,
+    )
+    task_count_phrase = (
+        "ten-task" if qwen.unique_tasks == 10 else f"{qwen.unique_tasks}-task"
     )
 
     qwen_score = _bar(
@@ -107,14 +122,14 @@ def render_chart(qwen: ModelResult, smol: ModelResult) -> str:
     qwen_latency = _bar(
         y=359,
         value=qwen.median_latency_ms,
-        maximum=450.0,
+        maximum=latency_maximum,
         color=qwen.color,
         text=f"{qwen.median_latency_ms:.0f} ms",
     )
     smol_latency = _bar(
         y=388,
         value=smol.median_latency_ms,
-        maximum=450.0,
+        maximum=latency_maximum,
         color=smol.color,
         text=f"{smol.median_latency_ms:.0f} ms",
     )
@@ -135,7 +150,7 @@ def render_chart(qwen: ModelResult, smol: ModelResult) -> str:
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
   <title id="title">Formal Qwen3-VL-2B and SmolVLM2-500M comparison</title>
-  <desc id="description">Qwen has higher mean task score and lower median latency. SmolVLM2 uses substantially less peak GPU memory on the same ten-task local benchmark.</desc>
+  <desc id="description">Qwen has higher mean task score and lower median latency. SmolVLM2 uses substantially less peak GPU memory on the same {task_count_phrase} local benchmark.</desc>
   <defs>
     <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#07111f"/>
@@ -179,7 +194,7 @@ def render_chart(qwen: ModelResult, smol: ModelResult) -> str:
 {smol_score}
 
   <text x="64" y="344" class="metric">MEDIAN TASK LATENCY ↓</text>
-  <text x="1090" y="344" text-anchor="end" class="scale">0–450 ms · lower is better</text>
+  <text x="1090" y="344" text-anchor="end" class="scale">0–{latency_maximum:,.0f} ms · lower is better</text>
 {qwen_latency}
 {smol_latency}
 
@@ -194,7 +209,7 @@ def render_chart(qwen: ModelResult, smol: ModelResult) -> str:
   <circle cx="639" cy="572" r="5" fill="{smol.color}"/>
   <text x="654" y="578" class="takeaway">SmolVLM2: {memory_reduction:.0f}% lower peak memory</text>
 
-  <text x="64" y="605" class="protocol">10 generated tasks · 1 warm-up + 3 measured repeats · greedy decoding · {qwen.successful_tasks}/{qwen.total_tasks} successful measurements each</text>
+  <text x="64" y="605" class="protocol">{qwen.unique_tasks} generated tasks · 1 warm-up + 3 measured repeats · greedy decoding · {qwen.successful_tasks}/{qwen.total_tasks} successful measurements each</text>
   <text x="1136" y="605" text-anchor="end" class="limit">SMALL SYNTHETIC SET · NOT A UNIVERSAL RANKING</text>
 </svg>
 """

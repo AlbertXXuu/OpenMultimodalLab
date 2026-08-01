@@ -17,7 +17,8 @@ JSONL，按任务选择确定性评分规则，并记录模型、环境、输入
 > 当前为发布前开发阶段。图片、文档、表格和图表任务、两个真实本地模型、
 > 正式性能协议、严格断点续跑、有限重试、协作式推理截止时间和 CI 质量门
 > 已经可用。两个真实 Adapter 已支持通过统一的 8 帧有界路径读取本地短视频；
-> 许可证清晰的视频任务集以及文档/视频正式对比仍属于路线图。
+> 32 条文档任务的正式对比已保存在下方；许可证清晰的视频任务集及其正式
+> 对比仍属于路线图。
 
 ## 第一份可复现双模型结果
 
@@ -42,6 +43,27 @@ Qwen 在这组任务上回答更完整且中位延迟更低。两者参数规模
 与
 [SmolVLM2 JSONL](docs/reports/results/2026-07-31-smolvlm2-500m-comparison-formal.jsonl)
 也保留在仓库中。
+
+## 更广的文档任务评测
+
+两个后端还完成了 32 条 OCR、键值、表格和图表任务的全部 96 次正式测量：
+
+| 模型 | 平均任务得分 | 中位 TTFT | 中位任务延迟 | 峰值已分配显存 | 运行失败 |
+|---|---:|---:|---:|---:|---:|
+| Qwen3-VL-2B | 0.719 | 184.2 ms | 353.3 ms | 4,180.4 MiB | 0/96 |
+| SmolVLM2-500M | 0.625 | 307.6 ms | 565.4 ms | 1,265.3 MiB | 0/96 |
+
+Qwen 总体及表格/图表任务更强；SmolVLM2 在 OCR 子集得到 `1.000`，峰值已
+分配显存约低 70%。每个模型的 32 条回答在三次重复中都保持一致。这仍是英文
+生成数据，不是通用文档理解排行榜。
+
+![文档任务正式对比](docs/assets/document-comparison.svg)
+
+完整方法与限制见
+[文档任务对比报告](docs/reports/2026-08-02-document-model-comparison.md)，原始
+[Qwen JSONL](docs/reports/results/2026-08-02-qwen3-vl-docs-formal.jsonl) 与
+[SmolVLM2 JSONL](docs/reports/results/2026-08-02-smolvlm2-500m-docs-formal.jsonl)
+及各自 manifest 也已保存。
 
 ## 已实现能力
 
@@ -195,6 +217,7 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 | 实验规则 | [评测协议](docs/evaluation-protocol.md) |
 | 运行记录、manifest 和恢复 | [产物契约](docs/run-records-and-manifests.md) |
 | 双模型正式结果 | [Qwen3-VL vs SmolVLM2](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md) |
+| 32 条文档任务对比 | [Qwen3-VL 与 SmolVLM2 文档评测](docs/reports/2026-08-02-document-model-comparison.md) |
 | 性能方法 | [Qwen 正式性能基线](docs/reports/2026-07-31-qwen3-vl-formal-performance.md) |
 | 质量与公开门槛 | [质量标准](docs/06-quality-and-open-source.md) |
 | 真实短视频运行冒烟 | [两个后端的 Windows GPU 证据](docs/reports/2026-08-02-video-runtime-smoke.md) |
@@ -212,11 +235,11 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 |---|---|
 | 真实图片后端 | Qwen3-VL-2B、SmolVLM2-500M 已在本机验证 |
 | 当前版本化任务集 | 42 条任务、18 张许可证清晰且可确定生成的图片 |
-| 已发布真实模型对比 | 使用 10 条合成图片任务；新文档任务尚未正式评测 |
+| 已保存真实模型对比 | 10 条图片任务，以及独立的 32 条文档/表格/图表对比 |
 | 性能协议 | warm-up、三次重复、TTFT、吞吐、延迟、峰值显存 |
 | 可靠性 | 逐条持久化、严格恢复、完整性哈希、失败分类 |
 | 自动质量 | 离线测试、Python 3.11/3.12 CI、仓库审计、全新 wheel 冒烟测试 |
-| 下一阶段 | 完成文档正式运行，再制作并运行许可证清晰的短视频任务集 |
+| 下一阶段 | 制作许可证清晰的短视频任务集并完成双模型正式运行 |
 
 目标是至少 100 条人工检查任务，覆盖图片、文档、图表、空间和短视频。当前
 没有把这个目标标记为已经完成。

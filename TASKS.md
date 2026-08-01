@@ -33,6 +33,8 @@
 - [x] 发布 `synthetic-docs-v1`：32 条 OCR、键值、表格和图表任务、8 张可复现媒体。
 - [x] 发布 Run record schema 0.4：协作式超时、有限重试、逐调用落盘与严格恢复。
 - [x] 为两个真实 Adapter 增加统一的本地短视频解码、8 帧抽样和可审计记录链路。
+- [x] 在 32 条文档、表格和图表任务上完成同提交、同协议的双模型正式评测。
+- [x] 拒绝把测量阶段重新加载模型的中断续跑误标为正式性能数据。
 
 ## Completed：第 1 周
 
@@ -88,3 +90,5 @@ python -m unittest discover -s tests -v
 文档、表格和图表任务集见：[docs/reports/2026-08-01-synthetic-docs-v1.md](docs/reports/2026-08-01-synthetic-docs-v1.md)。
 
 超时与重试实现见：[docs/reports/2026-08-01-run-record-0.4.md](docs/reports/2026-08-01-run-record-0.4.md)。
+
+文档任务双模型结果见：[docs/reports/2026-08-02-document-model-comparison.md](docs/reports/2026-08-02-document-model-comparison.md)。

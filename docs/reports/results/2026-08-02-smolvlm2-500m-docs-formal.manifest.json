@@ -1,0 +1,146 @@
+{
+  "backend": {
+    "model_id": "HuggingFaceTB/SmolVLM2-500M-Video-Instruct",
+    "model_revision": "7b375e1b73b11138ff12fe22c8f2822d8fe03467",
+    "name": "smolvlm2"
+  },
+  "checkpointed_at_utc": "2026-08-01T17:29:41.914381+00:00",
+  "completed_at_utc": "2026-08-01T17:29:41.918382+00:00",
+  "created_at_utc": "2026-08-01T17:28:21.772602+00:00",
+  "dataset": {
+    "media": [
+      {
+        "path": "examples/assets/synthetic-docs-v1/receipt-cafe.png",
+        "sha256": "9f73dfbd0bc132d16f16de9b9d21ef17664ea05218f5e8996ea16ee84dcc077b"
+      },
+      {
+        "path": "examples/assets/synthetic-docs-v1/invoice-studio.png",
+        "sha256": "c542b44d5c00759533b4157c3ae654e1195bcbe8fd766836199161984070a779"
+      },
+      {
+        "path": "examples/assets/synthetic-docs-v1/schedule-lab.png",
+        "sha256": "d19c7052c8284f5a6b92842f1ceee08f0a71c03342547437e6eeed2d40b7ef1d"
+      },
+      {
+        "path": "examples/assets/synthetic-docs-v1/inventory-table.png",
+        "sha256": "6c393e6283219c1c300f3186903b54cdbb0d69f6c4c9e7b8db2bcc6c52192c12"
+      },
+      {
+        "path": "examples/assets/synthetic-docs-v1/sales-bar-chart.png",
+        "sha256": "6ee2554370709b180a11f9e70b7f459f0baaad91ae03343ccd90a979da7c3f9d"
+      },
+      {
+        "path": "examples/assets/synthetic-docs-v1/traffic-line-chart.png",
+        "sha256": "20648e4c95a7e901701f66540722fb1f0a5d48e0910128c0a492175995595645"
+      },
+      {
+        "path": "examples/assets/synthetic-docs-v1/project-status.png",
+        "sha256": "cd25df46c552cab5b26bd7e890733829dd3d747b1e0af0a9c39337e6469bc203"
+      },
+      {
+        "path": "examples/assets/synthetic-docs-v1/energy-table.png",
+        "sha256": "e9cfb14aa2c52bcf5d9b0cec7ee8d1e15efd5cd9e663f93b2e569f23e0475ac8"
+      }
+    ],
+    "path": "examples/tasks/synthetic-docs-v1.jsonl",
+    "sha256": "79b9f2c25f2985b6ccbd6fba2e44d234685338534d3d810f4f2931eacdb9d610",
+    "task_ids": [
+      "receipt-cafe-id",
+      "receipt-cafe-total",
+      "receipt-cafe-date",
+      "receipt-cafe-bagel-price",
+      "invoice-studio-number",
+      "invoice-studio-client",
+      "invoice-studio-amount-due",
+      "invoice-studio-due-date",
+      "schedule-lab-1030-event",
+      "schedule-lab-robotics-time",
+      "schedule-lab-event-count",
+      "schedule-lab-last-event",
+      "inventory-q2-maximum",
+      "inventory-beta-total",
+      "inventory-gamma-change",
+      "inventory-lowest-stock",
+      "sales-region-maximum",
+      "sales-west-value",
+      "sales-south-west-gap",
+      "sales-total",
+      "traffic-peak-day",
+      "traffic-wed-value",
+      "traffic-mon-thu-rise",
+      "traffic-weekday-average",
+      "project-status-owner",
+      "project-status-value",
+      "project-status-remaining-budget",
+      "project-status-deadline",
+      "energy-highest-wind-site",
+      "energy-sites-bc-total",
+      "energy-site-d-total",
+      "energy-highest-solar-site"
+    ],
+    "versions": [
+      "synthetic-docs-v1"
+    ]
+  },
+  "environment": {
+    "executable_bits": 64,
+    "git": {
+      "commit": "2ba683fe0d3cff65e502ae9e9f5d559d180b5398",
+      "dirty": false
+    },
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU, 8188 MiB, 596.49",
+    "packages": {
+      "accelerate": "1.14.0",
+      "av": "18.0.0",
+      "huggingface-hub": "1.25.1",
+      "num2words": "0.5.14",
+      "openmultimodal-lab": "0.1.0",
+      "pillow": "12.3.0",
+      "safetensors": "0.8.0",
+      "tokenizers": "0.22.2",
+      "torch": "2.13.0+cu130",
+      "torchvision": "0.28.0+cu130",
+      "transformers": "5.14.1"
+    },
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "python": "3.11.0",
+    "python_implementation": "CPython"
+  },
+  "error": null,
+  "generation": {
+    "batch_size": 1,
+    "do_sample": false,
+    "max_new_tokens": 64
+  },
+  "generation_invocations": 97,
+  "measurement_records": 96,
+  "output": {
+    "path": "runs/smolvlm2-synthetic-docs-v1-formal-clean.jsonl",
+    "sha256": "63c979be02e3e99400c45b4ecf8d2ca797b5eaec0ff512b23fded5f7d50471df",
+    "size_bytes": 222282
+  },
+  "protocol": {
+    "attempt_timeout_seconds": null,
+    "categories": [],
+    "gpu_synchronization": "adapter timing boundaries when CUDA is active",
+    "max_retries": 0,
+    "peak_memory_boundary": "maximum allocated CUDA memory during generation",
+    "repetitions": 3,
+    "retry_backoff": "none",
+    "retryable_statuses": [
+      "generation_error",
+      "timeout"
+    ],
+    "task_order": "dataset order repeated without shuffle",
+    "throughput_boundary": "generated tokens over model.generate duration",
+    "timeout_boundary": "adapter inference after one-time model loading; cooperative for built-in backends",
+    "ttft_boundary": "generation start to first-token logits completion",
+    "warmup_attempts": 1
+  },
+  "records_written": 97,
+  "retry_records": 0,
+  "schema_version": "1.0",
+  "status": "completed",
+  "warmup_records": 1
+}

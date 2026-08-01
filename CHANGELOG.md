@@ -49,6 +49,9 @@ All notable changes to this project will be documented in this file.
 - Task schema 1.2 with strict, single-answer numeric tolerance scoring.
 - Reproducible `synthetic-docs-v1` with 32 OCR, key-value, table, and chart tasks over eight generated PNGs.
 - Run record schema 0.4 with durable retry chains, cumulative latency, cooperative Transformers deadlines, and strict retry-aware resume.
+- Shared PyAV short-video decoding for both real backends with fixed eight-frame sampling and auditable source metadata.
+- Preserved same-commit, 32-task document/table/chart comparison for Qwen3-VL-2B and SmolVLM2-500M.
+- Formal-run validation that rejects measurement-phase model reloads after a process restart.
 
 ### Planned
 

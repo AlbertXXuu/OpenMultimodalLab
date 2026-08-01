@@ -111,6 +111,10 @@ def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
         "model_load_ms",
         warmup_records,
     )
+    measurement_model_load_values = usage_values("model_load_ms")
+    measurement_model_reloads = sum(
+        value > 0 for value in measurement_model_load_values
+    )
     repetitions = {
         int(record.get("repetition", 1))
         for record in measurement_records
@@ -145,6 +149,7 @@ def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
         and len(repetitions) >= 3
         and performance_metrics_complete
         and retry_attempts == 0
+        and measurement_model_reloads == 0
     )
 
     return {
@@ -163,6 +168,7 @@ def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
         ),
         "repetitions": len(repetitions) if repetitions else 0,
         "performance_metrics_complete": performance_metrics_complete,
+        "measurement_model_reloads": measurement_model_reloads,
         "formal_performance_run": formal_performance_run,
         "successful_tasks": successful,
         "success_rate": successful / total if total else 0.0,
@@ -229,6 +235,7 @@ def format_summary(summary: dict[str, Any]) -> str:
         f"Median preprocessing: "
         f"{display_number(summary['median_preprocessing_ms'])} ms",
         f"Warm-up model load: {display_number(summary['model_load_ms'])} ms",
+        f"Measurement model reloads: {summary['measurement_model_reloads']}",
         f"Median TTFT: {display_number(summary['median_ttft_ms'])} ms",
         f"P95 TTFT: {display_number(summary['p95_ttft_ms'])} ms",
         f"Median generation: "
