@@ -152,6 +152,25 @@ Request machine-readable output:
 This separation matters: a report formatting bug can be fixed and the summary
 rebuilt without paying for inference again.
 
+For a formal multi-model comparison, use the stricter bundle builder. Unlike
+the single-run summary, it requires at least two backends, identical task
+grids, exactly one warm-up and three repeats, clean manifests, immutable model
+identities, and matching dataset/media hashes:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\build_benchmark_report.py `
+  --input docs/reports/results/2026-07-31-qwen3-vl-comparison-formal.jsonl `
+  --input docs/reports/results/2026-07-31-smolvlm2-500m-comparison-formal.jsonl `
+  --output-dir runs/tutorial-formal-report
+
+.\.venv\Scripts\python.exe scripts\build_benchmark_report.py `
+  --verify `
+  --output-dir runs/tutorial-formal-report
+```
+
+The six-file output contract and final-release workflow are documented in
+[Deterministic report bundles](../report-bundles.md).
+
 ## 6. Verify safe output behavior
 
 Repeat the original run command without another flag:
@@ -218,8 +237,10 @@ For a protocol-compliant performance run:
   --output runs/tutorial-qwen-formal-001.jsonl
 ```
 
-Formal status requires at least one successful warm-up, three measured
-repetitions, and complete performance usage fields for successful attempts.
+Formal status requires exactly one successful warm-up, exactly three complete
+task-grid repetitions, complete performance fields for successful attempts,
+recorded errors for failed attempts, no retries, and no measurement-phase
+model reload.
 
 ## 9. Compare without overstating
 

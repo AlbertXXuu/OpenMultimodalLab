@@ -92,6 +92,9 @@ and their manifests.
   these drafts are likewise excluded from canonical counts until approval.
 - Warm-up plus repeated measurement with CUDA-synchronized TTFT, generation
   time, throughput, preprocessing time, and peak allocated memory.
+- A deterministic multi-model report-bundle builder that rejects incomplete
+  formal grids and emits Markdown, CSV, failure data, SVG, and a self-hashed
+  build manifest from preserved JSONL without rerunning a model.
 - Typed model-load, timeout, out-of-memory, generation, and evaluation failures.
 - Run record schema 0.4 with durable invocation indexes, terminal/retryable
   state, cumulative latency, retry policy, and cooperative deadlines.
@@ -121,6 +124,14 @@ flowchart LR
 
 Inference and reporting are deliberately separate. Charts and summaries are
 derived artifacts; raw task-level evidence remains the source of truth.
+
+For release-grade reconstruction, the
+[deterministic report-bundle workflow](docs/report-bundles.md) validates exact
+one-warm-up/three-repeat grids, source manifests, model and dataset identities,
+and dataset/media hashes before generating a complete comparison bundle. The
+committed [rebuilt baseline](docs/reports/rebuilt-baseline/report.md) proves
+that path against the current 42 image/document tasks; it is explicitly not
+the pending 100-or-more-task v1.0 result.
 
 ## Five-minute core quick start
 
@@ -232,7 +243,7 @@ A publishable run should:
 1. use immutable task and model revisions;
 2. preserve the stored prompts and semantic media;
 3. use deterministic decoding and batch size 1;
-4. perform at least one warm-up and three measured repetitions;
+4. perform exactly one warm-up and three complete measured repetitions;
 5. retain slow attempts and failures;
 6. publish raw JSONL, the manifest, metric definitions, and limitations.
 

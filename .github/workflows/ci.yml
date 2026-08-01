@@ -54,6 +54,12 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Check repository artifacts
         run: python scripts/check_repository.py
+      - name: Verify committed report bundle
+        env:
+          PYTHONPATH: src
+        run: >-
+          python scripts/build_benchmark_report.py --verify
+          --output-dir docs/reports/rebuilt-baseline
       - name: Validate runtime license audit policy
         run: python scripts/audit_runtime_licenses.py --validate-policy-only
       - name: Build wheel
