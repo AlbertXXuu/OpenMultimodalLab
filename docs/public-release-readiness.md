@@ -30,6 +30,7 @@ make CI green.
 | Short-video runtime | Both full models completed a bounded eight-frame diagnostic clip | Proven runtime only |
 | Licensed versioned short-video tasks | No committed canonical video task set | Open; owner must confirm dataset name first |
 | Short-video corpus tooling | Byte-stable eight-clip/24-task generator plus SHA-bound human-review validator | Proven tooling; generated draft is not canonical evidence |
+| Visual-robustness corpus tooling | Byte-stable 12-image/36-task generator across four controlled factors plus SHA-bound review | Proven tooling; generated draft is not canonical evidence |
 | At least 100 unique, human-checked tasks | 42 canonical tasks with review reports | Open; 58+ additional unique tasks required |
 | Formal video metrics for both models | No warm-up plus three-repeat video task-set run | Open |
 | Quality, TTFT, throughput, memory, and failures | Present in preserved image/document records | Proven for current formal slices |

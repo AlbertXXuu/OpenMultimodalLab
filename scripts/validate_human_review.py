@@ -12,10 +12,19 @@ from typing import Any
 from openmultimodal_lab.datasets import DatasetError, load_tasks
 
 
-REQUIRED_CHECKS = frozenset(
+VIDEO_REQUIRED_CHECKS = frozenset(
     {
         "media_opens_and_plays",
         "sampled_temporal_evidence_visible",
+        "prompt_answer_matches_media",
+        "answer_is_unambiguous",
+        "license_and_provenance_confirmed",
+    }
+)
+IMAGE_REQUIRED_CHECKS = frozenset(
+    {
+        "media_opens_and_renders",
+        "robustness_condition_is_visible",
         "prompt_answer_matches_media",
         "answer_is_unambiguous",
         "license_and_provenance_confirmed",
@@ -62,12 +71,22 @@ def audit_human_review(
         return ["review record must be a JSON object"]
 
     findings: list[str] = []
-    if review.get("schema_version") != "1.0":
-        findings.append("review schema_version must be '1.0'")
-    if review.get("sampled_frame_indices") != EXPECTED_SAMPLED_FRAME_INDICES:
-        findings.append("review sampled_frame_indices do not match runtime")
-    if review.get("contact_sheet_order") != EXPECTED_CONTACT_SHEET_ORDER:
-        findings.append("review contact_sheet_order is invalid")
+    schema_version = review.get("schema_version")
+    review_profile = review.get("review_profile")
+    required_checks: frozenset[str]
+    if schema_version == "1.0" and review_profile in (None, "short-video-v1"):
+        required_checks = VIDEO_REQUIRED_CHECKS
+        if review.get("sampled_frame_indices") != EXPECTED_SAMPLED_FRAME_INDICES:
+            findings.append(
+                "review sampled_frame_indices do not match runtime"
+            )
+        if review.get("contact_sheet_order") != EXPECTED_CONTACT_SHEET_ORDER:
+            findings.append("review contact_sheet_order is invalid")
+    elif schema_version == "1.1" and review_profile == "static-image-v1":
+        required_checks = IMAGE_REQUIRED_CHECKS
+    else:
+        required_checks = frozenset()
+        findings.append("review schema_version/profile combination is unsupported")
     try:
         expected_hash = _sha256(dataset_path)
     except (OSError, ValueError) as exc:
@@ -100,6 +119,18 @@ def audit_human_review(
         entries_by_id[task_id] = entry
 
     tasks_by_id = {task.id: task for task in tasks}
+    if required_checks == IMAGE_REQUIRED_CHECKS:
+        expected_media_order = list(
+            dict.fromkeys(
+                media_item
+                for task in tasks
+                for media_item in task.media
+            )
+        )
+        if review.get("review_media_order") != expected_media_order:
+            findings.append(
+                "review review_media_order does not match the dataset"
+            )
     expected_ids = set(tasks_by_id)
     actual_ids = set(entries_by_id)
     for task_id in sorted(expected_ids - actual_ids):
@@ -116,8 +147,8 @@ def audit_human_review(
         if not isinstance(checks, dict):
             task_findings.append("checks must be an object")
         else:
-            missing_checks = REQUIRED_CHECKS - set(checks)
-            extra_checks = set(checks) - REQUIRED_CHECKS
+            missing_checks = required_checks - set(checks)
+            extra_checks = set(checks) - required_checks
             if missing_checks:
                 task_findings.append(
                     f"missing checks {sorted(missing_checks)}"
@@ -128,7 +159,7 @@ def audit_human_review(
                 )
             not_approved = sorted(
                 check
-                for check in REQUIRED_CHECKS & set(checks)
+                for check in required_checks & set(checks)
                 if checks[check] is not True
             )
             if not_approved:
