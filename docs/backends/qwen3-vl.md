@@ -52,6 +52,14 @@ PyTorch package on some package indexes. `doctor` detects that mismatch:
 Do not continue to a formal GPU run unless it reports that CUDA is available to
 PyTorch.
 
+`doctor` also checks the disk that Hugging Face will use for its model cache.
+It resolves `HF_HUB_CACHE`, then `HF_HOME`, then `XDG_CACHE_HOME`, without
+printing the potentially personal cache path. The Qwen3-VL profile warns below
+8 GiB free because the 3.96GB weights, metadata, temporary downloads, and cache
+bookkeeping need more room than the final weight file alone. Existing cached
+weights may still run below that recommendation, so low disk is a warning, not
+a false claim that the runtime is incompatible.
+
 ## First run
 
 Start with the single visual-comparison task:

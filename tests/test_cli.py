@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import json
+import os
 import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
@@ -9,7 +10,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from openmultimodal_lab.cli import main
+from openmultimodal_lab.cli import _hugging_face_cache_path, main
 from openmultimodal_lab.manifest import manifest_path_for
 from openmultimodal_lab.models import ModelOutput
 from openmultimodal_lab.reporting import load_records
@@ -491,6 +492,85 @@ class RunCommandTests(unittest.TestCase):
 
 
 class DoctorCommandTests(unittest.TestCase):
+    def test_hugging_face_cache_path_respects_environment(self) -> None:
+        cases = (
+            (
+                {
+                    "HF_HUB_CACHE": "custom-hub-cache",
+                    "HF_HOME": "ignored-home",
+                    "XDG_CACHE_HOME": "ignored-xdg-cache",
+                },
+                Path("custom-hub-cache"),
+            ),
+            (
+                {
+                    "HF_HOME": "custom-home",
+                    "XDG_CACHE_HOME": "ignored-xdg-cache",
+                },
+                Path("custom-home") / "hub",
+            ),
+            (
+                {"XDG_CACHE_HOME": "custom-xdg-cache"},
+                Path("custom-xdg-cache") / "huggingface" / "hub",
+            ),
+        )
+        for environment, expected in cases:
+            with self.subTest(environment=environment):
+                with patch.dict(os.environ, environment, clear=True):
+                    cache_path = _hugging_face_cache_path()
+
+                self.assertEqual(cache_path, expected)
+
+    def test_core_doctor_reports_disk_without_making_it_a_dependency(self) -> None:
+        stdout = io.StringIO()
+        with (
+            patch(
+                "openmultimodal_lab.cli._gpu_summary",
+                return_value="not detected",
+            ),
+            patch(
+                "openmultimodal_lab.cli._disk_free_gib",
+                return_value=None,
+            ),
+            redirect_stdout(stdout),
+        ):
+            exit_code = main(["doctor"])
+
+        self.assertEqual(exit_code, 0)
+        self.assertIn("Working disk free: unavailable", stdout.getvalue())
+
+    def test_qwen_doctor_warns_about_low_model_cache_disk(self) -> None:
+        fake_torch = SimpleNamespace(
+            __version__="2.13.0+cu130",
+            version=SimpleNamespace(cuda="13.0"),
+            cuda=SimpleNamespace(is_available=lambda: True),
+        )
+        stdout = io.StringIO()
+        with (
+            patch(
+                "openmultimodal_lab.cli._gpu_summary",
+                return_value="NVIDIA RTX Test GPU, 8192 MiB, driver",
+            ),
+            patch(
+                "openmultimodal_lab.cli._disk_free_gib",
+                side_effect=(100.0, 2.0),
+            ),
+            patch(
+                "openmultimodal_lab.cli.importlib.util.find_spec",
+                return_value=object(),
+            ),
+            patch(
+                "openmultimodal_lab.cli.importlib.import_module",
+                return_value=fake_torch,
+            ),
+            redirect_stdout(stdout),
+        ):
+            exit_code = main(["doctor", "--backend", "qwen3-vl"])
+
+        self.assertEqual(exit_code, 0)
+        self.assertIn("cache disk free: 2.0 GiB", stdout.getvalue())
+        self.assertIn("recommends at least 8.0 GiB", stdout.getvalue())
+
     def test_detects_cpu_only_torch_when_nvidia_gpu_exists(self) -> None:
         fake_torch = SimpleNamespace(
             __version__="2.13.0+cpu",

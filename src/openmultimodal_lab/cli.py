@@ -6,6 +6,7 @@ import argparse
 import importlib
 import importlib.util
 import json
+import os
 import platform
 import shutil
 import subprocess
@@ -40,6 +41,13 @@ from .runner import (
     run_benchmark,
     validate_resume_output,
 )
+
+
+GIBIBYTE = 1024**3
+RECOMMENDED_MODEL_CACHE_FREE_GIB = {
+    "qwen3-vl": 8.0,
+    "smolvlm2": 4.0,
+}
 
 
 def _positive_int(value: str) -> int:
@@ -167,9 +175,44 @@ def _gpu_summary() -> str:
     return result.stdout.strip() or "not detected"
 
 
+def _hugging_face_cache_path() -> Path:
+    explicit_hub_cache = os.environ.get("HF_HUB_CACHE")
+    if explicit_hub_cache:
+        return Path(explicit_hub_cache).expanduser()
+
+    explicit_home = os.environ.get("HF_HOME")
+    if explicit_home:
+        return Path(explicit_home).expanduser() / "hub"
+
+    xdg_cache_home = os.environ.get("XDG_CACHE_HOME")
+    if xdg_cache_home:
+        return Path(xdg_cache_home).expanduser() / "huggingface" / "hub"
+
+    return Path.home() / ".cache" / "huggingface" / "hub"
+
+
+def _disk_free_gib(path: Path) -> float | None:
+    candidate = path.expanduser()
+    while not candidate.exists():
+        parent = candidate.parent
+        if parent == candidate:
+            return None
+        candidate = parent
+    try:
+        free_bytes = shutil.disk_usage(candidate).free
+    except OSError:
+        return None
+    return free_bytes / GIBIBYTE
+
+
+def _format_free_disk(value: float | None) -> str:
+    return "unavailable" if value is None else f"{value:.1f} GiB"
+
+
 def _doctor(backend: str) -> int:
     python_version = platform.python_version()
     gpu_summary = _gpu_summary()
+    working_disk_free = _disk_free_gib(Path.cwd())
     print("OpenMultimodalLab doctor")
     print(f"Package version: {__version__}")
     print(f"Python: {python_version}")
@@ -177,6 +220,7 @@ def _doctor(backend: str) -> int:
     print(f"Git available: {'yes' if shutil.which('git') else 'no'}")
     print(f"NVIDIA GPU: {gpu_summary}")
     print(f"Working directory: {Path.cwd()}")
+    print(f"Working disk free: {_format_free_disk(working_disk_free)}")
 
     if sys.version_info < (3, 11):
         print("Status: unsupported Python; install Python 3.11 or newer.")
@@ -191,6 +235,21 @@ def _doctor(backend: str) -> int:
             "qwen3-vl": "Qwen3-VL",
             "smolvlm2": "SmolVLM2",
         }[backend]
+        model_cache_free = _disk_free_gib(_hugging_face_cache_path())
+        recommended_free = RECOMMENDED_MODEL_CACHE_FREE_GIB[backend]
+        print(
+            "Hugging Face cache disk free: "
+            f"{_format_free_disk(model_cache_free)}"
+        )
+        if (
+            model_cache_free is not None
+            and model_cache_free < recommended_free
+        ):
+            print(
+                f"Warning: {backend_label} setup recommends at least "
+                f"{recommended_free:.1f} GiB free on the model-cache disk; "
+                f"only {model_cache_free:.1f} GiB is available."
+            )
         required_modules = (
             "torch",
             "torchvision",
