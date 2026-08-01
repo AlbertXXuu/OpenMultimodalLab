@@ -195,7 +195,7 @@ class Qwen3VLAdapterTests(unittest.TestCase):
                 "openmultimodal_lab.adapters.qwen3_vl._load_dependencies",
                 return_value=dependencies,
             ):
-                output = adapter.generate(task)
+                output = adapter.generate(task, timeout_seconds=30)
 
         self.assertEqual(output.text, "three purple circles")
         self.assertEqual(output.backend, "qwen3-vl")
@@ -233,6 +233,14 @@ class Qwen3VLAdapterTests(unittest.TestCase):
         self.assertEqual(
             _FakeModelLoader.model.generation_kwargs["do_sample"],
             False,
+        )
+        self.assertGreater(
+            _FakeModelLoader.model.generation_kwargs["max_time"],
+            0,
+        )
+        self.assertLessEqual(
+            _FakeModelLoader.model.generation_kwargs["max_time"],
+            30,
         )
         self.assertEqual(
             _FakeProcessorLoader.processor.inputs.target_device,

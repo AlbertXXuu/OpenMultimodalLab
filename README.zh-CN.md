@@ -15,8 +15,8 @@ JSONL，按任务选择确定性评分规则，并记录模型、环境、输入
 从而不用重新推理也能重建报告。
 
 > 当前为发布前开发阶段。图片、文档、表格和图表任务、两个真实本地模型、
-> 正式性能协议、严格断点续跑和 CI 质量门已经可用。新的文档任务尚未完成
-> 真实模型正式对比；短视频仍属于路线图。
+> 正式性能协议、严格断点续跑、有限重试、协作式推理截止时间和 CI 质量门
+> 已经可用。新的文档任务尚未完成真实模型正式对比；短视频仍属于路线图。
 
 ## 第一份可复现双模型结果
 
@@ -53,8 +53,9 @@ Qwen 在这组任务上回答更完整且中位延迟更低。两者参数规模
 - `synthetic-docs-v1`：32 条许可证清晰的任务，覆盖 8 张可复现生成的 OCR、
   键值、表格、柱状图和折线图图片。
 - warm-up、重复测量、CUDA 同步 TTFT、生成速度、预处理和峰值显存。
-- 可区分的模型加载、OOM、生成和评分失败。
-- 每条尝试立即持久化，manifest 保存输入、配置、环境和结果身份。
+- 可区分的模型加载、超时、OOM、生成和评分失败。
+- Run record schema 0.4 持久化调用序号、终止/可重试状态、累计延迟、重试策略
+  和协作式截止时间。
 - 严格 `--resume`、显式 `--overwrite`、SHA-256 和原子检查点。
 - 后端感知 `doctor` 检查 Python、CUDA、BF16、可选包和工作/模型缓存磁盘
   空间，但不打印缓存路径。
@@ -151,6 +152,22 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 [严格恢复报告](docs/reports/2026-07-31-resumable-runs.md)说明了崩溃一致性
 边界和故障注入证据。
 
+长时间本地运行可以显式设置有限重试和超时策略：
+
+```powershell
+.\.venv-ml\Scripts\oml.exe run `
+  --backend qwen3-vl `
+  --dataset examples/tasks/synthetic-docs-v1.jsonl `
+  --attempt-timeout-seconds 120 `
+  --max-retries 1 `
+  --output runs/qwen3-vl-docs-001.jsonl
+```
+
+只有 `timeout` 与 `generation_error` 会重试；输入错误、模型加载失败和 OOM
+直接终止。内置模型的截止时间是协作式的，从一次性模型加载完成后开始计算；
+它能约束预处理与 Transformers 生成，但不能安全地强制中断正在运行的 CUDA
+内核。
+
 ## 可复现协议
 
 可发布实验必须：
@@ -180,6 +197,7 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 | 全新 wheel 安装 | [Windows 审计与永久 CI 门禁](docs/reports/2026-08-01-fresh-wheel-install.md) |
 | 依赖供应链 | [Action 固定与更新审计](docs/reports/2026-08-01-supply-chain-audit.md) |
 | 文档、表格与图表任务集 | [`synthetic-docs-v1` 证据报告](docs/reports/2026-08-01-synthetic-docs-v1.md) |
+| 超时与重试溯源 | [Run record schema 0.4 报告](docs/reports/2026-08-01-run-record-0.4.md) |
 | 第一份完整实验 | [分步教程（英文）](docs/tutorials/first-reproducible-benchmark.md) |
 | 当前工作 | [任务清单](TASKS.md) |
 | 第三方许可证 | [Third-party notices](THIRD_PARTY_NOTICES.md) |

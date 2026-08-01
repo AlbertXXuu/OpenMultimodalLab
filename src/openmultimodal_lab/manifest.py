@@ -271,6 +271,13 @@ def checkpoint_run_manifest(
             return str(record.get("phase", "measurement"))
         return record.phase
 
+    def terminal(record: RunRecord | Mapping[str, Any]) -> bool:
+        if isinstance(record, Mapping):
+            return bool(record.get("terminal", True))
+        return record.terminal
+
+    terminal_records = [record for record in record_list if terminal(record)]
+
     output_file = Path(output_path)
     output = dict(checkpoint.get("output", {}))
     output.update(
@@ -284,11 +291,13 @@ def checkpoint_run_manifest(
             "status": "started",
             "checkpointed_at_utc": datetime.now(timezone.utc).isoformat(),
             "records_written": len(record_list),
+            "generation_invocations": len(record_list),
+            "retry_records": len(record_list) - len(terminal_records),
             "warmup_records": sum(
-                phase(record) == "warmup" for record in record_list
+                phase(record) == "warmup" for record in terminal_records
             ),
             "measurement_records": sum(
-                phase(record) != "warmup" for record in record_list
+                phase(record) != "warmup" for record in terminal_records
             ),
             "output": output,
         }
@@ -308,6 +317,8 @@ def build_run_manifest(
     max_new_tokens: int,
     warmup: int,
     repetitions: int,
+    max_retries: int = 0,
+    timeout_seconds: float | None = None,
     categories: Iterable[str],
     gpu_summary: str,
     project_root: str | Path,
@@ -370,6 +381,14 @@ def build_run_manifest(
         "protocol": {
             "warmup_attempts": warmup,
             "repetitions": repetitions,
+            "max_retries": max_retries,
+            "attempt_timeout_seconds": timeout_seconds,
+            "retryable_statuses": ["generation_error", "timeout"],
+            "retry_backoff": "none",
+            "timeout_boundary": (
+                "adapter inference after one-time model loading; cooperative "
+                "for built-in backends"
+            ),
             "task_order": "dataset order repeated without shuffle",
             "categories": selected_categories,
             "gpu_synchronization": "adapter timing boundaries when CUDA is active",
@@ -415,16 +434,25 @@ def finalize_run_manifest(
             return str(record.get("phase", "measurement"))
         return record.phase
 
+    def terminal(record: RunRecord | Mapping[str, Any]) -> bool:
+        if isinstance(record, Mapping):
+            return bool(record.get("terminal", True))
+        return record.terminal
+
+    terminal_records = [record for record in record_list if terminal(record)]
+
     finalized.update(
         {
             "status": status,
             "completed_at_utc": datetime.now(timezone.utc).isoformat(),
             "records_written": len(record_list),
+            "generation_invocations": len(record_list),
+            "retry_records": len(record_list) - len(terminal_records),
             "warmup_records": sum(
-                phase(record) == "warmup" for record in record_list
+                phase(record) == "warmup" for record in terminal_records
             ),
             "measurement_records": sum(
-                phase(record) != "warmup" for record in record_list
+                phase(record) != "warmup" for record in terminal_records
             ),
             "error": error,
         }

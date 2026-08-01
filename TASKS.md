@@ -31,6 +31,7 @@
 - [x] 从正式 JSONL 结果生成 README 双模型对比图，并用测试防止图文漂移。
 - [x] 发布 Task Schema 1.2，增加单数值答案的确定性容差评分。
 - [x] 发布 `synthetic-docs-v1`：32 条 OCR、键值、表格和图表任务、8 张可复现媒体。
+- [x] 发布 Run record schema 0.4：协作式超时、有限重试、逐调用落盘与严格恢复。
 
 ## Completed：第 1 周
 
@@ -84,3 +85,5 @@ python -m unittest discover -s tests -v
 合成图片任务结果见：[docs/reports/2026-07-29-synthetic-v1.md](docs/reports/2026-07-29-synthetic-v1.md)。
 
 文档、表格和图表任务集见：[docs/reports/2026-08-01-synthetic-docs-v1.md](docs/reports/2026-08-01-synthetic-docs-v1.md)。
+
+超时与重试实现见：[docs/reports/2026-08-01-run-record-0.4.md](docs/reports/2026-08-01-run-record-0.4.md)。

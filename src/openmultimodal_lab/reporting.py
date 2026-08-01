@@ -48,12 +48,23 @@ def _nearest_rank_percentile(values: list[float], percentile: float) -> float | 
 
 
 def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
+    terminal_records = [
+        record for record in records if record.get("terminal", True)
+    ]
     warmup_records = [
-        record for record in records if record.get("phase") == "warmup"
+        record
+        for record in terminal_records
+        if record.get("phase") == "warmup"
     ]
     measurement_records = [
-        record for record in records if record.get("phase") != "warmup"
+        record
+        for record in terminal_records
+        if record.get("phase") != "warmup"
     ]
+    retry_attempts = len(records) - len(terminal_records)
+    timeout_invocations = sum(
+        record.get("status") == "timeout" for record in records
+    )
     total = len(measurement_records)
     successful = sum(
         record.get("status") == "success" for record in measurement_records
@@ -64,7 +75,7 @@ def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
         if isinstance(record.get("score"), (int, float))
     ]
     latencies = [
-        float(record["latency_ms"])
+        float(record.get("cumulative_latency_ms") or record["latency_ms"])
         for record in measurement_records
         if isinstance(record.get("latency_ms"), (int, float))
     ]
@@ -133,10 +144,14 @@ def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
         successful_warmups >= 1
         and len(repetitions) >= 3
         and performance_metrics_complete
+        and retry_attempts == 0
     )
 
     return {
         "total_records": len(records),
+        "generation_invocations": len(records),
+        "retry_attempts": retry_attempts,
+        "timeout_invocations": timeout_invocations,
         "warmup_attempts": len(warmup_records),
         "total_tasks": total,
         "unique_tasks": len(
@@ -194,6 +209,9 @@ def format_summary(summary: dict[str, Any]) -> str:
     lines = [
         "OpenMultimodalLab run summary",
         f"Records: {summary['total_records']}",
+        f"Generation invocations: {summary['generation_invocations']}",
+        f"Retry attempts: {summary['retry_attempts']}",
+        f"Timeout invocations: {summary['timeout_invocations']}",
         f"Warm-up attempts: {summary['warmup_attempts']}",
         f"Measurement attempts: {summary['total_tasks']}",
         f"Unique tasks: {summary['unique_tasks']}",

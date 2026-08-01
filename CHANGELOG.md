@@ -48,10 +48,11 @@ All notable changes to this project will be documented in this file.
 - Deterministic README comparison visual generated from preserved formal JSONL evidence.
 - Task schema 1.2 with strict, single-answer numeric tolerance scoring.
 - Reproducible `synthetic-docs-v1` with 32 OCR, key-value, table, and chart tasks over eight generated PNGs.
+- Run record schema 0.4 with durable retry chains, cumulative latency, cooperative Transformers deadlines, and strict retry-aware resume.
 
 ### Planned
 
-- Per-attempt timeout and bounded retry support.
+- Reproducible short-video benchmark tasks.
 
 ## [0.1.0] - 2026-07-28
 

@@ -105,6 +105,14 @@ batch_size = 1
 If a backend cannot express one of these settings, record the effective
 configuration and explain the difference.
 
+Timeout and retry are disabled unless explicitly configured. When enabled,
+record `attempt_timeout_seconds`, `max_retries`, the timeout boundary, and every
+generation invocation. Only timeout and generation errors are retryable. Do
+not retry invalid input, model-load failure, out-of-memory, or evaluation
+failure. A result that actually retried may still report quality, but it is not
+classified as a formal performance run because retry-chain resource usage is
+not equivalent to a clean invocation.
+
 ## 7. Repetition and warm-up
 
 - Use `--warmup 1` or more before performance measurement.
@@ -213,6 +221,10 @@ Every attempted task must produce a record. At minimum distinguish:
 
 Failures remain in the denominator. A high score cannot cancel an unauthorized
 side effect or a missing result.
+
+Run record schema 0.4 persists every retryable failure before starting the next
+invocation. Reports count the terminal record once in the task denominator and
+separately disclose generation invocations, retry attempts, and timeouts.
 
 ## 11. Environment record
 

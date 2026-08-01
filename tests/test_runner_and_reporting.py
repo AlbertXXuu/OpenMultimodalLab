@@ -6,7 +6,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 from openmultimodal_lab.adapters import MockAdapter
-from openmultimodal_lab.adapters.errors import AdapterOutOfMemoryError
+from openmultimodal_lab.adapters.errors import (
+    AdapterOutOfMemoryError,
+    AdapterTimeoutError,
+)
 from openmultimodal_lab.models import (
     EvaluationTask,
     ModelOutput,
@@ -40,7 +43,7 @@ class RunnerAndReportingTests(unittest.TestCase):
         self.assertEqual(summary["scored_tasks"], 1)
         self.assertEqual(summary["mean_score"], 1.0)
         self.assertTrue(all(record.status == "success" for record in records))
-        self.assertTrue(all(record.schema_version == "0.3" for record in records))
+        self.assertTrue(all(record.schema_version == "0.4" for record in records))
         self.assertTrue(all(record.phase == "measurement" for record in records))
         self.assertTrue(all(record.repetition == 1 for record in records))
         self.assertEqual(records[0].metric_name, "keyword_coverage")
@@ -61,19 +64,285 @@ class RunnerAndReportingTests(unittest.TestCase):
         self.assertEqual(records[0].status, "generation_error")
         self.assertIn("injected failure", records[0].error or "")
 
+    def test_retryable_failure_is_durable_before_success(self) -> None:
+        class FlakyAdapter:
+            name = "flaky"
+            revision = "revision-1"
+
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def generate(self, task: EvaluationTask) -> ModelOutput:
+                self.calls += 1
+                if self.calls == 1:
+                    raise RuntimeError("transient failure")
+                return ModelOutput(
+                    text="answer",
+                    backend=self.name,
+                    model_revision=self.revision,
+                )
+
+        task = EvaluationTask(
+            id="retry",
+            prompt="Retry safely.",
+            expected_keywords=("answer",),
+        )
+        checkpoints: list[int] = []
+        adapter = FlakyAdapter()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "run.jsonl"
+            records = run_benchmark(
+                [task],
+                adapter,
+                output,
+                max_retries=1,
+                on_record_persisted=lambda current: checkpoints.append(
+                    len(current)
+                ),
+            )
+            loaded = load_records(output)
+            summary = summarize(loaded)
+
+        self.assertEqual(adapter.calls, 2)
+        self.assertEqual(checkpoints, [1, 2])
+        self.assertEqual(len(records), 2)
+        self.assertFalse(records[0].terminal)
+        self.assertTrue(records[0].retryable)
+        self.assertEqual(records[0].attempt_index, 1)
+        self.assertTrue(records[1].terminal)
+        self.assertEqual(records[1].attempt_index, 2)
+        self.assertEqual(records[1].status, "success")
+        self.assertAlmostEqual(
+            records[1].cumulative_latency_ms or 0,
+            records[0].latency_ms + records[1].latency_ms,
+        )
+        self.assertEqual(summary["generation_invocations"], 2)
+        self.assertEqual(summary["retry_attempts"], 1)
+        self.assertEqual(summary["total_tasks"], 1)
+        self.assertEqual(summary["successful_tasks"], 1)
+        self.assertFalse(summary["formal_performance_run"])
+
+    def test_timeout_is_retryable_and_preserves_deadline(self) -> None:
+        class TimeoutThenSuccessAdapter:
+            name = "deadline-aware"
+            revision = "revision-1"
+
+            def __init__(self) -> None:
+                self.timeouts: list[float | None] = []
+
+            def generate(
+                self,
+                task: EvaluationTask,
+                *,
+                timeout_seconds: float | None = None,
+            ) -> ModelOutput:
+                self.timeouts.append(timeout_seconds)
+                if len(self.timeouts) == 1:
+                    raise AdapterTimeoutError("deadline reached")
+                return ModelOutput(
+                    text="answer",
+                    backend=self.name,
+                    model_revision=self.revision,
+                )
+
+        adapter = TimeoutThenSuccessAdapter()
+        task = EvaluationTask(id="timeout", prompt="Return.")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            records = run_benchmark(
+                [task],
+                adapter,
+                Path(temp_dir) / "run.jsonl",
+                max_retries=1,
+                timeout_seconds=0.25,
+            )
+
+        self.assertEqual(adapter.timeouts, [0.25, 0.25])
+        self.assertEqual(
+            [record.status for record in records],
+            ["timeout", "success"],
+        )
+        self.assertEqual(
+            [record.terminal for record in records],
+            [False, True],
+        )
+        self.assertTrue(all(record.timeout_seconds == 0.25 for record in records))
+        self.assertTrue(all(record.max_retries == 1 for record in records))
+
+    def test_retry_exhaustion_counts_one_terminal_failure(self) -> None:
+        class AlwaysFailingAdapter:
+            name = "always-failing"
+            revision = "revision-1"
+
+            def generate(self, task: EvaluationTask) -> ModelOutput:
+                raise RuntimeError("still failing")
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "run.jsonl"
+            records = run_benchmark(
+                [EvaluationTask(id="failure", prompt="Fail.")],
+                AlwaysFailingAdapter(),
+                output,
+                max_retries=2,
+            )
+            summary = summarize(load_records(output))
+
+        self.assertEqual(len(records), 3)
+        self.assertEqual(
+            [record.terminal for record in records],
+            [False, False, True],
+        )
+        self.assertEqual(summary["retry_attempts"], 2)
+        self.assertEqual(summary["total_tasks"], 1)
+        self.assertEqual(summary["successful_tasks"], 0)
+        self.assertEqual(summary["failures"], {"generation_error": 1})
+
+    def test_retry_configuration_rejects_invalid_values(self) -> None:
+        task = EvaluationTask(id="validation", prompt="Validate.")
+        invalid_configs = (
+            ({"max_retries": -1}, "max_retries"),
+            ({"max_retries": True}, "max_retries"),
+            ({"max_retries": 1.5}, "max_retries"),
+            ({"timeout_seconds": 0}, "timeout_seconds"),
+            ({"timeout_seconds": float("inf")}, "timeout_seconds"),
+            ({"timeout_seconds": True}, "timeout_seconds"),
+        )
+        for configuration, message in invalid_configs:
+            with self.subTest(configuration=configuration):
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    with self.assertRaisesRegex(ValueError, message):
+                        run_benchmark(
+                            [task],
+                            MockAdapter(),
+                            Path(temp_dir) / "run.jsonl",
+                            **configuration,
+                        )
+
+    def test_resume_continues_an_unfinished_retry_chain(self) -> None:
+        class InterruptedRetryAdapter:
+            name = "retry-resume"
+            revision = "revision-1"
+
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def generate(self, task: EvaluationTask) -> ModelOutput:
+                self.calls += 1
+                if self.calls == 1:
+                    raise RuntimeError("retry me")
+                raise KeyboardInterrupt()
+
+        class ResumedAdapter:
+            name = "retry-resume"
+            revision = "revision-1"
+
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def generate(self, task: EvaluationTask) -> ModelOutput:
+                self.calls += 1
+                return ModelOutput(
+                    text="answer",
+                    backend=self.name,
+                    model_revision=self.revision,
+                )
+
+        task = EvaluationTask(id="retry-resume", prompt="Return.")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "run.jsonl"
+            with self.assertRaises(KeyboardInterrupt):
+                run_benchmark(
+                    [task],
+                    InterruptedRetryAdapter(),
+                    output,
+                    max_retries=1,
+                )
+
+            partial = load_records(output)
+            resumed_adapter = ResumedAdapter()
+            records = run_benchmark(
+                [task],
+                resumed_adapter,
+                output,
+                max_retries=1,
+                resume=True,
+            )
+
+        self.assertEqual(len(partial), 1)
+        self.assertFalse(partial[0]["terminal"])
+        self.assertEqual(resumed_adapter.calls, 1)
+        self.assertEqual(len(records), 2)
+        self.assertEqual(records[-1].attempt_index, 2)
+        self.assertTrue(records[-1].terminal)
+
+    def test_resume_rejects_a_changed_retry_policy(self) -> None:
+        class FailingThenInterruptingAdapter:
+            name = "retry-policy"
+            revision = "revision-1"
+
+            def __init__(self) -> None:
+                self.calls = 0
+
+            def generate(self, task: EvaluationTask) -> ModelOutput:
+                self.calls += 1
+                if self.calls == 1:
+                    raise RuntimeError("retry me")
+                raise KeyboardInterrupt()
+
+        class CompatibleAdapter:
+            name = "retry-policy"
+            revision = "revision-1"
+
+            def generate(self, task: EvaluationTask) -> ModelOutput:
+                return ModelOutput(
+                    text="answer",
+                    backend=self.name,
+                    model_revision=self.revision,
+                )
+
+        task = EvaluationTask(id="retry-policy", prompt="Return.")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "run.jsonl"
+            with self.assertRaises(KeyboardInterrupt):
+                run_benchmark(
+                    [task],
+                    FailingThenInterruptingAdapter(),
+                    output,
+                    max_retries=1,
+                )
+
+            with self.assertRaisesRegex(ResumeError, "max_retries"):
+                run_benchmark(
+                    [task],
+                    CompatibleAdapter(),
+                    output,
+                    max_retries=0,
+                    resume=True,
+                )
+
     def test_typed_adapter_failure_keeps_specific_status(self) -> None:
         class OutOfMemoryAdapter:
             name = "memory-limited"
             revision = "revision-1"
 
+            def __init__(self) -> None:
+                self.calls = 0
+
             def generate(self, task: EvaluationTask):
+                self.calls += 1
                 raise AdapterOutOfMemoryError("CUDA out of memory")
 
         task = EvaluationTask(id="failure", prompt="Fail specifically.")
+        adapter = OutOfMemoryAdapter()
         with tempfile.TemporaryDirectory() as temp_dir:
             output = Path(temp_dir) / "run.jsonl"
-            records = run_benchmark([task], OutOfMemoryAdapter(), output)
+            records = run_benchmark(
+                [task],
+                adapter,
+                output,
+                max_retries=3,
+            )
 
+        self.assertEqual(adapter.calls, 1)
         self.assertEqual(records[0].status, "out_of_memory")
         self.assertEqual(records[0].model_revision, "revision-1")
 
