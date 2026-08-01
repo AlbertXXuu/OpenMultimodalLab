@@ -52,6 +52,7 @@ REQUIRED_DOCUMENTS = (
     "docs/03-architecture.md",
     "docs/06-quality-and-open-source.md",
     "docs/evaluation-protocol.md",
+    "docs/video-corpus-tooling.md",
     "docs/tutorials/first-reproducible-benchmark.md",
     "docs/reports/2026-08-02-security-review.md",
 )

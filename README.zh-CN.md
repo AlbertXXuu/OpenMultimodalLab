@@ -77,6 +77,8 @@ Qwen 总体及表格/图表任务更强；SmolVLM2 在 OCR 子集得到 `1.000`�
   键值、表格、柱状图和折线图图片。
 - 两个真实后端共用本地视频链路：PyAV 解码、均匀抽取 8 帧、保留抽样元数据，
   并禁止 Processor 隐式二次抽帧；正式视频任务集尚未创建。
+- 已提供不预设正式名称的确定性短视频生成与逐任务人工复核工具；正式数据集
+  仍等待所有者确认名称后再生成和提交。
 - warm-up、重复测量、CUDA 同步 TTFT、生成速度、预处理和峰值显存。
 - 可区分的模型加载、超时、OOM、生成和评分失败。
 - Run record schema 0.4 持久化调用序号、终止/可重试状态、累计延迟、重试策略
@@ -224,6 +226,7 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 | 质量与公开门槛 | [质量标准](docs/06-quality-and-open-source.md) |
 | 实时公开准备状态 | [证据矩阵与严格验收命令](docs/public-release-readiness.md) |
 | 真实短视频运行冒烟 | [两个后端的 Windows GPU 证据](docs/reports/2026-08-02-video-runtime-smoke.md) |
+| 短视频语料工具链 | [确定性生成与人工复核流程](docs/video-corpus-tooling.md) |
 | 全新 wheel 安装 | [Windows 审计与永久 CI 门禁](docs/reports/2026-08-01-fresh-wheel-install.md) |
 | 依赖供应链 | [Action 固定与更新审计](docs/reports/2026-08-01-supply-chain-audit.md) |
 | 安全审查 | [本地输入边界与路径隐私审计](docs/reports/2026-08-02-security-review.md) |
