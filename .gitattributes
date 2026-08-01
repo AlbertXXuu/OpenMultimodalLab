@@ -11,3 +11,4 @@ LICENSE text eol=lf
 *.json text eol=lf
 *.jsonl text eol=lf
 *.svg text eol=lf
+*.avi binary
