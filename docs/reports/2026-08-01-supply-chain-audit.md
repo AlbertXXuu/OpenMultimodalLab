@@ -3,7 +3,8 @@
 Date: 2026-08-01
 
 Outcome: no model weights, private run artifacts, or oversized tracked files
-were found; two mutable GitHub Action references were identified and fixed.
+were found; two mutable GitHub Action references were fixed, and the first
+grouped update was independently reviewed and passed CI.
 
 ## Reviewed scope
 
@@ -20,7 +21,7 @@ were found; two mutable GitHub Action references were identified and fixed.
 
 | Severity | Finding | Action |
 |---|---|---|
-| Medium | CI used mutable major tags for `actions/checkout` and `actions/setup-python`. | Replaced each tag with the full commit SHA currently resolved by the official `v6` tag and retained `# v6` for update tooling. |
+| Medium | CI used mutable major tags for `actions/checkout` and `actions/setup-python`. | Replaced each tag with a full official commit SHA and retained an adjacent release comment for update tooling. |
 | Low | Dependency updates depended on manual review. | Added grouped weekly Dependabot checks for `pip` and GitHub Actions, capped at two open version-update PRs per ecosystem. |
 | Informational | Private vulnerability reporting is a feature for public repositories, while this repository is still private. | Kept the portable `SECURITY.md` fallback; enable GitHub private vulnerability reporting only after the owner approves public visibility. |
 
@@ -48,12 +49,23 @@ on the audit date:
 
 | Action | Pinned commit | Human-readable tag |
 |---|---|---|
-| `actions/checkout` | `d23441a48e516b6c34aea4fa41551a30e30af803` | `v6` |
-| `actions/setup-python` | `ece7cb06caefa5fff74198d8649806c4678c61a1` | `v6` |
+| `actions/checkout` | `3d3c42e5aac5ba805825da76410c181273ba90b1` | `v7.0.1` |
+| `actions/setup-python` | `5fda3b95a4ea91299a34e894583c3862153e4b97` | `v7.0.0` |
 
 Dependabot understands both commit-pinned GitHub Actions and an adjacent tag
 comment, so updates can retain immutable execution while still proposing new
 upstream versions for review.
+
+## First update validation
+
+After the configuration reached `main`, Dependabot opened
+[PR #14](https://github.com/AlbertXXuu/OpenMultimodalLab/pull/14) with a grouped
+major update for both Actions. Before merging, the proposed SHAs were resolved
+independently through the official GitHub tag API, the four-line workflow diff
+and upstream release notes were reviewed, and Python 3.11, Python 3.12, and
+repository-quality CI all passed. The PR was then merged manually. This is the
+intended maintenance loop; Dependabot proposes evidence, but does not make the
+acceptance decision.
 
 ## Residual risks
 
