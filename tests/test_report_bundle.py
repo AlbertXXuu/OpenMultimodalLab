@@ -185,7 +185,7 @@ class ReportBundleTests(unittest.TestCase):
                 verify_report_bundle(output, project_root=PROJECT_ROOT)
 
     def test_failed_measurement_is_preserved_and_path_redacted(self) -> None:
-        with tempfile.TemporaryDirectory(dir=PROJECT_ROOT / "runs") as temp_dir:
+        with tempfile.TemporaryDirectory(dir=PROJECT_ROOT) as temp_dir:
             copied_results: list[Path] = []
             for index, original in enumerate(FORMAL_RESULTS[:2]):
                 records = [
