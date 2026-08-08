@@ -10,6 +10,9 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Iterable
 
+from openmultimodal_lab.report_bundle import verify_report_bundle
+from openmultimodal_lab.reporting import ReportError
+
 
 VIDEO_SUFFIXES = frozenset(
     {".avi", ".m4v", ".mkv", ".mov", ".mp4", ".mpeg", ".mpg", ".webm"}
@@ -55,6 +58,7 @@ REQUIRED_DOCUMENTS = (
     "docs/06-quality-and-open-source.md",
     "docs/evaluation-protocol.md",
     "docs/license-audit.md",
+    "docs/report-bundles.md",
     "docs/robustness-corpus-tooling.md",
     "docs/video-corpus-tooling.md",
     "docs/tutorials/first-reproducible-benchmark.md",
@@ -544,6 +548,27 @@ def audit_release_readiness(root: Path) -> list[ReadinessCheck]:
             "license documents exist"
             if not missing_documents
             else f"missing={missing_documents}",
+        )
+    )
+    baseline_bundle = root / "docs/reports/rebuilt-baseline"
+    try:
+        bundle_manifest = verify_report_bundle(
+            baseline_bundle,
+            project_root=root,
+        )
+        bundle_passed = len(bundle_manifest.get("sources", [])) == 4
+        bundle_evidence = (
+            f"verified sources={len(bundle_manifest.get('sources', []))}, "
+            f"outputs={len(bundle_manifest.get('outputs', []))}"
+        )
+    except (OSError, ReportError, ValueError) as exc:
+        bundle_passed = False
+        bundle_evidence = f"baseline bundle verification failed: {exc}"
+    checks.append(
+        ReadinessCheck(
+            "REPORT-BUNDLE-TOOLING",
+            bundle_passed,
+            bundle_evidence,
         )
     )
     video_tutorial = root / "docs/tutorials/video-benchmark.md"

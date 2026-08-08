@@ -1,0 +1,139 @@
+{
+  "generators": [
+    {
+      "path": "scripts/build_benchmark_report.py",
+      "sha256": "b14629462965ba0add1ba4566f5e602c426519fd81cd4deae947859297bed176",
+      "size_bytes": 2578
+    },
+    {
+      "path": "src/openmultimodal_lab/report_bundle.py",
+      "sha256": "0e3862a2cbe89acca7733c3cd67c87c5f5b3c8277f9c2afb88b1a252746740fd",
+      "size_bytes": 42912
+    },
+    {
+      "path": "src/openmultimodal_lab/reporting.py",
+      "sha256": "c6d64983ae22b6b2d42835cc1742af1507a1a3ecc96f65b285825607b2b3141b",
+      "size_bytes": 16668
+    }
+  ],
+  "manifest_sha256": "11d8e2b6f73044b93e701a58b2a8980a52783ef451023d7c8183a70bc5daa59f",
+  "outputs": [
+    {
+      "path": "category-summary.csv",
+      "sha256": "336e299912d0bcfc23dd2022a971fb75b950fd64186d2e7b0340af7be6daa70e",
+      "size_bytes": 2112
+    },
+    {
+      "path": "failures.csv",
+      "sha256": "8a71cf65041afb413994efd20d5d3dc44f74e28fc96652cdd5365dc19f3540ba",
+      "size_bytes": 66
+    },
+    {
+      "path": "overview.svg",
+      "sha256": "314a350a004ef36e20e9278e3061cbc8795c0738dad72b8370b936d61536cd4a",
+      "size_bytes": 4785
+    },
+    {
+      "path": "report.md",
+      "sha256": "21c51a8c888f46f0eac99362276dddc75cdea9ee404bf843882df55dcb48651d",
+      "size_bytes": 5452
+    },
+    {
+      "path": "run-summary.csv",
+      "sha256": "b02168ff65d3175abfb98b8667b6c000575ce2d54fc01b7a7766711b9ca829ea",
+      "size_bytes": 2123
+    }
+  ],
+  "protocol": {
+    "batch_size": 1,
+    "do_sample": false,
+    "max_retries": 0,
+    "measurement_model_reloads": 0,
+    "repetitions": 3,
+    "warmup_attempts": 1
+  },
+  "schema_version": "1.0",
+  "sources": [
+    {
+      "backend": "qwen3-vl",
+      "dataset_sha256": "79b9f2c25f2985b6ccbd6fba2e44d234685338534d3d810f4f2931eacdb9d610",
+      "dataset_versions": [
+        "synthetic-docs-v1"
+      ],
+      "git_commit": "2ba683fe0d3cff65e502ae9e9f5d559d180b5398",
+      "manifest": {
+        "path": "docs/reports/results/2026-08-02-qwen3-vl-docs-formal.manifest.json",
+        "sha256": "38aee214b5288f14ac5e0bc8fbcf9f8cab9a332c93e6321b48485f8a1dfff60e",
+        "size_bytes": 4941
+      },
+      "model_id": "Qwen/Qwen3-VL-2B-Instruct",
+      "model_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+      "result": {
+        "path": "docs/reports/results/2026-08-02-qwen3-vl-docs-formal.jsonl",
+        "sha256": "1b0655ee19c1cd6c635a15d66abe90bc4f44bb06edda8e13efa808f27be2ac17",
+        "size_bytes": 245233
+      }
+    },
+    {
+      "backend": "smolvlm2",
+      "dataset_sha256": "79b9f2c25f2985b6ccbd6fba2e44d234685338534d3d810f4f2931eacdb9d610",
+      "dataset_versions": [
+        "synthetic-docs-v1"
+      ],
+      "git_commit": "2ba683fe0d3cff65e502ae9e9f5d559d180b5398",
+      "manifest": {
+        "path": "docs/reports/results/2026-08-02-smolvlm2-500m-docs-formal.manifest.json",
+        "sha256": "f61e5fa8c4690a97119e6185f82212c739a78604170100420e3f7186f8567b2a",
+        "size_bytes": 4958
+      },
+      "model_id": "HuggingFaceTB/SmolVLM2-500M-Video-Instruct",
+      "model_revision": "7b375e1b73b11138ff12fe22c8f2822d8fe03467",
+      "result": {
+        "path": "docs/reports/results/2026-08-02-smolvlm2-500m-docs-formal.jsonl",
+        "sha256": "63c979be02e3e99400c45b4ecf8d2ca797b5eaec0ff512b23fded5f7d50471df",
+        "size_bytes": 222282
+      }
+    },
+    {
+      "backend": "qwen3-vl",
+      "dataset_sha256": "682e4089fc2f9793209b40beb0026279bd0f58d3ec4fcf75d3f65abba88e4692",
+      "dataset_versions": [
+        "synthetic-v1.1"
+      ],
+      "git_commit": "e6d25410e66c483747a519b1877f0ae4a1d5b380",
+      "manifest": {
+        "path": "docs/reports/results/2026-07-31-qwen3-vl-comparison-formal.manifest.json",
+        "sha256": "fe4f4ce01102cf572a61ad11c102d332609d8a374d6420d11d3205f05ffe5b0a",
+        "size_bytes": 4055
+      },
+      "model_id": "Qwen/Qwen3-VL-2B-Instruct",
+      "model_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+      "result": {
+        "path": "docs/reports/results/2026-07-31-qwen3-vl-comparison-formal.jsonl",
+        "sha256": "bb3cd773a66b85713d221e632ce44d0d561950d6ede4ce9c8bb0ccacfd7e10ff",
+        "size_bytes": 62808
+      }
+    },
+    {
+      "backend": "smolvlm2",
+      "dataset_sha256": "682e4089fc2f9793209b40beb0026279bd0f58d3ec4fcf75d3f65abba88e4692",
+      "dataset_versions": [
+        "synthetic-v1.1"
+      ],
+      "git_commit": "e6d25410e66c483747a519b1877f0ae4a1d5b380",
+      "manifest": {
+        "path": "docs/reports/results/2026-07-31-smolvlm2-500m-comparison-formal.manifest.json",
+        "sha256": "e367c63c7547fc398ab7c0a3196c17efb699e56f0c57ba1ba12469a0b45e28a8",
+        "size_bytes": 4077
+      },
+      "model_id": "HuggingFaceTB/SmolVLM2-500M-Video-Instruct",
+      "model_revision": "7b375e1b73b11138ff12fe22c8f2822d8fe03467",
+      "result": {
+        "path": "docs/reports/results/2026-07-31-smolvlm2-500m-comparison-formal.jsonl",
+        "sha256": "841002994be8f733bab0cc9ca4e5627b4e0198145a84871bd1b61427086625ba",
+        "size_bytes": 59758
+      }
+    }
+  ],
+  "status": "verified-formal-sources"
+}

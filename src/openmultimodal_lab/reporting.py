@@ -5,18 +5,57 @@ from __future__ import annotations
 import json
 import math
 import statistics
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from .privacy import portable_path_reference
 
 
 MAX_RESULT_FILE_BYTES = 256 * 1024 * 1024
 MAX_RESULT_LINE_BYTES = 4 * 1024 * 1024
+PERFORMANCE_FIELDS = (
+    "preprocessing_ms",
+    "ttft_ms",
+    "generation_ms",
+    "output_tokens_per_second",
+    "peak_gpu_memory_mb",
+)
 
 
 class ReportError(ValueError):
     """Raised when raw run records cannot be summarized."""
+
+
+@dataclass(frozen=True, slots=True)
+class FormalRunValidation:
+    """Machine-checkable result of the documented formal-run protocol."""
+
+    passed: bool
+    warmup_attempts: int
+    measurement_attempts: int
+    repetitions: tuple[int, ...]
+    successful_measurements: int
+    failed_measurements: int
+    complete_repeat_grid: bool
+    retry_attempts: int
+    measurement_model_reloads: int
+    issues: tuple[str, ...]
+
+    @property
+    def detail(self) -> str:
+        """Return a compact evidence string for readiness checks."""
+
+        return (
+            f"warmups={self.warmup_attempts}, "
+            f"measurements={self.measurement_attempts}, "
+            f"repetitions={len(self.repetitions)}, "
+            f"successful={self.successful_measurements}, "
+            f"failures={self.failed_measurements}, "
+            f"complete_grid={self.complete_repeat_grid}, "
+            f"retries={self.retry_attempts}, "
+            f"measurement_reloads={self.measurement_model_reloads}"
+        )
 
 
 def load_records(path: str | Path) -> list[dict[str, Any]]:
@@ -81,6 +120,150 @@ def _nearest_rank_percentile(values: list[float], percentile: float) -> float | 
     ordered = sorted(values)
     rank = max(1, math.ceil(percentile * len(ordered)))
     return ordered[rank - 1]
+
+
+def validate_formal_run(
+    records: list[dict[str, Any]],
+) -> FormalRunValidation:
+    """Validate exactly one warm-up and a complete three-repeat task grid."""
+
+    terminal_records = [
+        record for record in records if record.get("terminal", True)
+    ]
+    warmup_records = [
+        record
+        for record in terminal_records
+        if record.get("phase") == "warmup"
+    ]
+    measurement_records = [
+        record
+        for record in terminal_records
+        if record.get("phase") == "measurement"
+    ]
+    unrecognized_phases = [
+        record
+        for record in terminal_records
+        if record.get("phase") not in {"warmup", "measurement"}
+    ]
+    retry_attempts = len(records) - len(terminal_records)
+
+    raw_repetition_values = [
+        record.get("repetition") for record in measurement_records
+    ]
+    valid_repetitions = all(
+        isinstance(value, int)
+        and not isinstance(value, bool)
+        and value > 0
+        for value in raw_repetition_values
+    )
+    repetitions: tuple[int, ...] = (
+        tuple(
+            sorted(
+                {cast(int, value) for value in raw_repetition_values}
+            )
+        )
+        if valid_repetitions
+        else ()
+    )
+
+    successful = [
+        record
+        for record in measurement_records
+        if record.get("status") == "success"
+    ]
+    failures = [
+        record
+        for record in measurement_records
+        if record.get("status") != "success"
+    ]
+    complete_metrics = bool(successful) and all(
+        isinstance(record.get("usage"), dict)
+        and all(
+            isinstance(record["usage"].get(field), (int, float))
+            and not isinstance(record["usage"].get(field), bool)
+            for field in PERFORMANCE_FIELDS
+        )
+        for record in successful
+    )
+    complete_failures = all(
+        isinstance(record.get("status"), str)
+        and bool(record["status"].strip())
+        and isinstance(record.get("error"), str)
+        and bool(record["error"].strip())
+        for record in failures
+    )
+
+    tasks_by_repetition: dict[object, list[object]] = {}
+    for record in measurement_records:
+        tasks_by_repetition.setdefault(record.get("repetition"), []).append(
+            record.get("task_id")
+        )
+    valid_task_ids = all(
+        isinstance(task_id, str) and bool(task_id.strip())
+        for task_ids in tasks_by_repetition.values()
+        for task_id in task_ids
+    )
+    no_duplicate_cells = all(
+        len(task_ids) == len(set(task_ids))
+        for task_ids in tasks_by_repetition.values()
+    )
+    complete_repeat_grid = (
+        bool(tasks_by_repetition)
+        and valid_task_ids
+        and no_duplicate_cells
+        and len(
+            {
+                frozenset(task_ids)
+                for task_ids in tasks_by_repetition.values()
+            }
+        )
+        == 1
+    )
+    measurement_model_reloads = sum(
+        isinstance(record.get("usage"), dict)
+        and isinstance(
+            record["usage"].get("model_load_ms"),
+            (int, float),
+        )
+        and not isinstance(record["usage"].get("model_load_ms"), bool)
+        and record["usage"]["model_load_ms"] > 0
+        for record in measurement_records
+    )
+
+    issues: list[str] = []
+    if len(warmup_records) != 1:
+        issues.append("expected exactly one warm-up record")
+    elif warmup_records[0].get("status") != "success":
+        issues.append("warm-up record did not succeed")
+    if unrecognized_phases:
+        issues.append("terminal records contain an unrecognized phase")
+    if repetitions != (1, 2, 3):
+        issues.append("measurement repetitions must be exactly 1, 2, and 3")
+    if not successful:
+        issues.append("run contains no successful measurements")
+    if not complete_metrics:
+        issues.append("successful measurements lack required performance metrics")
+    if not complete_failures:
+        issues.append("failed measurements lack a status or error message")
+    if not complete_repeat_grid:
+        issues.append("measurement records do not form a complete task grid")
+    if retry_attempts:
+        issues.append("formal run contains retry-attempt records")
+    if measurement_model_reloads:
+        issues.append("model was loaded during a measurement attempt")
+
+    return FormalRunValidation(
+        passed=not issues,
+        warmup_attempts=len(warmup_records),
+        measurement_attempts=len(measurement_records),
+        repetitions=repetitions,
+        successful_measurements=len(successful),
+        failed_measurements=len(failures),
+        complete_repeat_grid=complete_repeat_grid,
+        retry_attempts=retry_attempts,
+        measurement_model_reloads=measurement_model_reloads,
+        issues=tuple(issues),
+    )
 
 
 def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
@@ -161,32 +344,16 @@ def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
         for record in measurement_records
         if record.get("status") == "success"
     ]
-    required_performance_fields = (
-        "preprocessing_ms",
-        "ttft_ms",
-        "generation_ms",
-        "output_tokens_per_second",
-        "peak_gpu_memory_mb",
-    )
     performance_metrics_complete = bool(successful_measurements) and all(
         isinstance(record.get("usage"), dict)
         and all(
             isinstance(record["usage"].get(field), (int, float))
             and not isinstance(record["usage"].get(field), bool)
-            for field in required_performance_fields
+            for field in PERFORMANCE_FIELDS
         )
         for record in successful_measurements
     )
-    successful_warmups = sum(
-        record.get("status") == "success" for record in warmup_records
-    )
-    formal_performance_run = (
-        successful_warmups >= 1
-        and len(repetitions) >= 3
-        and performance_metrics_complete
-        and retry_attempts == 0
-        and measurement_model_reloads == 0
-    )
+    formal_validation = validate_formal_run(records)
 
     return {
         "total_records": len(records),
@@ -205,7 +372,8 @@ def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
         "repetitions": len(repetitions) if repetitions else 0,
         "performance_metrics_complete": performance_metrics_complete,
         "measurement_model_reloads": measurement_model_reloads,
-        "formal_performance_run": formal_performance_run,
+        "formal_performance_run": formal_validation.passed,
+        "formal_protocol_issues": list(formal_validation.issues),
         "successful_tasks": successful,
         "success_rate": successful / total if total else 0.0,
         "scored_tasks": len(scores),

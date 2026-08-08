@@ -161,7 +161,9 @@ not equivalent to a clean invocation.
 - For the comparable formal profile, use exactly `--warmup 1` before
   performance measurement. Additional warm-ups define a different profile and
   must not be mixed into the published comparison.
-- Use `--repetitions 3` or more for every formal configuration.
+- Use exactly `--repetitions 3` for the comparable formal profile. Additional
+  repetitions define a different profile and must not be labeled with this
+  protocol.
 - Keep task order fixed unless the run manifest records a seeded shuffle.
 - Report medians for central tendency and p95 for latency tails.
 - Do not discard slow, failed, or out-of-memory samples.
@@ -172,6 +174,11 @@ Measured records use `phase: "measurement"` and a one-based `repetition`.
 
 The current `mock` smoke runs are infrastructure checks and are exempt from
 three-run model reporting because they do not measure a real model.
+
+The formal validator also requires every repetition to contain each selected
+task exactly once. The [deterministic report-bundle workflow](report-bundles.md)
+rejects missing cells, duplicate cells, extra repetitions, retries, and model
+reloads before producing a comparison.
 
 ## 8. Timing boundaries
 

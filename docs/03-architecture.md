@@ -26,6 +26,7 @@ flowchart LR
 | `runner` | 调度任务、计时、捕获异常、写原始记录 |
 | `metrics` | 对单条响应评分 |
 | `reporting` | 从原始记录计算汇总指标 |
+| `report_bundle` | 校验正式结果/manifest，并重建可自校验的多模型报告包 |
 | `cli` | 提供稳定的用户入口 |
 
 ## 3. Adapter 边界
@@ -100,6 +101,7 @@ OpenMultimodalLab/
 │   ├── datasets.py
 │   ├── metrics.py
 │   ├── models.py
+│   ├── report_bundle.py
 │   ├── reporting.py
 │   └── runner.py
 ├── tests/

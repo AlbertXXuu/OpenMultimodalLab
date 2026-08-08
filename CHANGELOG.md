@@ -57,6 +57,7 @@ All notable changes to this project will be documented in this file.
 - Name-neutral, byte-stable AVI generation for a 24-task short-video draft, with contact sheets and SHA-bound per-task human review validation.
 - Name-neutral, byte-stable PNG generation for a 36-task visual-robustness draft covering small objects, low contrast, clutter, and partial occlusion.
 - A path-safe, deterministic runtime-license audit with exact package/model versions, PyAV binary hashes, FFmpeg copyleft detection, constraints output, and a CI-validated policy.
+- Exact one-warm-up/three-repeat formal-grid validation and a deterministic multi-model report bundle with Markdown, CSV, complete failure data, SVG, source/generator/output hashes, and tamper verification.
 
 ### Planned
 

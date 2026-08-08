@@ -186,6 +186,7 @@ class ReleaseReadinessTests(unittest.TestCase):
             "FORMAL-DOCUMENT",
             "FORMAL-PROTOCOL",
             "DOCUMENTATION",
+            "REPORT-BUNDLE-TOOLING",
             "LINUX-CI-CONTRACT",
         ):
             with self.subTest(check_id=check_id):

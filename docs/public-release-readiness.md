@@ -34,7 +34,7 @@ make CI green.
 | At least 100 unique, human-checked tasks | 42 canonical tasks with review reports | Open; 58+ additional unique tasks required |
 | Formal video metrics for both models | No warm-up plus three-repeat video task-set run | Open |
 | Quality, TTFT, throughput, memory, and failures | Present in preserved image/document records | Proven for current formal slices |
-| Rebuildable reports and visuals | Raw JSONL/manifests, `oml report`, byte-stable SVG tests | Proven |
+| Rebuildable reports and visuals | Raw JSONL/manifests, strict formal-grid validation, deterministic Markdown/CSV/failure/SVG bundle, self-hashed build manifest, tamper tests | Proven tooling and current 42-task baseline; final corpus bundle open |
 | English main README and Chinese guide | `README.md` and `README.zh-CN.md` | Proven |
 | Tutorial/demo | Complete first experiment tutorial and result visuals | Proven for image/document; final video demo open |
 | Tests and Linux CI | Python 3.11/3.12, wheel build, fresh install, outside-checkout smoke | Proven on merged private `main`; rerun after final corpus |
@@ -54,7 +54,9 @@ make CI green.
    canonical tasks, including short video.
 3. Run both pinned models on the final video and complete canonical corpus with
    one warm-up and three measurements, preserving every failure.
-4. Rebuild reports and update the evidence matrix from raw artifacts.
+4. Build the final deterministic report bundle from raw artifacts, rebuild it
+   independently byte-for-byte, run its self/source/output verification, and
+   update the evidence matrix.
 5. Regenerate the exact dependency/license inventory and constraints from the
    final Python 3.11 model environment, audit the PyAV wheel's bundled FFmpeg,
    and retain `final-dependency-license-audit.md`.
