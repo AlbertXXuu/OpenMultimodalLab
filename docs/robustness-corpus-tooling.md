@@ -1,10 +1,9 @@
 # Deterministic visual-robustness corpus tooling
 
-This tooling prepares a reviewable 36-task image draft without choosing its
-public dataset name. It does not make the current 42-task canonical corpus
-larger by itself. The dataset version, repository paths, generated media, and
-completed review record must only be committed after the repository owner
-approves the dataset name and task quota.
+This tooling generated the approved `synthetic-robustness-v1` 36-task
+candidate. Its dataset, 12 images, overview sheet, and SHA-bound review
+template are committed, but the candidate is not human-approved until the
+repository owner completes and validates every review entry.
 
 ## Coverage design
 
@@ -30,26 +29,24 @@ answers are all stored in the repository. Assets have no encoder timestamps,
 downloaded media, host paths, or third-party creative content, so independent
 generations are byte-identical and licensed under Apache-2.0 with the project.
 
-## Generate a non-canonical draft
+## Rebuild the approved candidate
 
 Use a temporary directory until the public dataset name is approved:
 
 ```powershell
-$draft = "runs/robustness-corpus-draft"
-
 .\.venv\Scripts\python.exe scripts/generate_robustness_images.py `
-  --output-dir "$draft/assets" `
-  --review-sheet "$draft/overview.png" `
-  --dataset-output "$draft/tasks.jsonl" `
-  --dataset-version candidate-robustness-v0 `
-  --media-prefix assets `
-  --review-output "$draft/review.json"
+  --output-dir examples\assets\synthetic-robustness-v1 `
+  --review-sheet docs\reviews\synthetic-robustness-v1-overview.png `
+  --dataset-output examples\tasks\synthetic-robustness-v1.jsonl `
+  --dataset-version synthetic-robustness-v1 `
+  --media-prefix examples/assets/synthetic-robustness-v1 `
+  --review-output docs\reviews\synthetic-robustness-v1.json
 ```
 
-`candidate-robustness-v0` is a temporary example, not an approved public
-dataset name. The generator has no canonical output default. It rejects an
-empty version, partial dataset configuration, absolute media paths, Windows
-drive paths, and parent-directory traversal.
+The generator still has no inferred output name. It rejects an empty version,
+partial dataset configuration, absolute media paths, Windows drive paths, and
+parent-directory traversal. Rebuilding the review template resets every human
+check to `false`, so do not run this command over a completed review record.
 
 ## Review-sheet order
 
@@ -116,17 +113,14 @@ They prove runtime compatibility and diagnostic value only; they are not
 formal model-quality/performance results and do not increase the canonical
 task count.
 
-## Canonicalization after approval
+## Remaining review and freeze steps
 
-After the owner approves a dataset version and the 36-task quota:
+The approved-name generation and hash binding are complete. The owner must now:
 
-1. generate into `examples/assets/<approved-version>` and
-   `examples/tasks/<approved-version>.jsonl`;
-2. regenerate a review template from those exact committed bytes;
-3. inspect all 12 original images and all 36 prompt/answer pairs;
-4. complete and validate the review record;
-5. add the approved dataset and review report to the readiness evidence map;
-6. include the tasks in both pinned-model formal comparison runs.
+1. inspect all 12 original images and all 36 prompt/answer pairs;
+2. complete and validate the review record;
+3. freeze the reviewed bytes;
+4. include the tasks in both pinned-model formal comparison runs.
 
 Do not rename the canonical dataset after review or formal runs. A content
 change requires a new version and a new review hash.

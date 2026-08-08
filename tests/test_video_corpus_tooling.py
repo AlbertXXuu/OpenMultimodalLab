@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import struct
@@ -13,6 +14,10 @@ from unittest.mock import patch
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = PROJECT_ROOT / "scripts"
+CANONICAL_DATASET = PROJECT_ROOT / "examples/tasks/synthetic-video-v1.jsonl"
+CANONICAL_ASSETS = PROJECT_ROOT / "examples/assets/synthetic-video-v1"
+CANONICAL_REVIEW = PROJECT_ROOT / "docs/reviews/synthetic-video-v1.json"
+CANONICAL_REVIEW_SHEETS = PROJECT_ROOT / "docs/reviews/synthetic-video-v1"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
@@ -35,6 +40,51 @@ from openmultimodal_lab.datasets import load_tasks  # noqa: E402
 
 
 class VideoCorpusToolingTests(unittest.TestCase):
+    def test_canonical_corpus_is_deterministic_and_awaits_review(self) -> None:
+        rows = [
+            json.loads(line)
+            for line in CANONICAL_DATASET.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        review = json.loads(CANONICAL_REVIEW.read_text(encoding="utf-8"))
+        findings = audit_human_review(CANONICAL_DATASET, CANONICAL_REVIEW)
+        tasks = load_tasks(CANONICAL_DATASET, media_root=PROJECT_ROOT)
+
+        self.assertEqual(
+            rows,
+            build_tasks(
+                "synthetic-video-v1",
+                "examples/assets/synthetic-video-v1",
+            ),
+        )
+        self.assertEqual(len(tasks), 24)
+        self.assertEqual(
+            review["dataset_sha256"],
+            hashlib.sha256(CANONICAL_DATASET.read_bytes()).hexdigest(),
+        )
+        self.assertEqual(len(findings), 24)
+        self.assertTrue(
+            all(
+                value is False
+                for entry in review["entries"]
+                for value in entry["checks"].values()
+            )
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            generate_assets(root / "assets", review_dir=root / "review")
+            for path in CANONICAL_ASSETS.iterdir():
+                self.assertEqual(
+                    path.read_bytes(),
+                    (root / "assets" / path.name).read_bytes(),
+                )
+            for path in CANONICAL_REVIEW_SHEETS.iterdir():
+                self.assertEqual(
+                    path.read_bytes(),
+                    (root / "review" / path.name).read_bytes(),
+                )
+
     def test_draft_contains_24_licensed_reviewable_tasks(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

@@ -1,10 +1,9 @@
 # Deterministic short-video corpus tooling
 
-This tooling prepares a reviewable 24-task short-video draft without choosing
-its public dataset name. It does not make the current 42-task canonical corpus
-larger by itself. The dataset version, repository paths, generated media, and
-completed review record must only be committed after the repository owner
-approves the dataset name.
+This tooling generated the approved `synthetic-video-v1` 24-task candidate.
+Its dataset, eight clips, eight contact sheets, and SHA-bound review template
+are committed, but the candidate is not human-approved until the repository
+owner completes and validates every review entry.
 
 ## What is generated
 
@@ -29,25 +28,23 @@ top-left, top-right, bottom-left, and bottom-right order. Runtime inference
 uses frames `0, 2, 4, 6, 8, 10, 12, 14`; the human review record requires the
 reviewer to confirm that the answer remains visible under that exact sample.
 
-## Generate a non-canonical draft
+## Rebuild the approved candidate
 
 Use a temporary directory while the public dataset name is unapproved:
 
 ```powershell
-$draft = "runs/video-corpus-draft"
-
 .\.venv\Scripts\python.exe scripts/generate_synthetic_videos.py `
-  --output-dir "$draft/assets" `
-  --review-dir "$draft/review-sheets" `
-  --dataset-output "$draft/tasks.jsonl" `
-  --dataset-version candidate-video-v0 `
-  --media-prefix assets `
-  --review-output "$draft/review.json"
+  --output-dir examples\assets\synthetic-video-v1 `
+  --review-dir docs\reviews\synthetic-video-v1 `
+  --dataset-output examples\tasks\synthetic-video-v1.jsonl `
+  --dataset-version synthetic-video-v1 `
+  --media-prefix examples/assets/synthetic-video-v1 `
+  --review-output docs\reviews\synthetic-video-v1.json
 ```
 
-`candidate-video-v0` is deliberately a temporary example, not an approved
-public dataset name. The script has no canonical output default and refuses a
-partial dataset configuration.
+The script still has no inferred output name and refuses a partial dataset
+configuration. Rebuilding the review template resets every human check to
+`false`, so do not run this command over a completed review record.
 
 ## Human review protocol
 
@@ -96,17 +93,14 @@ On 2026-08-02, the tooling was checked without committing a canonical draft:
 This is one cold diagnostic invocation per model. It proves format/runtime
 compatibility only and is not a formal quality or performance result.
 
-## Canonicalization after approval
+## Remaining review and freeze steps
 
-After the owner approves a dataset version:
+The approved-name generation and hash binding are complete. The owner must now:
 
-1. generate into `examples/assets/<approved-version>` and
-   `examples/tasks/<approved-version>.jsonl`;
-2. regenerate a fresh review template from those exact bytes;
-3. inspect all eight clips and all 24 task/answer pairs;
-4. complete and validate the review record;
-5. add the approved dataset and review report to the release-readiness map;
-6. run both pinned models with one warm-up and exactly three repetitions.
+1. inspect all eight clips and all 24 task/answer pairs;
+2. complete and validate the review record;
+3. freeze the reviewed bytes;
+4. run both pinned models with one warm-up and exactly three repetitions.
 
 Do not rename a canonical dataset after formal runs. A content change requires
 a new version and new review hash.

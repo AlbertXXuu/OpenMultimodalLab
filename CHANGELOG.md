@@ -58,10 +58,14 @@ All notable changes to this project will be documented in this file.
 - Name-neutral, byte-stable PNG generation for a 36-task visual-robustness draft covering small objects, low contrast, clutter, and partial occlusion.
 - A path-safe, deterministic runtime-license audit with exact package/model versions, PyAV binary hashes, FFmpeg copyleft detection, constraints output, and a CI-validated policy.
 - Exact one-warm-up/three-repeat formal-grid validation and a deterministic multi-model report bundle with Markdown, CSV, complete failure data, SVG, source/generator/output hashes, and tamper verification.
+- Approved `synthetic-video-v1` with 24 licensed short-video tasks, eight deterministic AVI clips, contact sheets, and an incomplete SHA-bound owner-review record.
+- Approved `synthetic-robustness-v1` with 36 licensed robustness tasks, 12 deterministic PNG images, an overview sheet, and an incomplete SHA-bound owner-review record.
+- A 102-task final-corpus candidate whose release gate remains open until the owner completes the 60 new human-review entries.
 
 ### Planned
 
-- Reproducible short-video benchmark tasks.
+- Owner review of the final-corpus video and robustness task records.
+- Protocol-compliant final-corpus runs for both pinned model families.
 
 ## [0.1.0] - 2026-07-28
 

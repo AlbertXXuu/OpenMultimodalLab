@@ -1,0 +1,598 @@
+{
+  "schema_version": "1.1",
+  "review_profile": "static-image-v1",
+  "dataset_version": "synthetic-robustness-v1",
+  "dataset_sha256": "e63e291e9bbaf62aa2521080a0e3c9e3ee8ec56a90df4ccd18b1624c5b25f757",
+  "review_media_order": [
+    "examples/assets/synthetic-robustness-v1/small-red-square-left.png",
+    "examples/assets/synthetic-robustness-v1/small-blue-circle-right.png",
+    "examples/assets/synthetic-robustness-v1/small-green-triangle-top.png",
+    "examples/assets/synthetic-robustness-v1/low-contrast-red-circle-left.png",
+    "examples/assets/synthetic-robustness-v1/low-contrast-blue-square-right.png",
+    "examples/assets/synthetic-robustness-v1/low-contrast-green-triangle-bottom.png",
+    "examples/assets/synthetic-robustness-v1/clutter-purple-triangle-center.png",
+    "examples/assets/synthetic-robustness-v1/clutter-orange-circle-left.png",
+    "examples/assets/synthetic-robustness-v1/clutter-green-square-right.png",
+    "examples/assets/synthetic-robustness-v1/occluded-red-circle-vertical.png",
+    "examples/assets/synthetic-robustness-v1/occluded-blue-square-horizontal.png",
+    "examples/assets/synthetic-robustness-v1/occluded-green-triangle-vertical.png"
+  ],
+  "entries": [
+    {
+      "task_id": "small-red-square-left-color",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/small-red-square-left.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "small-red-square-left-shape",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/small-red-square-left.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "small-red-square-left-context",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/small-red-square-left.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "small-blue-circle-right-color",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/small-blue-circle-right.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "small-blue-circle-right-shape",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/small-blue-circle-right.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "small-blue-circle-right-context",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/small-blue-circle-right.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "small-green-triangle-top-color",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/small-green-triangle-top.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "small-green-triangle-top-shape",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/small-green-triangle-top.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "small-green-triangle-top-context",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/small-green-triangle-top.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "low-contrast-red-circle-left-color",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/low-contrast-red-circle-left.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "low-contrast-red-circle-left-shape",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/low-contrast-red-circle-left.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "low-contrast-red-circle-left-context",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/low-contrast-red-circle-left.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "low-contrast-blue-square-right-color",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/low-contrast-blue-square-right.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "low-contrast-blue-square-right-shape",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/low-contrast-blue-square-right.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "low-contrast-blue-square-right-context",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/low-contrast-blue-square-right.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "low-contrast-green-triangle-bottom-color",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/low-contrast-green-triangle-bottom.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "low-contrast-green-triangle-bottom-shape",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/low-contrast-green-triangle-bottom.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "low-contrast-green-triangle-bottom-context",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/low-contrast-green-triangle-bottom.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "clutter-purple-triangle-center-color",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/clutter-purple-triangle-center.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "clutter-purple-triangle-center-shape",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/clutter-purple-triangle-center.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "clutter-purple-triangle-center-context",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/clutter-purple-triangle-center.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "clutter-orange-circle-left-color",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/clutter-orange-circle-left.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "clutter-orange-circle-left-shape",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/clutter-orange-circle-left.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "clutter-orange-circle-left-context",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/clutter-orange-circle-left.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "clutter-green-square-right-color",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/clutter-green-square-right.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "clutter-green-square-right-shape",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/clutter-green-square-right.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "clutter-green-square-right-context",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/clutter-green-square-right.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "occluded-red-circle-vertical-color",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/occluded-red-circle-vertical.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "occluded-red-circle-vertical-shape",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/occluded-red-circle-vertical.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "occluded-red-circle-vertical-context",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/occluded-red-circle-vertical.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "occluded-blue-square-horizontal-color",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/occluded-blue-square-horizontal.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "occluded-blue-square-horizontal-shape",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/occluded-blue-square-horizontal.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "occluded-blue-square-horizontal-context",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/occluded-blue-square-horizontal.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "occluded-green-triangle-vertical-color",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/occluded-green-triangle-vertical.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "occluded-green-triangle-vertical-shape",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/occluded-green-triangle-vertical.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    },
+    {
+      "task_id": "occluded-green-triangle-vertical-context",
+      "media": [
+        "examples/assets/synthetic-robustness-v1/occluded-green-triangle-vertical.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": false,
+        "robustness_condition_is_visible": false,
+        "prompt_answer_matches_media": false,
+        "answer_is_unambiguous": false,
+        "license_and_provenance_confirmed": false
+      },
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": ""
+    }
+  ]
+}

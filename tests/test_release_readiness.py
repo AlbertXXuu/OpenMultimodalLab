@@ -181,21 +181,21 @@ class ReleaseReadinessTests(unittest.TestCase):
 
         for check_id in (
             "TASK-PROVENANCE",
+            "TASK-COUNT",
             "TWO-REAL-MODELS",
             "FORMAL-IMAGE",
             "FORMAL-DOCUMENT",
             "FORMAL-PROTOCOL",
             "DOCUMENTATION",
             "REPORT-BUNDLE-TOOLING",
+            "VIDEO-TASKS",
             "LINUX-CI-CONTRACT",
         ):
             with self.subTest(check_id=check_id):
                 self.assertTrue(checks[check_id].passed)
 
         for check_id in (
-            "TASK-COUNT",
             "HUMAN-REVIEW",
-            "VIDEO-TASKS",
             "FORMAL-VIDEO",
             "VIDEO-DEMO",
             "FINAL-LICENSE-AUDIT",
@@ -231,6 +231,26 @@ class ReleaseReadinessTests(unittest.TestCase):
         self.assertEqual(approvals["public_version"], "v1.0.0")
         self.assertFalse(approvals["make_repository_public"])
         self.assertFalse(approvals["formal_release_authorized"])
+
+    def test_final_candidate_corpus_waits_for_owner_review(self) -> None:
+        checks = {
+            check.id: check
+            for check in audit_release_readiness(PROJECT_ROOT)
+        }
+
+        self.assertTrue(checks["TASK-COUNT"].passed)
+        self.assertIn("102 unique", checks["TASK-COUNT"].evidence)
+        self.assertTrue(checks["VIDEO-TASKS"].passed)
+        self.assertIn("24 canonical", checks["VIDEO-TASKS"].evidence)
+        self.assertFalse(checks["HUMAN-REVIEW"].passed)
+        self.assertIn(
+            "synthetic-video-v1: 24 open review findings",
+            checks["HUMAN-REVIEW"].evidence,
+        )
+        self.assertIn(
+            "synthetic-robustness-v1: 36 open review findings",
+            checks["HUMAN-REVIEW"].evidence,
+        )
 
     def test_strict_mode_fails_while_release_requirements_are_open(self) -> None:
         completed = subprocess.run(
