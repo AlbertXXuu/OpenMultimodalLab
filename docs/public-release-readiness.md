@@ -43,13 +43,13 @@ make CI green.
 | Fresh Windows environment | Prior wheel audit exists | Must be repeated on final candidate |
 | Security | Bounded-input/path-privacy review plus automated regression tests | Proven for current scope; dependency residuals remain |
 | Code/model/data licenses | Apache-2.0 project/models/media plus a machine-verifiable package/PyAV-FFmpeg policy and audit tool | Tooling proven; final clean snapshot, constraints, and signed report open |
-| Project/package/CLI/dataset/public version names | `docs/release-approvals.json` intentionally contains no inferred approval | Owner decision required |
+| Project/package/import/CLI/dataset/public version names | `docs/release-approvals.json` records the owner's 2026-08-09 approval | Proven; publication remains separate |
 | Repository visibility and formal Release | Current visibility is recorded separately from the unapproved target; repository remains private | Owner decision required |
 | Star/user claims | README explicitly refuses fabricated adoption claims | Proven truthful |
 
 ## Required final sequence
 
-1. Record explicit dataset-name approval without changing repository visibility.
+1. **Complete:** record explicit naming approval without changing repository visibility.
 2. Build and human-review enough licensed tasks to reach at least 100 unique
    canonical tasks, including short video.
 3. Run both pinned models on the final video and complete canonical corpus with

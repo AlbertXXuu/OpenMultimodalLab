@@ -201,12 +201,36 @@ class ReleaseReadinessTests(unittest.TestCase):
             "FINAL-LICENSE-AUDIT",
             "FINAL-FRESH-WINDOWS",
             "FINAL-LINUX-CI",
-            "OWNER-NAMING-APPROVAL",
             "OWNER-PUBLICATION-APPROVAL",
             "FINAL-CANDIDATE-VALIDATION",
         ):
             with self.subTest(check_id=check_id):
                 self.assertFalse(checks[check_id].passed)
+
+        self.assertTrue(checks["OWNER-NAMING-APPROVAL"].passed)
+        self.assertIn("import", checks["OWNER-NAMING-APPROVAL"].evidence)
+
+    def test_owner_naming_approval_matches_recorded_decision(self) -> None:
+        approvals = json.loads(
+            (PROJECT_ROOT / "docs/release-approvals.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+        self.assertEqual(approvals["project_name"], "OpenMultimodalLab")
+        self.assertEqual(approvals["package_name"], "openmultimodal-lab")
+        self.assertEqual(approvals["import_module"], "openmultimodal_lab")
+        self.assertEqual(approvals["cli_name"], "oml")
+        self.assertEqual(
+            approvals["video_dataset_name"], "synthetic-video-v1"
+        )
+        self.assertEqual(
+            approvals["robustness_dataset_name"],
+            "synthetic-robustness-v1",
+        )
+        self.assertEqual(approvals["public_version"], "v1.0.0")
+        self.assertFalse(approvals["make_repository_public"])
+        self.assertFalse(approvals["formal_release_authorized"])
 
     def test_strict_mode_fails_while_release_requirements_are_open(self) -> None:
         completed = subprocess.run(

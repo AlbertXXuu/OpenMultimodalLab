@@ -1,13 +1,21 @@
 {
   "schema_version": "1.0",
-  "project_name": null,
-  "package_name": null,
-  "cli_name": null,
-  "dataset_names": [],
-  "public_version": null,
+  "project_name": "OpenMultimodalLab",
+  "package_name": "openmultimodal-lab",
+  "import_module": "openmultimodal_lab",
+  "cli_name": "oml",
+  "dataset_names": [
+    "synthetic-v1.1",
+    "synthetic-docs-v1",
+    "synthetic-video-v1",
+    "synthetic-robustness-v1"
+  ],
+  "video_dataset_name": "synthetic-video-v1",
+  "robustness_dataset_name": "synthetic-robustness-v1",
+  "public_version": "v1.0.0",
   "current_repository_visibility": "private",
   "target_repository_visibility": null,
   "make_repository_public": false,
   "formal_release_authorized": false,
-  "note": "Null and false values are intentional until the repository owner explicitly approves each external decision."
+  "note": "The repository owner approved the recorded names on 2026-08-09. Repository publication and a formal Release remain separate, unauthorized decisions."
 }

@@ -652,15 +652,30 @@ def audit_release_readiness(root: Path) -> list[ReadinessCheck]:
 
     approvals_path = root / "docs/release-approvals.json"
     approvals = json.loads(approvals_path.read_text(encoding="utf-8"))
-    approved_names = all(
+    approved_name_fields = all(
         isinstance(approvals.get(key), str) and approvals[key].strip()
-        for key in ("project_name", "package_name", "cli_name", "public_version")
-    ) and dataset_versions.issubset(set(approvals.get("dataset_names", [])))
+        for key in (
+            "project_name",
+            "package_name",
+            "import_module",
+            "cli_name",
+            "video_dataset_name",
+            "robustness_dataset_name",
+            "public_version",
+        )
+    )
+    approved_datasets = set(approvals.get("dataset_names", []))
+    approved_names = (
+        approved_name_fields
+        and dataset_versions.issubset(approved_datasets)
+        and approvals.get("video_dataset_name") in approved_datasets
+        and approvals.get("robustness_dataset_name") in approved_datasets
+    )
     checks.append(
         ReadinessCheck(
             "OWNER-NAMING-APPROVAL",
             approved_names,
-            "project/package/CLI/dataset/public-version approvals are recorded"
+            "project/package/import/CLI/dataset/public-version approvals are recorded"
             if approved_names
             else "one or more required naming approvals are intentionally unrecorded",
         )
