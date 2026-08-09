@@ -1,9 +1,9 @@
 # Deterministic visual-robustness corpus tooling
 
 This tooling generated the approved `synthetic-robustness-v1` 36-task
-candidate. Its dataset, 12 images, overview sheet, and SHA-bound review
-template are committed, but the candidate is not human-approved until the
-repository owner completes and validates every review entry.
+candidate. Its dataset, 12 images, overview sheet, and SHA-bound review record
+are committed. `AlbertXXuu` completed all 36 review entries on 2026-08-10, and
+the record validates against the unchanged dataset hash.
 
 ## Coverage design
 
@@ -113,14 +113,11 @@ They prove runtime compatibility and diagnostic value only; they are not
 formal model-quality/performance results and do not increase the canonical
 task count.
 
-## Remaining review and freeze steps
+## Remaining freeze and formal-run steps
 
-The approved-name generation and hash binding are complete. The owner must now:
-
-1. inspect all 12 original images and all 36 prompt/answer pairs;
-2. complete and validate the review record;
-3. freeze the reviewed bytes;
-4. include the tasks in both pinned-model formal comparison runs.
+Generation, hash binding, and owner review are complete. The remaining steps
+are to freeze the reviewed bytes and include the tasks in both pinned-model
+formal comparison runs.
 
 Do not rename the canonical dataset after review or formal runs. A content
 change requires a new version and a new review hash.

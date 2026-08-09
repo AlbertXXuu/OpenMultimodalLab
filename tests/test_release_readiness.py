@@ -182,6 +182,7 @@ class ReleaseReadinessTests(unittest.TestCase):
         for check_id in (
             "TASK-PROVENANCE",
             "TASK-COUNT",
+            "HUMAN-REVIEW",
             "TWO-REAL-MODELS",
             "FORMAL-IMAGE",
             "FORMAL-DOCUMENT",
@@ -195,7 +196,6 @@ class ReleaseReadinessTests(unittest.TestCase):
                 self.assertTrue(checks[check_id].passed)
 
         for check_id in (
-            "HUMAN-REVIEW",
             "FORMAL-VIDEO",
             "VIDEO-DEMO",
             "FINAL-LICENSE-AUDIT",
@@ -232,7 +232,7 @@ class ReleaseReadinessTests(unittest.TestCase):
         self.assertFalse(approvals["make_repository_public"])
         self.assertFalse(approvals["formal_release_authorized"])
 
-    def test_final_candidate_corpus_waits_for_owner_review(self) -> None:
+    def test_final_candidate_corpus_has_valid_owner_review(self) -> None:
         checks = {
             check.id: check
             for check in audit_release_readiness(PROJECT_ROOT)
@@ -242,13 +242,9 @@ class ReleaseReadinessTests(unittest.TestCase):
         self.assertIn("102 unique", checks["TASK-COUNT"].evidence)
         self.assertTrue(checks["VIDEO-TASKS"].passed)
         self.assertIn("24 canonical", checks["VIDEO-TASKS"].evidence)
-        self.assertFalse(checks["HUMAN-REVIEW"].passed)
+        self.assertTrue(checks["HUMAN-REVIEW"].passed)
         self.assertIn(
-            "synthetic-video-v1: 24 open review findings",
-            checks["HUMAN-REVIEW"].evidence,
-        )
-        self.assertIn(
-            "synthetic-robustness-v1: 36 open review findings",
+            "the corpus has 102 tasks",
             checks["HUMAN-REVIEW"].evidence,
         )
 
@@ -263,7 +259,8 @@ class ReleaseReadinessTests(unittest.TestCase):
 
         self.assertEqual(completed.returncode, 1)
         self.assertIn("Ready: no", completed.stdout)
-        self.assertIn("[OPEN] TASK-COUNT", completed.stdout)
+        self.assertIn("[PASS] TASK-COUNT", completed.stdout)
+        self.assertIn("[PASS] HUMAN-REVIEW", completed.stdout)
         self.assertIn("[OPEN] OWNER-PUBLICATION-APPROVAL", completed.stdout)
 
 

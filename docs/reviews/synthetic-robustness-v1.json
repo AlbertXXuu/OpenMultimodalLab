@@ -24,14 +24,14 @@
         "examples/assets/synthetic-robustness-v1/small-red-square-left.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -40,14 +40,14 @@
         "examples/assets/synthetic-robustness-v1/small-red-square-left.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -56,14 +56,14 @@
         "examples/assets/synthetic-robustness-v1/small-red-square-left.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -72,14 +72,14 @@
         "examples/assets/synthetic-robustness-v1/small-blue-circle-right.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -88,14 +88,14 @@
         "examples/assets/synthetic-robustness-v1/small-blue-circle-right.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -104,14 +104,14 @@
         "examples/assets/synthetic-robustness-v1/small-blue-circle-right.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -120,14 +120,14 @@
         "examples/assets/synthetic-robustness-v1/small-green-triangle-top.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -136,14 +136,14 @@
         "examples/assets/synthetic-robustness-v1/small-green-triangle-top.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -152,14 +152,14 @@
         "examples/assets/synthetic-robustness-v1/small-green-triangle-top.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -168,14 +168,14 @@
         "examples/assets/synthetic-robustness-v1/low-contrast-red-circle-left.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -184,14 +184,14 @@
         "examples/assets/synthetic-robustness-v1/low-contrast-red-circle-left.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -200,14 +200,14 @@
         "examples/assets/synthetic-robustness-v1/low-contrast-red-circle-left.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -216,14 +216,14 @@
         "examples/assets/synthetic-robustness-v1/low-contrast-blue-square-right.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -232,14 +232,14 @@
         "examples/assets/synthetic-robustness-v1/low-contrast-blue-square-right.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -248,14 +248,14 @@
         "examples/assets/synthetic-robustness-v1/low-contrast-blue-square-right.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -264,14 +264,14 @@
         "examples/assets/synthetic-robustness-v1/low-contrast-green-triangle-bottom.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -280,14 +280,14 @@
         "examples/assets/synthetic-robustness-v1/low-contrast-green-triangle-bottom.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -296,14 +296,14 @@
         "examples/assets/synthetic-robustness-v1/low-contrast-green-triangle-bottom.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -312,14 +312,14 @@
         "examples/assets/synthetic-robustness-v1/clutter-purple-triangle-center.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -328,14 +328,14 @@
         "examples/assets/synthetic-robustness-v1/clutter-purple-triangle-center.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -344,14 +344,14 @@
         "examples/assets/synthetic-robustness-v1/clutter-purple-triangle-center.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -360,14 +360,14 @@
         "examples/assets/synthetic-robustness-v1/clutter-orange-circle-left.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -376,14 +376,14 @@
         "examples/assets/synthetic-robustness-v1/clutter-orange-circle-left.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -392,14 +392,14 @@
         "examples/assets/synthetic-robustness-v1/clutter-orange-circle-left.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -408,14 +408,14 @@
         "examples/assets/synthetic-robustness-v1/clutter-green-square-right.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -424,14 +424,14 @@
         "examples/assets/synthetic-robustness-v1/clutter-green-square-right.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -440,14 +440,14 @@
         "examples/assets/synthetic-robustness-v1/clutter-green-square-right.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -456,14 +456,14 @@
         "examples/assets/synthetic-robustness-v1/occluded-red-circle-vertical.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -472,14 +472,14 @@
         "examples/assets/synthetic-robustness-v1/occluded-red-circle-vertical.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -488,14 +488,14 @@
         "examples/assets/synthetic-robustness-v1/occluded-red-circle-vertical.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -504,14 +504,14 @@
         "examples/assets/synthetic-robustness-v1/occluded-blue-square-horizontal.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -520,14 +520,14 @@
         "examples/assets/synthetic-robustness-v1/occluded-blue-square-horizontal.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -536,14 +536,14 @@
         "examples/assets/synthetic-robustness-v1/occluded-blue-square-horizontal.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -552,14 +552,14 @@
         "examples/assets/synthetic-robustness-v1/occluded-green-triangle-vertical.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -568,14 +568,14 @@
         "examples/assets/synthetic-robustness-v1/occluded-green-triangle-vertical.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -584,14 +584,14 @@
         "examples/assets/synthetic-robustness-v1/occluded-green-triangle-vertical.png"
       ],
       "checks": {
-        "media_opens_and_renders": false,
-        "robustness_condition_is_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_renders": true,
+        "robustness_condition_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     }
   ]

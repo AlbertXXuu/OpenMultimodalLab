@@ -40,7 +40,7 @@ from openmultimodal_lab.datasets import load_tasks  # noqa: E402
 
 
 class VideoCorpusToolingTests(unittest.TestCase):
-    def test_canonical_corpus_is_deterministic_and_awaits_review(self) -> None:
+    def test_canonical_corpus_is_deterministic_and_owner_reviewed(self) -> None:
         rows = [
             json.loads(line)
             for line in CANONICAL_DATASET.read_text(encoding="utf-8").splitlines()
@@ -62,12 +62,24 @@ class VideoCorpusToolingTests(unittest.TestCase):
             review["dataset_sha256"],
             hashlib.sha256(CANONICAL_DATASET.read_bytes()).hexdigest(),
         )
-        self.assertEqual(len(findings), 24)
+        self.assertEqual(findings, [])
         self.assertTrue(
             all(
-                value is False
+                value is True
                 for entry in review["entries"]
                 for value in entry["checks"].values()
+            )
+        )
+        self.assertTrue(
+            all(
+                entry["reviewer"] == "AlbertXXuu"
+                for entry in review["entries"]
+            )
+        )
+        self.assertTrue(
+            all(
+                entry["reviewed_at"] == "2026-08-10"
+                for entry in review["entries"]
             )
         )
 

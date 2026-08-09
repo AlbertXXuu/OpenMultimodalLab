@@ -502,7 +502,7 @@ def audit_release_readiness(root: Path) -> list[ReadinessCheck]:
             "HUMAN-REVIEW",
             len(task_ids) >= 100 and not review_issues,
             (
-                f"review reports cover {sorted(dataset_versions)} and "
+                f"review evidence covers {sorted(dataset_versions)} and "
                 f"the corpus has {len(task_ids)} tasks"
                 if len(task_ids) >= 100 and not review_issues
                 else f"current tasks={len(task_ids)}; review issues="

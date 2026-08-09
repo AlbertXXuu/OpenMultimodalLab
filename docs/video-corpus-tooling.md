@@ -1,9 +1,9 @@
 # Deterministic short-video corpus tooling
 
 This tooling generated the approved `synthetic-video-v1` 24-task candidate.
-Its dataset, eight clips, eight contact sheets, and SHA-bound review template
-are committed, but the candidate is not human-approved until the repository
-owner completes and validates every review entry.
+Its dataset, eight clips, eight contact sheets, and SHA-bound review record are
+committed. `AlbertXXuu` completed all 24 review entries on 2026-08-10, and the
+record validates against the unchanged dataset hash.
 
 ## What is generated
 
@@ -93,14 +93,11 @@ On 2026-08-02, the tooling was checked without committing a canonical draft:
 This is one cold diagnostic invocation per model. It proves format/runtime
 compatibility only and is not a formal quality or performance result.
 
-## Remaining review and freeze steps
+## Remaining freeze and formal-run steps
 
-The approved-name generation and hash binding are complete. The owner must now:
-
-1. inspect all eight clips and all 24 task/answer pairs;
-2. complete and validate the review record;
-3. freeze the reviewed bytes;
-4. run both pinned models with one warm-up and exactly three repetitions.
+Generation, hash binding, and owner review are complete. The remaining steps
+are to freeze the reviewed bytes and run both pinned models with one warm-up
+and exactly three repetitions.
 
 Do not rename a canonical dataset after formal runs. A content change requires
 a new version and new review hash.

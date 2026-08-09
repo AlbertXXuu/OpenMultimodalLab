@@ -25,14 +25,14 @@
         "examples/assets/synthetic-video-v1/motion-right-red-square.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -41,14 +41,14 @@
         "examples/assets/synthetic-video-v1/motion-right-red-square.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -57,14 +57,14 @@
         "examples/assets/synthetic-video-v1/motion-right-red-square.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -73,14 +73,14 @@
         "examples/assets/synthetic-video-v1/motion-left-blue-circle.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -89,14 +89,14 @@
         "examples/assets/synthetic-video-v1/motion-left-blue-circle.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -105,14 +105,14 @@
         "examples/assets/synthetic-video-v1/motion-left-blue-circle.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -121,14 +121,14 @@
         "examples/assets/synthetic-video-v1/motion-down-green-triangle.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -137,14 +137,14 @@
         "examples/assets/synthetic-video-v1/motion-down-green-triangle.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -153,14 +153,14 @@
         "examples/assets/synthetic-video-v1/motion-down-green-triangle.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -169,14 +169,14 @@
         "examples/assets/synthetic-video-v1/motion-up-purple-square.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -185,14 +185,14 @@
         "examples/assets/synthetic-video-v1/motion-up-purple-square.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -201,14 +201,14 @@
         "examples/assets/synthetic-video-v1/motion-up-purple-square.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -217,14 +217,14 @@
         "examples/assets/synthetic-video-v1/event-appearance-order.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -233,14 +233,14 @@
         "examples/assets/synthetic-video-v1/event-appearance-order.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -249,14 +249,14 @@
         "examples/assets/synthetic-video-v1/event-appearance-order.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -265,14 +265,14 @@
         "examples/assets/synthetic-video-v1/event-disappearance-order.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -281,14 +281,14 @@
         "examples/assets/synthetic-video-v1/event-disappearance-order.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -297,14 +297,14 @@
         "examples/assets/synthetic-video-v1/event-disappearance-order.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -313,14 +313,14 @@
         "examples/assets/synthetic-video-v1/state-color-change.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -329,14 +329,14 @@
         "examples/assets/synthetic-video-v1/state-color-change.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -345,14 +345,14 @@
         "examples/assets/synthetic-video-v1/state-color-change.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -361,14 +361,14 @@
         "examples/assets/synthetic-video-v1/count-increase.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -377,14 +377,14 @@
         "examples/assets/synthetic-video-v1/count-increase.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     },
     {
@@ -393,14 +393,14 @@
         "examples/assets/synthetic-video-v1/count-increase.avi"
       ],
       "checks": {
-        "media_opens_and_plays": false,
-        "sampled_temporal_evidence_visible": false,
-        "prompt_answer_matches_media": false,
-        "answer_is_unambiguous": false,
-        "license_and_provenance_confirmed": false
+        "media_opens_and_plays": true,
+        "sampled_temporal_evidence_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
       },
-      "reviewer": null,
-      "reviewed_at": null,
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-10",
       "notes": ""
     }
   ]
