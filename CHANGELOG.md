@@ -61,6 +61,12 @@ All notable changes to this project will be documented in this file.
 - Approved `synthetic-video-v1` with 24 licensed short-video tasks, eight deterministic AVI clips, contact sheets, and a validated SHA-bound owner-review record.
 - Approved `synthetic-robustness-v1` with 36 licensed robustness tasks, 12 deterministic PNG images, an overview sheet, and a validated SHA-bound owner-review record.
 - A 102-task reviewed final-corpus candidate whose remaining release work begins with the two pinned-model formal runs.
+- A SHA-256-bound formal-evaluation configuration and builder that assembles
+  all 102 approved tasks without introducing a new dataset version.
+
+### Fixed
+
+- Enforced LF checkouts for deterministic CSV report artifacts on Windows.
 
 ### Planned
 
