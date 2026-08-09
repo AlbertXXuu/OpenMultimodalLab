@@ -72,6 +72,9 @@ All notable changes to this project will be documented in this file.
   failure rather than a cherry-picked all-pass example.
 - Final candidate package metadata for the owner-approved `v1.0.0` public
   version. Creating a GitHub Release remains a separate owner action.
+- Final source-security, dependency-license, Python 3.11/3.13, fresh Windows
+  wheel, deterministic rebuild, and GitHub Linux CI evidence, with a strict
+  technical-readiness gate that leaves publication to the repository owner.
 
 ### Fixed
 

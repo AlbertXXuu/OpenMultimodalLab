@@ -197,12 +197,12 @@ class ReleaseReadinessTests(unittest.TestCase):
             "FINAL-LICENSE-AUDIT",
             "FINAL-FRESH-WINDOWS",
             "FINAL-CANDIDATE-VALIDATION",
+            "FINAL-LINUX-CI",
         ):
             with self.subTest(check_id=check_id):
                 self.assertTrue(checks[check_id].passed)
 
         for check_id in (
-            "FINAL-LINUX-CI",
             "OWNER-PUBLICATION-APPROVAL",
         ):
             with self.subTest(check_id=check_id):
