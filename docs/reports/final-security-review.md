@@ -35,8 +35,8 @@ python -m pip_audit --path .\.venv-ml\Lib\site-packages `
 
 | Artifact | Result | SHA-256 |
 |---|---|---|
-| Bandit JSON | 8 low, 0 medium, 0 high | `75bdfdee8c12849a4a62638c67efa64a1a92008749867d729aed34bb7d0c6afb` |
-| pip-audit JSON | 41 audited, 0 known vulnerabilities, 3 skipped | `7eeedbe6e9ad0d464d87a6c5abf3fd2908894686388251ce18237d01e202a082` |
+| Bandit JSON | 8 low, 0 medium, 0 high | `70e66cbc5f496765d3b4b5936434aa6b04409bf784b7f8d00af3fb2e509ec0f5` |
+| pip-audit JSON | 41 audited, 0 known vulnerabilities, 3 skipped | `075e9e8162153cf06d6090496b37c031ba43c094894de48f9ee4c20b9cfc7f12` |
 
 Before the final scan, four internal `assert` statements were replaced with
 explicit checks that remain active under optimized Python. The shared adapter
