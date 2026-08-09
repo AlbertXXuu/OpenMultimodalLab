@@ -13,6 +13,11 @@ from typing import Any, Iterable
 from openmultimodal_lab.report_bundle import verify_report_bundle
 from openmultimodal_lab.reporting import ReportError
 
+try:
+    from scripts.validate_human_review import audit_human_review
+except ModuleNotFoundError:  # Direct execution adds scripts/, not its parent.
+    from validate_human_review import audit_human_review
+
 
 VIDEO_SUFFIXES = frozenset(
     {".avi", ".m4v", ".mkv", ".mov", ".mp4", ".mpeg", ".mpg", ".webm"}
@@ -20,10 +25,22 @@ VIDEO_SUFFIXES = frozenset(
 CANONICAL_DATASETS = (
     "examples/tasks/synthetic-v1.1.jsonl",
     "examples/tasks/synthetic-docs-v1.jsonl",
+    "examples/tasks/synthetic-video-v1.jsonl",
+    "examples/tasks/synthetic-robustness-v1.jsonl",
 )
 REVIEW_REPORTS_BY_DATASET = {
     "synthetic-v1.1": "docs/reports/2026-07-29-synthetic-v1.md",
     "synthetic-docs-v1": "docs/reports/2026-08-01-synthetic-docs-v1.md",
+}
+REVIEW_RECORDS_BY_DATASET = {
+    "synthetic-video-v1": (
+        "examples/tasks/synthetic-video-v1.jsonl",
+        "docs/reviews/synthetic-video-v1.json",
+    ),
+    "synthetic-robustness-v1": (
+        "examples/tasks/synthetic-robustness-v1.jsonl",
+        "docs/reviews/synthetic-robustness-v1.json",
+    ),
 }
 FORMAL_RESULTS = (
     (
@@ -462,23 +479,34 @@ def audit_release_readiness(root: Path) -> list[ReadinessCheck]:
             else "; ".join(metadata_issues[:5]),
         )
     )
-    missing_review_reports = [
-        version
-        for version in sorted(dataset_versions)
-        if version not in REVIEW_REPORTS_BY_DATASET
-        or not (root / REVIEW_REPORTS_BY_DATASET[version]).is_file()
-    ]
+    review_issues: list[str] = []
+    for version in sorted(dataset_versions):
+        if version in REVIEW_RECORDS_BY_DATASET:
+            dataset_relative, review_relative = REVIEW_RECORDS_BY_DATASET[
+                version
+            ]
+            findings = audit_human_review(
+                root / dataset_relative,
+                root / review_relative,
+            )
+            if findings:
+                review_issues.append(
+                    f"{version}: {len(findings)} open review findings"
+                )
+        elif version not in REVIEW_REPORTS_BY_DATASET or not (
+            root / REVIEW_REPORTS_BY_DATASET[version]
+        ).is_file():
+            review_issues.append(f"{version}: review evidence is missing")
     checks.append(
         ReadinessCheck(
             "HUMAN-REVIEW",
-            len(task_ids) >= 100 and not missing_review_reports,
+            len(task_ids) >= 100 and not review_issues,
             (
-                f"review reports cover {sorted(dataset_versions)} and "
+                f"review evidence covers {sorted(dataset_versions)} and "
                 f"the corpus has {len(task_ids)} tasks"
-                if len(task_ids) >= 100 and not missing_review_reports
-                else f"current tasks={len(task_ids)}; datasets missing a "
-                f"review report={missing_review_reports}; final >=100-task "
-                "review is required"
+                if len(task_ids) >= 100 and not review_issues
+                else f"current tasks={len(task_ids)}; review issues="
+                f"{review_issues}; final owner review is required"
             ),
         )
     )

@@ -7,10 +7,10 @@ can be verified without running a model. `scripts/build_benchmark_report.py`
 provides that release-oriented path using only the Python standard library and
 the installed project package.
 
-This tooling does not make the current 42-task corpus a final v1.0 benchmark.
-It proves the report-rebuilding mechanism against the preserved image and
-document results while the named video/robustness datasets and final
-100-or-more-task runs remain open.
+This tooling does not make the 102-task candidate a final v1.0 benchmark. It
+proves the report-rebuilding mechanism against the preserved 42-task image and
+document results. The 60 new video/robustness tasks are owner-reviewed but
+still require final protocol-compliant runs before they enter the report.
 
 ## Build the current evidence bundle
 

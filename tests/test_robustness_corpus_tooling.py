@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import struct
 import sys
@@ -12,6 +13,16 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = PROJECT_ROOT / "scripts"
+CANONICAL_DATASET = (
+    PROJECT_ROOT / "examples/tasks/synthetic-robustness-v1.jsonl"
+)
+CANONICAL_ASSETS = PROJECT_ROOT / "examples/assets/synthetic-robustness-v1"
+CANONICAL_REVIEW = (
+    PROJECT_ROOT / "docs/reviews/synthetic-robustness-v1.json"
+)
+CANONICAL_REVIEW_SHEET = (
+    PROJECT_ROOT / "docs/reviews/synthetic-robustness-v1-overview.png"
+)
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
@@ -66,6 +77,65 @@ def _pixel(pixels: bytes, x: int, y: int, width: int = WIDTH) -> tuple[int, ...]
 
 
 class RobustnessCorpusToolingTests(unittest.TestCase):
+    def test_canonical_corpus_is_deterministic_and_owner_reviewed(self) -> None:
+        rows = [
+            json.loads(line)
+            for line in CANONICAL_DATASET.read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        review = json.loads(CANONICAL_REVIEW.read_text(encoding="utf-8"))
+        findings = audit_human_review(CANONICAL_DATASET, CANONICAL_REVIEW)
+        tasks = load_tasks(CANONICAL_DATASET, media_root=PROJECT_ROOT)
+
+        self.assertEqual(
+            rows,
+            build_tasks(
+                "synthetic-robustness-v1",
+                "examples/assets/synthetic-robustness-v1",
+            ),
+        )
+        self.assertEqual(len(tasks), 36)
+        self.assertEqual(
+            review["dataset_sha256"],
+            hashlib.sha256(CANONICAL_DATASET.read_bytes()).hexdigest(),
+        )
+        self.assertEqual(findings, [])
+        self.assertTrue(
+            all(
+                value is True
+                for entry in review["entries"]
+                for value in entry["checks"].values()
+            )
+        )
+        self.assertTrue(
+            all(
+                entry["reviewer"] == "AlbertXXuu"
+                for entry in review["entries"]
+            )
+        )
+        self.assertTrue(
+            all(
+                entry["reviewed_at"] == "2026-08-10"
+                for entry in review["entries"]
+            )
+        )
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            generate_assets(
+                root / "assets",
+                review_sheet=root / "overview.png",
+            )
+            for path in CANONICAL_ASSETS.iterdir():
+                self.assertEqual(
+                    path.read_bytes(),
+                    (root / "assets" / path.name).read_bytes(),
+                )
+            self.assertEqual(
+                CANONICAL_REVIEW_SHEET.read_bytes(),
+                (root / "overview.png").read_bytes(),
+            )
+
     def test_draft_contains_36_unique_licensed_tasks(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

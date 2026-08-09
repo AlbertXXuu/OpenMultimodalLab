@@ -28,10 +28,10 @@ make CI green.
 | Image input and formal comparison | Same-commit 10-task, two-model raw JSONL and manifests | Proven |
 | Document/table/chart input and formal comparison | Same-commit 32-task, two-model raw JSONL and manifests | Proven |
 | Short-video runtime | Both full models completed a bounded eight-frame diagnostic clip | Proven runtime only |
-| Licensed versioned short-video tasks | No committed canonical video task set | Open; owner must confirm dataset name first |
-| Short-video corpus tooling | Byte-stable eight-clip/24-task generator plus SHA-bound human-review validator | Proven tooling; generated draft is not canonical evidence |
-| Visual-robustness corpus tooling | Byte-stable 12-image/36-task generator across four controlled factors plus SHA-bound review | Proven tooling; generated draft is not canonical evidence |
-| At least 100 unique, human-checked tasks | 42 canonical tasks with review reports | Open; 58+ additional unique tasks required |
+| Licensed versioned short-video tasks | 24 `synthetic-video-v1` tasks over eight project-generated AVI clips | Generated, SHA-bound, and owner-reviewed |
+| Short-video corpus tooling | Byte-stable eight-clip/24-task generator plus SHA-bound human-review validator | Proven tooling and reviewed candidate |
+| Visual-robustness corpus tooling | Byte-stable 12-image/36-task generator across four controlled factors plus SHA-bound review | Proven tooling and reviewed candidate |
+| At least 100 unique, human-checked tasks | 102 unique licensed tasks: 42 covered by existing reports and 60 covered by validated owner-signed records | Proven for the current corpus |
 | Formal video metrics for both models | No warm-up plus three-repeat video task-set run | Open |
 | Quality, TTFT, throughput, memory, and failures | Present in preserved image/document records | Proven for current formal slices |
 | Rebuildable reports and visuals | Raw JSONL/manifests, strict formal-grid validation, deterministic Markdown/CSV/failure/SVG bundle, self-hashed build manifest, tamper tests | Proven tooling and current 42-task baseline; final corpus bundle open |
@@ -50,8 +50,8 @@ make CI green.
 ## Required final sequence
 
 1. **Complete:** record explicit naming approval without changing repository visibility.
-2. Build and human-review enough licensed tasks to reach at least 100 unique
-   canonical tasks, including short video.
+2. **Complete:** 102 licensed tasks are generated and the 24 video plus 36
+   robustness tasks have validated owner review records.
 3. Run both pinned models on the final video and complete canonical corpus with
    one warm-up and three measurements, preserving every failure.
 4. Build the final deterministic report bundle from raw artifacts, rebuild it
