@@ -5,7 +5,8 @@ This report was generated deterministically from preserved result JSONL and side
 ## Scope
 
 - 2 model backends
-- 2 versioned task sets
+- 2 SHA-bound evaluation inputs
+- 2 retained dataset versions
 - 42 unique dataset tasks
 - exactly one successful warm-up followed by three complete measured repetitions per source
 - batch size 1, deterministic decoding, no retries, and no model reloads during measurement

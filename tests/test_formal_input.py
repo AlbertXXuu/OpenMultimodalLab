@@ -19,6 +19,7 @@ from build_formal_input import (  # noqa: E402
 
 
 CANONICAL_CONFIG = PROJECT_ROOT / "configs" / "formal-evaluation.json"
+COMMITTED_INPUT = PROJECT_ROOT / "runs" / "formal-evaluation-input.jsonl"
 EXPECTED_HASH = "d18e6dce941cfac1fee0d637449229d786d7d6b601c063c0af2266b7e2d7a5a8"
 
 
@@ -32,6 +33,7 @@ class FormalInputTests(unittest.TestCase):
             self.assertEqual(summary.sha256, EXPECTED_HASH)
             self.assertEqual(output.read_bytes().count(b"\n"), 102)
             self.assertNotIn(b"\r", output.read_bytes())
+            self.assertEqual(output.read_bytes(), COMMITTED_INPUT.read_bytes())
             verified = build_formal_input(
                 CANONICAL_CONFIG,
                 output,

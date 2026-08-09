@@ -654,6 +654,14 @@ def _failure_csv(sources: tuple[FormalSource, ...]) -> bytes:
 
 def _markdown_report(sources: tuple[FormalSource, ...]) -> bytes:
     dataset_count = len({source.dataset_sha256 for source in sources})
+    input_label = "input" if dataset_count == 1 else "inputs"
+    dataset_version_count = len(
+        {
+            version
+            for source in sources
+            for version in source.dataset_versions
+        }
+    )
     backend_count = len({source.backend for source in sources})
     task_count = sum(
         len(group[0].task_ids)
@@ -670,7 +678,8 @@ def _markdown_report(sources: tuple[FormalSource, ...]) -> bytes:
         "## Scope",
         "",
         f"- {backend_count} model backends",
-        f"- {dataset_count} versioned task sets",
+        f"- {dataset_count} SHA-bound evaluation {input_label}",
+        f"- {dataset_version_count} retained dataset versions",
         f"- {task_count} unique dataset tasks",
         "- exactly one successful warm-up followed by three complete measured "
         "repetitions per source",

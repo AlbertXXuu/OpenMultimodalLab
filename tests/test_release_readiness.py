@@ -186,6 +186,7 @@ class ReleaseReadinessTests(unittest.TestCase):
             "TWO-REAL-MODELS",
             "FORMAL-IMAGE",
             "FORMAL-DOCUMENT",
+            "FORMAL-VIDEO",
             "FORMAL-PROTOCOL",
             "DOCUMENTATION",
             "REPORT-BUNDLE-TOOLING",
@@ -196,7 +197,6 @@ class ReleaseReadinessTests(unittest.TestCase):
                 self.assertTrue(checks[check_id].passed)
 
         for check_id in (
-            "FORMAL-VIDEO",
             "VIDEO-DEMO",
             "FINAL-LICENSE-AUDIT",
             "FINAL-FRESH-WINDOWS",

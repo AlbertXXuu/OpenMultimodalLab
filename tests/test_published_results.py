@@ -40,6 +40,18 @@ DOCUMENT_SMOL_RESULT = (
 DOCUMENT_SMOL_MANIFEST = (
     RESULTS_ROOT / "2026-08-02-smolvlm2-500m-docs-formal.manifest.json"
 )
+FINAL_QWEN_RESULT = (
+    RESULTS_ROOT / "2026-08-10-qwen3-vl-v1.0.0-formal.jsonl"
+)
+FINAL_QWEN_MANIFEST = (
+    RESULTS_ROOT / "2026-08-10-qwen3-vl-v1.0.0-formal.manifest.json"
+)
+FINAL_SMOL_RESULT = (
+    RESULTS_ROOT / "2026-08-10-smolvlm2-v1.0.0-formal.jsonl"
+)
+FINAL_SMOL_MANIFEST = (
+    RESULTS_ROOT / "2026-08-10-smolvlm2-v1.0.0-formal.manifest.json"
+)
 
 
 def _sha256(path: Path) -> str:
@@ -47,6 +59,116 @@ def _sha256(path: Path) -> str:
 
 
 class PublishedResultTests(unittest.TestCase):
+    def test_final_102_task_comparison_is_complete_and_unchanged(self) -> None:
+        cases = (
+            {
+                "result": FINAL_QWEN_RESULT,
+                "manifest": FINAL_QWEN_MANIFEST,
+                "result_sha256": (
+                    "A6574423770718FE20F7BD308D09FB82"
+                    "46ED9D0F71A70BD5B15138FF9C90908C"
+                ),
+                "manifest_sha256": (
+                    "7B73EFC0DECECC8D03F998040844FFD1"
+                    "22284DD24745907035EB33C8C825CC78"
+                ),
+                "backend": "qwen3-vl",
+                "revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+                "mean_score": 0.7843137254901961,
+                "median_latency_ms": 212.855,
+                "median_ttft_ms": 120.54755,
+                "peak_gpu_memory_mb": 4180.45556640625,
+            },
+            {
+                "result": FINAL_SMOL_RESULT,
+                "manifest": FINAL_SMOL_MANIFEST,
+                "result_sha256": (
+                    "B195DC43E7D0F719C02F819C4FFAB801"
+                    "7DD905B74CD7981D4E39BF8527FDB027"
+                ),
+                "manifest_sha256": (
+                    "CC2C3B4E66B2814475D39C292CE3AEC8"
+                    "74F0940DAC0F5DF978777BF6AAE9BCA9"
+                ),
+                "backend": "smolvlm2",
+                "revision": "7b375e1b73b11138ff12fe22c8f2822d8fe03467",
+                "mean_score": 0.6895424836601307,
+                "median_latency_ms": 471.53085,
+                "median_ttft_ms": 260.0487,
+                "peak_gpu_memory_mb": 1265.279296875,
+            },
+        )
+        manifests: list[dict[str, object]] = []
+        for case in cases:
+            with self.subTest(backend=case["backend"]):
+                records = load_records(case["result"])
+                summary = summarize(records)
+                manifest_text = case["manifest"].read_text(encoding="utf-8")
+                manifest = json.loads(manifest_text)
+                manifests.append(manifest)
+
+                self.assertEqual(_sha256(case["result"]), case["result_sha256"])
+                self.assertEqual(
+                    _sha256(case["manifest"]),
+                    case["manifest_sha256"],
+                )
+                self.assertEqual(summary["total_records"], 307)
+                self.assertEqual(summary["warmup_attempts"], 1)
+                self.assertEqual(summary["total_tasks"], 306)
+                self.assertEqual(summary["unique_tasks"], 102)
+                self.assertEqual(summary["repetitions"], 3)
+                self.assertTrue(summary["formal_performance_run"])
+                self.assertEqual(summary["successful_tasks"], 306)
+                self.assertEqual(summary["failures"], {})
+                self.assertAlmostEqual(summary["mean_score"], case["mean_score"])
+                self.assertAlmostEqual(
+                    summary["median_latency_ms"],
+                    case["median_latency_ms"],
+                )
+                self.assertAlmostEqual(
+                    summary["median_ttft_ms"],
+                    case["median_ttft_ms"],
+                )
+                self.assertAlmostEqual(
+                    summary["peak_gpu_memory_mb"],
+                    case["peak_gpu_memory_mb"],
+                )
+                self.assertEqual(manifest["backend"]["name"], case["backend"])
+                self.assertEqual(
+                    manifest["backend"]["model_revision"],
+                    case["revision"],
+                )
+                self.assertEqual(manifest["status"], "completed")
+                self.assertFalse(manifest["environment"]["git"]["dirty"])
+                self.assertEqual(
+                    manifest["environment"]["git"]["commit"],
+                    "aeb445086001215dfe6f0c7fe04e6a7872f447c7",
+                )
+                self.assertEqual(manifest["environment"]["packages"]["av"], "18.0.0")
+                self.assertNotRegex(manifest_text, r"(?i)[a-z]:[\\/]")
+
+        self.assertEqual(manifests[0]["dataset"], manifests[1]["dataset"])
+        self.assertEqual(
+            manifests[0]["dataset"]["sha256"],
+            "d18e6dce941cfac1fee0d637449229d786d7d6b601c063c0af2266b7e2d7a5a8",
+        )
+
+    def test_readmes_show_the_preserved_final_metrics(self) -> None:
+        english = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+        chinese = (PROJECT_ROOT / "README.zh-CN.md").read_text(encoding="utf-8")
+
+        for text in (english, chinese):
+            self.assertIn(
+                "Qwen3-VL-2B | 0.784 | 120.5 ms | 212.9 ms | "
+                "4,180.5 MiB | 0/306",
+                text,
+            )
+            self.assertIn(
+                "SmolVLM2-500M | 0.690 | 260.0 ms | 471.5 ms | "
+                "1,265.3 MiB | 0/306",
+                text,
+            )
+
     def test_formal_qwen_baseline_is_complete_and_unchanged(self) -> None:
         records = load_records(FORMAL_QWEN_RESULT)
         summary = summarize(records)

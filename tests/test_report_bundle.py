@@ -30,8 +30,16 @@ FORMAL_RESULTS = (
     RESULTS_ROOT / "2026-08-02-qwen3-vl-docs-formal.jsonl",
     RESULTS_ROOT / "2026-08-02-smolvlm2-500m-docs-formal.jsonl",
 )
+FINAL_RESULTS = (
+    RESULTS_ROOT / "2026-08-10-qwen3-vl-v1.0.0-formal.jsonl",
+    RESULTS_ROOT / "2026-08-10-smolvlm2-v1.0.0-formal.jsonl",
+)
 GENERATOR = PROJECT_ROOT / "scripts" / "build_benchmark_report.py"
 COMMITTED_BUNDLE = PROJECT_ROOT / "docs" / "reports" / "rebuilt-baseline"
+FINAL_BUNDLE = PROJECT_ROOT / "docs" / "reports" / "v1.0.0-candidate"
+FINAL_INPUT_SHA256 = (
+    "d18e6dce941cfac1fee0d637449229d786d7d6b601c063c0af2266b7e2d7a5a8"
+)
 
 
 class FormalProtocolValidationTests(unittest.TestCase):
@@ -164,6 +172,32 @@ class ReportBundleTests(unittest.TestCase):
             project_root=PROJECT_ROOT,
         )
         self.assertEqual(manifest["status"], "verified-formal-sources")
+
+    def test_final_102_task_bundle_is_complete_and_byte_exact(self) -> None:
+        sources = load_comparable_sources(
+            FINAL_RESULTS,
+            project_root=PROJECT_ROOT,
+        )
+        self.assertEqual(
+            {source.backend for source in sources},
+            {"qwen3-vl", "smolvlm2"},
+        )
+        self.assertEqual({len(source.task_ids) for source in sources}, {102})
+        self.assertEqual(
+            {source.dataset_sha256 for source in sources},
+            {FINAL_INPUT_SHA256},
+        )
+        generated = build_report_bundle(sources, project_root=PROJECT_ROOT)
+        for name, content in generated.items():
+            with self.subTest(name=name):
+                self.assertEqual((FINAL_BUNDLE / name).read_bytes(), content)
+
+        manifest = verify_report_bundle(FINAL_BUNDLE, project_root=PROJECT_ROOT)
+        self.assertEqual(len(manifest["sources"]), 2)
+        self.assertEqual(len(manifest["outputs"]), 5)
+        report = generated["report.md"].decode("utf-8")
+        self.assertIn("102 unique dataset tasks", report)
+        self.assertIn("4 retained dataset versions", report)
 
     def test_written_bundle_verifies_and_detects_tampering(self) -> None:
         bundle = build_report_bundle(

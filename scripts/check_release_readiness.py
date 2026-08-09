@@ -42,26 +42,24 @@ REVIEW_RECORDS_BY_DATASET = {
         "docs/reviews/synthetic-robustness-v1.json",
     ),
 }
+FINAL_DATASET_VERSIONS = frozenset(
+    {
+        "synthetic-v1.1",
+        "synthetic-docs-v1",
+        "synthetic-video-v1",
+        "synthetic-robustness-v1",
+    }
+)
 FORMAL_RESULTS = (
     (
-        "docs/reports/results/2026-07-31-qwen3-vl-comparison-formal.jsonl",
+        "docs/reports/results/2026-08-10-qwen3-vl-v1.0.0-formal.jsonl",
         "qwen3-vl",
-        "image",
+        ("image", "document", "video"),
     ),
     (
-        "docs/reports/results/2026-07-31-smolvlm2-500m-comparison-formal.jsonl",
+        "docs/reports/results/2026-08-10-smolvlm2-v1.0.0-formal.jsonl",
         "smolvlm2",
-        "image",
-    ),
-    (
-        "docs/reports/results/2026-08-02-qwen3-vl-docs-formal.jsonl",
-        "qwen3-vl",
-        "document",
-    ),
-    (
-        "docs/reports/results/2026-08-02-smolvlm2-500m-docs-formal.jsonl",
-        "smolvlm2",
-        "document",
+        ("image", "document", "video"),
     ),
 )
 REQUIRED_DOCUMENTS = (
@@ -521,7 +519,7 @@ def audit_release_readiness(root: Path) -> list[ReadinessCheck]:
     formal_by_modality: dict[str, set[str]] = {}
     formal_details: list[str] = []
     all_formal = True
-    for relative, expected_backend, modality in FORMAL_RESULTS:
+    for relative, expected_backend, modalities in FORMAL_RESULTS:
         path = root / relative
         if not path.is_file():
             all_formal = False
@@ -530,10 +528,22 @@ def audit_release_readiness(root: Path) -> list[ReadinessCheck]:
         records = _load_jsonl(path)
         passed, detail = _formal_result_status(records)
         actual_backends = {str(record.get("backend")) for record in records}
-        passed = passed and actual_backends == {expected_backend}
+        actual_versions = {
+            str(record.get("dataset_version"))
+            for record in records
+            if record.get("phase") == "measurement"
+        }
+        passed = (
+            passed
+            and actual_backends == {expected_backend}
+            and actual_versions == FINAL_DATASET_VERSIONS
+        )
         all_formal = all_formal and passed
         if passed:
-            formal_by_modality.setdefault(modality, set()).add(expected_backend)
+            for modality in modalities:
+                formal_by_modality.setdefault(modality, set()).add(
+                    expected_backend
+                )
         formal_details.append(f"{path.name}: {detail}")
 
     real_backends = (
@@ -578,13 +588,13 @@ def audit_release_readiness(root: Path) -> list[ReadinessCheck]:
             else f"missing={missing_documents}",
         )
     )
-    baseline_bundle = root / "docs/reports/rebuilt-baseline"
+    baseline_bundle = root / "docs/reports/v1.0.0-candidate"
     try:
         bundle_manifest = verify_report_bundle(
             baseline_bundle,
             project_root=root,
         )
-        bundle_passed = len(bundle_manifest.get("sources", [])) == 4
+        bundle_passed = len(bundle_manifest.get("sources", [])) == 2
         bundle_evidence = (
             f"verified sources={len(bundle_manifest.get('sources', []))}, "
             f"outputs={len(bundle_manifest.get('outputs', []))}"
