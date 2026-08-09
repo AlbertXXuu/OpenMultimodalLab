@@ -1,0 +1,341 @@
+{
+  "backend": {
+    "model_id": "Qwen/Qwen3-VL-2B-Instruct",
+    "model_revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+    "name": "qwen3-vl"
+  },
+  "checkpointed_at_utc": "2026-08-09T17:37:56.644486+00:00",
+  "completed_at_utc": "2026-08-09T17:37:56.654657+00:00",
+  "created_at_utc": "2026-08-09T17:35:36.289511+00:00",
+  "dataset": {
+    "media": [
+      {
+        "path": "examples/assets/synthetic-v1/shapes-basic-001.png",
+        "sha256": "4d395520f365158d5552a02f72b3ae5415bbd3fb5c6a758cb2372e0a264637c1"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/spatial-above-001.png",
+        "sha256": "a6578d60906f1daccf5091eaf575b3707279a3c136a154cb463de3c84f8c05be"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/counting-circles-001.png",
+        "sha256": "81938f85a073facb2ca534deb6f24f9eb76a0455bf85fa0561c788c84fb7aa36"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/counting-squares-001.png",
+        "sha256": "0a24f3a15ed134bc5874af121a76b401615041e277ad47e4f956001a46f2f370"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/spatial-left-001.png",
+        "sha256": "4bb5c2212e624a3e18631366a882d1d1b3aa7265863b9f4058060275ea912acf"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/spatial-below-001.png",
+        "sha256": "eaad001c43b9cb30740e2e023c692dc186b7ef2d16b68c042e61a0e148242b40"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/shapes-multi-001.png",
+        "sha256": "f05d4bd4a377f6ffd43597f0d20bae1df9f135201546c490a4e0717a5621e432"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/counting-rectangles-001.png",
+        "sha256": "10b889aed2c0e129b92429f54540af8d291367b3863fc8a68be1d77d51db081d"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/spatial-between-001.png",
+        "sha256": "2c805d9e3f096c493472bba47cf4937e0c340cd3e5d64e6a7a6eb125cc85f25b"
+      },
+      {
+        "path": "examples/assets/synthetic-v1/comparison-size-001.png",
+        "sha256": "3a69b0256d8b561ef74080eaa72e2fb33e1e4c1fd2219daa73d0b22929ff84ed"
+      },
+      {
+        "path": "examples/assets/synthetic-docs-v1/receipt-cafe.png",
+        "sha256": "9f73dfbd0bc132d16f16de9b9d21ef17664ea05218f5e8996ea16ee84dcc077b"
+      },
+      {
+        "path": "examples/assets/synthetic-docs-v1/invoice-studio.png",
+        "sha256": "c542b44d5c00759533b4157c3ae654e1195bcbe8fd766836199161984070a779"
+      },
+      {
+        "path": "examples/assets/synthetic-docs-v1/schedule-lab.png",
+        "sha256": "d19c7052c8284f5a6b92842f1ceee08f0a71c03342547437e6eeed2d40b7ef1d"
+      },
+      {
+        "path": "examples/assets/synthetic-docs-v1/inventory-table.png",
+        "sha256": "6c393e6283219c1c300f3186903b54cdbb0d69f6c4c9e7b8db2bcc6c52192c12"
+      },
+      {
+        "path": "examples/assets/synthetic-docs-v1/sales-bar-chart.png",
+        "sha256": "6ee2554370709b180a11f9e70b7f459f0baaad91ae03343ccd90a979da7c3f9d"
+      },
+      {
+        "path": "examples/assets/synthetic-docs-v1/traffic-line-chart.png",
+        "sha256": "20648e4c95a7e901701f66540722fb1f0a5d48e0910128c0a492175995595645"
+      },
+      {
+        "path": "examples/assets/synthetic-docs-v1/project-status.png",
+        "sha256": "cd25df46c552cab5b26bd7e890733829dd3d747b1e0af0a9c39337e6469bc203"
+      },
+      {
+        "path": "examples/assets/synthetic-docs-v1/energy-table.png",
+        "sha256": "e9cfb14aa2c52bcf5d9b0cec7ee8d1e15efd5cd9e663f93b2e569f23e0475ac8"
+      },
+      {
+        "path": "examples/assets/synthetic-video-v1/motion-right-red-square.avi",
+        "sha256": "8f2df32293933f55fd9d5fb4f4d2b70e0b11bb2836303870165f94bb30a44a42"
+      },
+      {
+        "path": "examples/assets/synthetic-video-v1/motion-left-blue-circle.avi",
+        "sha256": "d4710ab6e5b0ca07fcecb485d614f979be34b3b400d966e9bfc5879a34a4b957"
+      },
+      {
+        "path": "examples/assets/synthetic-video-v1/motion-down-green-triangle.avi",
+        "sha256": "d44881e56abafc321553dc2370f8daf8a719586547b59feb592f275d4b7ae1cf"
+      },
+      {
+        "path": "examples/assets/synthetic-video-v1/motion-up-purple-square.avi",
+        "sha256": "ec9f4a772905ec5e08999f9e6727f05897de63c7b9a40c17f120a04be48057fb"
+      },
+      {
+        "path": "examples/assets/synthetic-video-v1/event-appearance-order.avi",
+        "sha256": "beecb07a44a489ceecd2bb6466fc355f0c0772b46019f3ce1021a1d52f7afdc2"
+      },
+      {
+        "path": "examples/assets/synthetic-video-v1/event-disappearance-order.avi",
+        "sha256": "d4f1849876ecbb76dbe1b24c5e38720a8551840aeee51476fd246875a887d786"
+      },
+      {
+        "path": "examples/assets/synthetic-video-v1/state-color-change.avi",
+        "sha256": "3db1bc248fbf25b13c46487c8cb1831afde7392cb46cf879adfe82742e2819cb"
+      },
+      {
+        "path": "examples/assets/synthetic-video-v1/count-increase.avi",
+        "sha256": "240b314a4da9709324631ee31fe1680846e8ba07c4df4943c461f18be652b54a"
+      },
+      {
+        "path": "examples/assets/synthetic-robustness-v1/small-red-square-left.png",
+        "sha256": "a434530579bbb11133bbd09e866e20ab627d6b0a8c13d755c7e4152d9d4999aa"
+      },
+      {
+        "path": "examples/assets/synthetic-robustness-v1/small-blue-circle-right.png",
+        "sha256": "e815856701f45ca09314b8e4ee4860f2b4023e6754e8506facc0a7727ee7fb62"
+      },
+      {
+        "path": "examples/assets/synthetic-robustness-v1/small-green-triangle-top.png",
+        "sha256": "57279127b906a81bd6cc31b08d1c400349eebd6f0af74072d472bc8d069e27db"
+      },
+      {
+        "path": "examples/assets/synthetic-robustness-v1/low-contrast-red-circle-left.png",
+        "sha256": "7bbd242b76c6424fe8ca5502b5b725cc5465c83282122f4db010dffe1eec86d0"
+      },
+      {
+        "path": "examples/assets/synthetic-robustness-v1/low-contrast-blue-square-right.png",
+        "sha256": "a54218ac26870bb87466cc0a6e42e6ce5d15912cb5f99956a04c95e6666c51a6"
+      },
+      {
+        "path": "examples/assets/synthetic-robustness-v1/low-contrast-green-triangle-bottom.png",
+        "sha256": "e84bf610695e4880b93ec5c82146ff0c0014aa69ae80417df9dca8700fa87df2"
+      },
+      {
+        "path": "examples/assets/synthetic-robustness-v1/clutter-purple-triangle-center.png",
+        "sha256": "7cefbbe2df22a390baf80a2ffcd28fcc6335711f0e3c76a3a4e5eff3294016a8"
+      },
+      {
+        "path": "examples/assets/synthetic-robustness-v1/clutter-orange-circle-left.png",
+        "sha256": "03c2ef0b9610f3d064559cad62a668357d71706be84c5cdd6d6c0612dafae16a"
+      },
+      {
+        "path": "examples/assets/synthetic-robustness-v1/clutter-green-square-right.png",
+        "sha256": "5fe197f0cf27fe9d77e63e7b9b9e62fd1c2f55c2956e61930dbe8750671b1c88"
+      },
+      {
+        "path": "examples/assets/synthetic-robustness-v1/occluded-red-circle-vertical.png",
+        "sha256": "f487b9ae88e8cbe6c19c257e6a16008e50677e7f3b3c739cf76ca223f3f7a2fe"
+      },
+      {
+        "path": "examples/assets/synthetic-robustness-v1/occluded-blue-square-horizontal.png",
+        "sha256": "a8bb8ae719a1fa0789f2726d9b29c60ef10ed4b3f27b84138d8a0b43ca120d0b"
+      },
+      {
+        "path": "examples/assets/synthetic-robustness-v1/occluded-green-triangle-vertical.png",
+        "sha256": "15ced464b83ec959eadf9168e66da4cd876ccc6a4349344cb019e3f776957625"
+      }
+    ],
+    "path": "runs/formal-evaluation-input.jsonl",
+    "sha256": "d18e6dce941cfac1fee0d637449229d786d7d6b601c063c0af2266b7e2d7a5a8",
+    "task_ids": [
+      "shapes-basic-001",
+      "spatial-above-001",
+      "counting-circles-001",
+      "counting-squares-001",
+      "spatial-left-001",
+      "spatial-below-001",
+      "shapes-multi-001",
+      "counting-rectangles-001",
+      "spatial-between-001",
+      "comparison-size-001",
+      "receipt-cafe-id",
+      "receipt-cafe-total",
+      "receipt-cafe-date",
+      "receipt-cafe-bagel-price",
+      "invoice-studio-number",
+      "invoice-studio-client",
+      "invoice-studio-amount-due",
+      "invoice-studio-due-date",
+      "schedule-lab-1030-event",
+      "schedule-lab-robotics-time",
+      "schedule-lab-event-count",
+      "schedule-lab-last-event",
+      "inventory-q2-maximum",
+      "inventory-beta-total",
+      "inventory-gamma-change",
+      "inventory-lowest-stock",
+      "sales-region-maximum",
+      "sales-west-value",
+      "sales-south-west-gap",
+      "sales-total",
+      "traffic-peak-day",
+      "traffic-wed-value",
+      "traffic-mon-thu-rise",
+      "traffic-weekday-average",
+      "project-status-owner",
+      "project-status-value",
+      "project-status-remaining-budget",
+      "project-status-deadline",
+      "energy-highest-wind-site",
+      "energy-sites-bc-total",
+      "energy-site-d-total",
+      "energy-highest-solar-site",
+      "video-right-direction",
+      "video-right-start",
+      "video-right-end",
+      "video-left-direction",
+      "video-left-start",
+      "video-left-end",
+      "video-down-direction",
+      "video-down-start",
+      "video-down-end",
+      "video-up-direction",
+      "video-up-start",
+      "video-up-end",
+      "video-appear-first",
+      "video-appear-second",
+      "video-appear-final-count",
+      "video-disappear-first",
+      "video-disappear-last",
+      "video-disappear-final-count",
+      "video-color-start",
+      "video-color-end",
+      "video-color-changed",
+      "video-count-start",
+      "video-count-end",
+      "video-count-added",
+      "small-red-square-left-color",
+      "small-red-square-left-shape",
+      "small-red-square-left-context",
+      "small-blue-circle-right-color",
+      "small-blue-circle-right-shape",
+      "small-blue-circle-right-context",
+      "small-green-triangle-top-color",
+      "small-green-triangle-top-shape",
+      "small-green-triangle-top-context",
+      "low-contrast-red-circle-left-color",
+      "low-contrast-red-circle-left-shape",
+      "low-contrast-red-circle-left-context",
+      "low-contrast-blue-square-right-color",
+      "low-contrast-blue-square-right-shape",
+      "low-contrast-blue-square-right-context",
+      "low-contrast-green-triangle-bottom-color",
+      "low-contrast-green-triangle-bottom-shape",
+      "low-contrast-green-triangle-bottom-context",
+      "clutter-purple-triangle-center-color",
+      "clutter-purple-triangle-center-shape",
+      "clutter-purple-triangle-center-context",
+      "clutter-orange-circle-left-color",
+      "clutter-orange-circle-left-shape",
+      "clutter-orange-circle-left-context",
+      "clutter-green-square-right-color",
+      "clutter-green-square-right-shape",
+      "clutter-green-square-right-context",
+      "occluded-red-circle-vertical-color",
+      "occluded-red-circle-vertical-shape",
+      "occluded-red-circle-vertical-context",
+      "occluded-blue-square-horizontal-color",
+      "occluded-blue-square-horizontal-shape",
+      "occluded-blue-square-horizontal-context",
+      "occluded-green-triangle-vertical-color",
+      "occluded-green-triangle-vertical-shape",
+      "occluded-green-triangle-vertical-context"
+    ],
+    "versions": [
+      "synthetic-docs-v1",
+      "synthetic-robustness-v1",
+      "synthetic-v1.1",
+      "synthetic-video-v1"
+    ]
+  },
+  "environment": {
+    "executable_bits": 64,
+    "git": {
+      "commit": "aeb445086001215dfe6f0c7fe04e6a7872f447c7",
+      "dirty": false
+    },
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU, 8188 MiB, 596.49",
+    "packages": {
+      "accelerate": "1.14.0",
+      "av": "18.0.0",
+      "huggingface-hub": "1.25.1",
+      "num2words": "0.5.14",
+      "numpy": "2.4.6",
+      "openmultimodal-lab": "0.1.0",
+      "pillow": "12.3.0",
+      "safetensors": "0.8.0",
+      "tokenizers": "0.22.2",
+      "torch": "2.13.0+cu130",
+      "torchvision": "0.28.0+cu130",
+      "transformers": "5.14.1"
+    },
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+    "python": "3.11.0",
+    "python_implementation": "CPython"
+  },
+  "error": null,
+  "generation": {
+    "batch_size": 1,
+    "do_sample": false,
+    "max_new_tokens": 64,
+    "video_num_frames": 8
+  },
+  "generation_invocations": 307,
+  "measurement_records": 306,
+  "output": {
+    "path": "runs/v1.0.0-qwen3-vl-formal.jsonl",
+    "sha256": "a6574423770718fe20f7bd308d09fb8246ed9d0f71a70bd5b15138ff9c90908c",
+    "size_bytes": 881724
+  },
+  "protocol": {
+    "attempt_timeout_seconds": null,
+    "categories": [],
+    "gpu_synchronization": "adapter timing boundaries when CUDA is active",
+    "max_retries": 0,
+    "peak_memory_boundary": "maximum allocated CUDA memory during generation",
+    "repetitions": 3,
+    "retry_backoff": "none",
+    "retryable_statuses": [
+      "generation_error",
+      "timeout"
+    ],
+    "task_order": "dataset order repeated without shuffle",
+    "throughput_boundary": "generated tokens over model.generate duration",
+    "timeout_boundary": "adapter inference after one-time model loading; cooperative for built-in backends",
+    "ttft_boundary": "generation start to first-token logits completion",
+    "warmup_attempts": 1
+  },
+  "records_written": 307,
+  "retry_records": 0,
+  "schema_version": "1.0",
+  "status": "completed",
+  "warmup_records": 1
+}

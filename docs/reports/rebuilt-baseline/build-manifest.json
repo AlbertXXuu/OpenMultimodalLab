@@ -7,8 +7,8 @@
     },
     {
       "path": "src/openmultimodal_lab/report_bundle.py",
-      "sha256": "0e3862a2cbe89acca7733c3cd67c87c5f5b3c8277f9c2afb88b1a252746740fd",
-      "size_bytes": 42912
+      "sha256": "8d60607dd5bd0a5386d242274e1689860a3655e2c464854471439af4fc95ee68",
+      "size_bytes": 43217
     },
     {
       "path": "src/openmultimodal_lab/reporting.py",
@@ -16,7 +16,7 @@
       "size_bytes": 16668
     }
   ],
-  "manifest_sha256": "11d8e2b6f73044b93e701a58b2a8980a52783ef451023d7c8183a70bc5daa59f",
+  "manifest_sha256": "a843f4670fa3f500afafc06bfed8eac5cd04d434d7d4c2e3055ae820017be043",
   "outputs": [
     {
       "path": "category-summary.csv",
@@ -35,8 +35,8 @@
     },
     {
       "path": "report.md",
-      "sha256": "21c51a8c888f46f0eac99362276dddc75cdea9ee404bf843882df55dcb48651d",
-      "size_bytes": 5452
+      "sha256": "6db38a4fd51946244712c55a244cedbeb4c681c7472f731b7ab07e7237a31147",
+      "size_bytes": 5490
     },
     {
       "path": "run-summary.csv",

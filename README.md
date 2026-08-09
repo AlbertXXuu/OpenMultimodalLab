@@ -19,57 +19,35 @@ to rebuild a report without rerunning the model.
 > tasks, two real local backends, the formal performance protocol, strict
 > resume, bounded retries, cooperative inference deadlines, and CI quality
 > gates work today. Both real adapters now decode local short video through a
-> bounded eight-frame path. A formal 32-task document comparison is preserved
-> below; the licensed video task set and formal video comparison remain
-> roadmap work.
+> bounded eight-frame path. Both pinned models have completed the same formal
+> 102-task image, document, short-video, and robustness grid; the raw evidence
+> and byte-rebuildable candidate report are preserved in the repository.
 
-## First reproducible comparison
+## v1.0.0 candidate comparison
 
-One NVIDIA RTX 4060 Laptop GPU (8,188 MiB), the same ten project-generated
-tasks, one warm-up, three measured repetitions, greedy decoding, batch size 1,
-and one clean Git commit:
-
-| Model | Mean task score | Median TTFT | Median task latency | Peak allocated GPU memory | Runtime failures |
-|---|---:|---:|---:|---:|---:|
-| Qwen3-VL-2B | 1.000 | 107.4 ms | 182.8 ms | 4,093.3 MiB | 0/30 |
-| SmolVLM2-500M | 0.733 | 257.6 ms | 386.7 ms | 1,265.3 MiB | 0/30 |
-
-The result is a resource-versus-quality observation, not a universal model
-ranking. SmolVLM2 used about 69% less peak allocated memory, while Qwen
-produced more complete answers and lower median latency on this small task
-mix. Model sizes and native visual processors differ, and the ten synthetic
-English tasks do not represent broad real-world capability.
-
-![Formal Qwen3-VL-2B and SmolVLM2-500M comparison](docs/assets/model-comparison.svg)
-
-Read the [full comparison](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md)
-or inspect the preserved
-[Qwen JSONL](docs/reports/results/2026-07-31-qwen3-vl-comparison-formal.jsonl),
-[SmolVLM2 JSONL](docs/reports/results/2026-07-31-smolvlm2-500m-comparison-formal.jsonl),
-and their manifests.
-
-## Broader document benchmark
-
-The same two backends also completed all 96 measured attempts on 32 OCR,
-key-value, table, and chart tasks:
+One NVIDIA RTX 4060 Laptop GPU (8,188 MiB), the same 102 human-checked tasks,
+one warm-up, three complete measured repetitions, greedy decoding, batch size
+1, and one clean Git commit:
 
 | Model | Mean task score | Median TTFT | Median task latency | Peak allocated GPU memory | Runtime failures |
 |---|---:|---:|---:|---:|---:|
-| Qwen3-VL-2B | 0.719 | 184.2 ms | 353.3 ms | 4,180.4 MiB | 0/96 |
-| SmolVLM2-500M | 0.625 | 307.6 ms | 565.4 ms | 1,265.3 MiB | 0/96 |
+| Qwen3-VL-2B | 0.784 | 120.5 ms | 212.9 ms | 4,180.5 MiB | 0/306 |
+| SmolVLM2-500M | 0.690 | 260.0 ms | 471.5 ms | 1,265.3 MiB | 0/306 |
 
-Qwen was stronger overall and on table/chart questions. SmolVLM2 achieved
-`1.000` on the OCR subset and used about 70% less peak allocated memory. All
-32 responses/model were stable across three repetitions. This remains a
-generated English benchmark, not a general document-understanding ranking.
+Qwen achieved the higher aggregate score and lower median latency. SmolVLM2
+used about 70% less peak allocated GPU memory and led some categories,
+including OCR and event order. This is an evidence-backed hardware/task
+trade-off, not a universal model ranking; all media are controlled synthetic
+assets and cross-family token throughput is not directly equivalent.
 
-![Formal document-task comparison](docs/assets/document-comparison.svg)
+![Formal 102-task Qwen3-VL-2B and SmolVLM2-500M comparison](docs/reports/v1.0.0-candidate/overview.svg)
 
-Read the [document comparison report](docs/reports/2026-08-02-document-model-comparison.md)
-or inspect the preserved
-[Qwen JSONL](docs/reports/results/2026-08-02-qwen3-vl-docs-formal.jsonl),
-[SmolVLM2 JSONL](docs/reports/results/2026-08-02-smolvlm2-500m-docs-formal.jsonl),
-and their manifests.
+Read the [byte-rebuildable report](docs/reports/v1.0.0-candidate/report.md) or
+inspect the preserved
+[Qwen JSONL](docs/reports/results/2026-08-10-qwen3-vl-v1.0.0-formal.jsonl),
+[SmolVLM2 JSONL](docs/reports/results/2026-08-10-smolvlm2-v1.0.0-formal.jsonl),
+and their SHA-bound manifests. Historical ten-task and document-only reports
+remain available in the evidence index below.
 
 ## What is already implemented
 
@@ -81,15 +59,13 @@ and their manifests.
   attribute-group scoring through backward-compatible task schemas 1.0–1.2.
 - `synthetic-docs-v1`: 32 licensed tasks over eight reproducible OCR,
   key-value, table, bar-chart, and line-chart images.
+- `synthetic-video-v1`: 24 owner-reviewed tasks over eight deterministic,
+  project-generated short videos.
+- `synthetic-robustness-v1`: 36 owner-reviewed tasks covering small objects,
+  low contrast, visual clutter, and partial occlusion.
 - A shared local-video path for both real backends: PyAV decoding, eight
   uniformly sampled frames, preserved sampling metadata, and no hidden
-  processor resampling. The formal licensed video dataset is not yet present.
-- Name-neutral deterministic tooling can generate and hash-bind a 24-task
-  short-video draft for human review; canonical dataset output still waits for
-  owner naming approval.
-- A second name-neutral generator prepares 36 controlled visual-robustness
-  tasks across small objects, low contrast, clutter, and partial occlusion;
-  these drafts are likewise excluded from canonical counts until approval.
+  processor resampling.
 - Warm-up plus repeated measurement with CUDA-synchronized TTFT, generation
   time, throughput, preprocessing time, and peak allocated memory.
 - A deterministic multi-model report-bundle builder that rejects incomplete
@@ -129,9 +105,10 @@ For release-grade reconstruction, the
 [deterministic report-bundle workflow](docs/report-bundles.md) validates exact
 one-warm-up/three-repeat grids, source manifests, model and dataset identities,
 and dataset/media hashes before generating a complete comparison bundle. The
-committed [rebuilt baseline](docs/reports/rebuilt-baseline/report.md) proves
-that path against the current 42 image/document tasks; it is explicitly not
-the pending 100-or-more-task v1.0 result.
+committed [v1.0.0 candidate report](docs/reports/v1.0.0-candidate/report.md)
+applies that path to the complete 102-task, two-model formal grid. The older
+[rebuilt baseline](docs/reports/rebuilt-baseline/report.md) remains available
+for historical auditability.
 
 ## Five-minute core quick start
 
@@ -262,6 +239,7 @@ equivalent because tokenizers differ.
 | Run records, manifests, and resume | [Artifact contract](docs/run-records-and-manifests.md) |
 | Two-model formal result | [Qwen3-VL vs SmolVLM2](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md) |
 | 32-task document comparison | [Qwen3-VL vs SmolVLM2 on documents](docs/reports/2026-08-02-document-model-comparison.md) |
+| 102-task v1.0.0 candidate comparison | [Byte-rebuildable final-corpus bundle](docs/reports/v1.0.0-candidate/report.md) |
 | Performance methodology | [Qwen formal performance baseline](docs/reports/2026-07-31-qwen3-vl-formal-performance.md) |
 | Quality and public-release gates | [Quality standard](docs/06-quality-and-open-source.md) |
 | Live public-release status | [Evidence matrix and strict readiness check](docs/public-release-readiness.md) |
@@ -283,15 +261,15 @@ equivalent because tokenizers differ.
 | Area | Current state |
 |---|---|
 | Real image backends | Qwen3-VL-2B and SmolVLM2-500M verified locally |
-| Current versioned task corpus | 42 tasks over 18 licensed, deterministic generated images |
-| Preserved real-model comparison | 10 image tasks plus a separate 32-task document/table/chart comparison |
+| Current versioned task corpus | 102 licensed, human-checked image, document, short-video, and robustness tasks |
+| Preserved real-model comparison | Both pinned models, 102 tasks, 1 warm-up + 3 repetitions, 612 measured attempts |
 | Performance protocol | Warm-up, three repetitions, TTFT, throughput, latency, peak memory |
 | Reliability | Durable records, strict resume, integrity hashes, typed failures |
 | Automated quality | Offline tests, Python 3.11/3.12 CI, repository audit, fresh-wheel smoke test |
-| Next capability work | Licensed short-video task set and formal two-model run |
+| Next capability work | Final tutorial, license snapshot, and fresh-environment release validation |
 
-The target is at least 100 human-checked tasks across image, document, chart,
-spatial, and short-video capabilities. That target is not yet marked complete.
+The target of at least 100 human-checked tasks is complete. Repository
+publication and a formal Release remain separate owner-authorized actions.
 
 ## Contributing
 

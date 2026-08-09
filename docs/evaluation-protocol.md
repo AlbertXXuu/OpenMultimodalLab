@@ -31,8 +31,10 @@ approved datasets. This aggregate is an internal run input, not a fifth
 dataset release: every task retains its existing `metadata.dataset_version`.
 
 `configs/formal-evaluation.json` fixes the source order, each source SHA-256,
-the expected 102-task count, and the aggregate SHA-256. Build and immediately
-verify the ignored run input before either model run:
+the expected 102-task count, and the aggregate SHA-256. The byte-exact
+aggregate is tracked at `runs/formal-evaluation-input.jsonl` so a fresh clone
+can verify the preserved run manifests. Rebuild and immediately verify it
+before either model run:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts/build_formal_input.py `

@@ -25,16 +25,16 @@ make CI green.
 | Requirement | Current evidence | Status |
 |---|---|---|
 | Two real open model families on an 8 GB GPU | Qwen3-VL-2B and SmolVLM2-500M formal manifests on RTX 4060 Laptop 8,188 MiB | Proven |
-| Image input and formal comparison | Same-commit 10-task, two-model raw JSONL and manifests | Proven |
-| Document/table/chart input and formal comparison | Same-commit 32-task, two-model raw JSONL and manifests | Proven |
-| Short-video runtime | Both full models completed a bounded eight-frame diagnostic clip | Proven runtime only |
+| Image input and formal comparison | Same-commit 102-task, two-model raw JSONL and manifests include the image tasks | Proven |
+| Document/table/chart input and formal comparison | Same final grid includes all 32 document tasks | Proven |
+| Short-video runtime | Same final grid includes all 24 reviewed video tasks with bounded eight-frame decoding | Proven formally |
 | Licensed versioned short-video tasks | 24 `synthetic-video-v1` tasks over eight project-generated AVI clips | Generated, SHA-bound, and owner-reviewed |
 | Short-video corpus tooling | Byte-stable eight-clip/24-task generator plus SHA-bound human-review validator | Proven tooling and reviewed candidate |
 | Visual-robustness corpus tooling | Byte-stable 12-image/36-task generator across four controlled factors plus SHA-bound review | Proven tooling and reviewed candidate |
 | At least 100 unique, human-checked tasks | 102 unique licensed tasks: 42 covered by existing reports and 60 covered by validated owner-signed records | Proven for the current corpus |
-| Formal video metrics for both models | No warm-up plus three-repeat video task-set run | Open |
-| Quality, TTFT, throughput, memory, and failures | Present in preserved image/document records | Proven for current formal slices |
-| Rebuildable reports and visuals | Raw JSONL/manifests, strict formal-grid validation, deterministic Markdown/CSV/failure/SVG bundle, self-hashed build manifest, tamper tests | Proven tooling and current 42-task baseline; final corpus bundle open |
+| Formal video metrics for both models | One warm-up plus three complete repetitions for both pinned models | Proven |
+| Quality, TTFT, throughput, memory, and failures | Preserved for all 612 measured attempts; zero runtime failures | Proven for all 102 tasks |
+| Rebuildable reports and visuals | Final raw JSONL/manifests plus deterministic Markdown/CSV/failure/SVG bundle and self-hashed manifest | Proven for the 102-task candidate |
 | English main README and Chinese guide | `README.md` and `README.zh-CN.md` | Proven |
 | Tutorial/demo | Complete first experiment tutorial and result visuals | Proven for image/document; final video demo open |
 | Tests and Linux CI | Python 3.11/3.12, wheel build, fresh install, outside-checkout smoke | Proven on merged private `main`; rerun after final corpus |
@@ -52,11 +52,11 @@ make CI green.
 1. **Complete:** record explicit naming approval without changing repository visibility.
 2. **Complete:** 102 licensed tasks are generated and the 24 video plus 36
    robustness tasks have validated owner review records.
-3. Run both pinned models on the final video and complete canonical corpus with
-   one warm-up and three measurements, preserving every failure.
-4. Build the final deterministic report bundle from raw artifacts, rebuild it
-   independently byte-for-byte, run its self/source/output verification, and
-   update the evidence matrix.
+3. **Complete:** both pinned models ran the complete canonical corpus with one
+   warm-up and three measurements, preserving every result and failure field.
+4. **Complete:** the final deterministic report bundle was built from raw
+   artifacts and passes self/source/output verification. Independent final
+   environment rebuild evidence remains part of step 6.
 5. Regenerate the exact dependency/license inventory and constraints from the
    final Python 3.11 model environment, audit the PyAV wheel's bundled FFmpeg,
    and retain `final-dependency-license-audit.md`.

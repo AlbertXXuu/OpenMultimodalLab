@@ -17,53 +17,31 @@ JSONL，按任务选择确定性评分规则，并记录模型、环境、输入
 > 当前为发布前开发阶段。图片、文档、表格和图表任务、两个真实本地模型、
 > 正式性能协议、严格断点续跑、有限重试、协作式推理截止时间和 CI 质量门
 > 已经可用。两个真实 Adapter 已支持通过统一的 8 帧有界路径读取本地短视频；
-> 32 条文档任务的正式对比已保存在下方；许可证清晰的视频任务集及其正式
-> 对比仍属于路线图。
+> 两个固定模型已经完成同一套 102 条图片、文档、短视频和鲁棒性任务的正式
+> 网格；原始证据和可逐字节重建的候选报告均已保存在仓库中。
 
-## 第一份可复现双模型结果
+## v1.0.0 候选正式对比
 
-硬件为 NVIDIA RTX 4060 Laptop GPU（8,188 MiB）。两个模型使用相同的 10
-条项目自制任务、相同干净 Git 提交、1 次 warm-up、3 次正式重复、贪心解码
-和 batch size 1：
-
-| 模型 | 平均任务得分 | 中位 TTFT | 中位任务延迟 | 峰值已分配显存 | 运行失败 |
-|---|---:|---:|---:|---:|---:|
-| Qwen3-VL-2B | 1.000 | 107.4 ms | 182.8 ms | 4,093.3 MiB | 0/30 |
-| SmolVLM2-500M | 0.733 | 257.6 ms | 386.7 ms | 1,265.3 MiB | 0/30 |
-
-这是资源与质量权衡，不是通用排行榜。SmolVLM2 峰值已分配显存约低 69%，
-Qwen 在这组任务上回答更完整且中位延迟更低。两者参数规模和原生视觉处理器
-不同，10 条英文合成任务也不能代表广泛真实能力。
-
-![Qwen3-VL-2B 与 SmolVLM2-500M 正式对比](docs/assets/model-comparison.svg)
-
-完整解释见
-[正式对比报告](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md)，原始
-[Qwen JSONL](docs/reports/results/2026-07-31-qwen3-vl-comparison-formal.jsonl)
-与
-[SmolVLM2 JSONL](docs/reports/results/2026-07-31-smolvlm2-500m-comparison-formal.jsonl)
-也保留在仓库中。
-
-## 更广的文档任务评测
-
-两个后端还完成了 32 条 OCR、键值、表格和图表任务的全部 96 次正式测量：
+硬件为 NVIDIA RTX 4060 Laptop GPU（8,188 MiB）。两个模型使用相同的 102
+条人工检查任务、相同干净 Git 提交、1 次 warm-up、3 次完整正式重复、贪心
+解码和 batch size 1：
 
 | 模型 | 平均任务得分 | 中位 TTFT | 中位任务延迟 | 峰值已分配显存 | 运行失败 |
 |---|---:|---:|---:|---:|---:|
-| Qwen3-VL-2B | 0.719 | 184.2 ms | 353.3 ms | 4,180.4 MiB | 0/96 |
-| SmolVLM2-500M | 0.625 | 307.6 ms | 565.4 ms | 1,265.3 MiB | 0/96 |
+| Qwen3-VL-2B | 0.784 | 120.5 ms | 212.9 ms | 4,180.5 MiB | 0/306 |
+| SmolVLM2-500M | 0.690 | 260.0 ms | 471.5 ms | 1,265.3 MiB | 0/306 |
 
-Qwen 总体及表格/图表任务更强；SmolVLM2 在 OCR 子集得到 `1.000`，峰值已
-分配显存约低 70%。每个模型的 32 条回答在三次重复中都保持一致。这仍是英文
-生成数据，不是通用文档理解排行榜。
+Qwen 的总体得分更高、中位延迟更低；SmolVLM2 的峰值显存约低 70%，并在
+OCR、事件顺序等部分分类领先。这是基于固定硬件和任务的取舍证据，不是通用
+排行榜；媒体均为受控合成资产，不同 tokenizer 的吞吐也不能直接等价比较。
 
-![文档任务正式对比](docs/assets/document-comparison.svg)
+![102 条任务正式对比](docs/reports/v1.0.0-candidate/overview.svg)
 
-完整方法与限制见
-[文档任务对比报告](docs/reports/2026-08-02-document-model-comparison.md)，原始
-[Qwen JSONL](docs/reports/results/2026-08-02-qwen3-vl-docs-formal.jsonl) 与
-[SmolVLM2 JSONL](docs/reports/results/2026-08-02-smolvlm2-500m-docs-formal.jsonl)
-及各自 manifest 也已保存。
+完整证据见[可逐字节重建报告](docs/reports/v1.0.0-candidate/report.md)，原始
+[Qwen JSONL](docs/reports/results/2026-08-10-qwen3-vl-v1.0.0-formal.jsonl)、
+[SmolVLM2 JSONL](docs/reports/results/2026-08-10-smolvlm2-v1.0.0-formal.jsonl)
+及其 SHA 绑定 manifest 均已保存。早期 10 条任务和文档专项报告仍保留在下方
+证据索引中供审计。
 
 ## 已实现能力
 
@@ -75,12 +53,11 @@ Qwen 总体及表格/图表任务更强；SmolVLM2 在 OCR 子集得到 `1.000`�
   和可排序属性组评分。
 - `synthetic-docs-v1`：32 条许可证清晰的任务，覆盖 8 张可复现生成的 OCR、
   键值、表格、柱状图和折线图图片。
+- `synthetic-video-v1`：24 条经所有者复核的任务，覆盖 8 个确定性生成短视频。
+- `synthetic-robustness-v1`：36 条经所有者复核的小目标、低对比度、视觉干扰
+  和局部遮挡任务。
 - 两个真实后端共用本地视频链路：PyAV 解码、均匀抽取 8 帧、保留抽样元数据，
-  并禁止 Processor 隐式二次抽帧；正式视频任务集尚未创建。
-- 已提供不预设正式名称的确定性短视频生成与逐任务人工复核工具；正式数据集
-  仍等待所有者确认名称后再生成和提交。
-- 另有不预设正式名称的 36 条视觉鲁棒性任务生成器，系统覆盖小目标、低对比度、
-  视觉干扰和局部遮挡；未经确认的草稿不会计入正式任务数。
+  并禁止 Processor 隐式二次抽帧。
 - warm-up、重复测量、CUDA 同步 TTFT、生成速度、预处理和峰值显存。
 - 确定性的多模型报告包生成器：拒绝不完整的正式重复网格，并从已保存 JSONL
   生成 Markdown、CSV、完整失败数据、SVG 和自哈希构建清单，无需重新运行模型。
@@ -113,9 +90,10 @@ flowchart LR
 
 面向发布的重建流程见[确定性报告包说明](docs/report-bundles.md)。它会先验证
 “恰好一次 warm-up + 三次完整重复”、来源 manifest、模型/数据集身份和媒体哈希，
-再生成完整对比包。仓库中的[当前重建基线](docs/reports/rebuilt-baseline/report.md)
-只用于证明现有 42 条图片/文档任务的重建链路，不是尚未完成的 100 条以上 v1.0
-最终结果。
+再生成完整对比包。仓库中的
+[v1.0.0 候选报告](docs/reports/v1.0.0-candidate/report.md)已经覆盖完整的
+102 条任务双模型正式网格；旧的
+[重建基线](docs/reports/rebuilt-baseline/report.md)仅作为历史审计证据保留。
 
 ## 五分钟核心快速开始
 
@@ -232,6 +210,7 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 | 运行记录、manifest 和恢复 | [产物契约](docs/run-records-and-manifests.md) |
 | 双模型正式结果 | [Qwen3-VL vs SmolVLM2](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md) |
 | 32 条文档任务对比 | [Qwen3-VL 与 SmolVLM2 文档评测](docs/reports/2026-08-02-document-model-comparison.md) |
+| 102 条 v1.0.0 候选对比 | [可逐字节重建的完整语料报告](docs/reports/v1.0.0-candidate/report.md) |
 | 性能方法 | [Qwen 正式性能基线](docs/reports/2026-07-31-qwen3-vl-formal-performance.md) |
 | 质量与公开门槛 | [质量标准](docs/06-quality-and-open-source.md) |
 | 实时公开准备状态 | [证据矩阵与严格验收命令](docs/public-release-readiness.md) |
@@ -253,15 +232,15 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 | 领域 | 当前事实 |
 |---|---|
 | 真实图片后端 | Qwen3-VL-2B、SmolVLM2-500M 已在本机验证 |
-| 当前版本化任务集 | 42 条任务、18 张许可证清晰且可确定生成的图片 |
-| 已保存真实模型对比 | 10 条图片任务，以及独立的 32 条文档/表格/图表对比 |
+| 当前版本化任务集 | 102 条经人工检查的图片、文档、短视频和鲁棒性任务 |
+| 已保存真实模型对比 | 两个固定模型、102 条任务、1 次 warm-up、3 次重复、612 次正式测量 |
 | 性能协议 | warm-up、三次重复、TTFT、吞吐、延迟、峰值显存 |
 | 可靠性 | 逐条持久化、严格恢复、完整性哈希、失败分类 |
 | 自动质量 | 离线测试、Python 3.11/3.12 CI、仓库审计、全新 wheel 冒烟测试 |
-| 下一阶段 | 制作许可证清晰的短视频任务集并完成双模型正式运行 |
+| 下一阶段 | 完成视频教程、许可证快照和全新环境发布验证 |
 
-目标是至少 100 条人工检查任务，覆盖图片、文档、图表、空间和短视频。当前
-没有把这个目标标记为已经完成。
+至少 100 条人工检查任务的目标已经完成。仓库公开与正式 Release 仍是两个
+需要所有者单独确认的外部动作。
 
 ## 贡献
 

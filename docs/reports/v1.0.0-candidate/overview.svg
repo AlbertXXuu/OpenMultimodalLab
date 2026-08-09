@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="404" viewBox="0 0 1200 404" role="img" aria-labelledby="title description">
+  <title id="title">Formal multimodal benchmark overview</title>
+  <desc id="description">Quality, time to first token, throughput, peak allocated GPU memory, and success for verified formal runs.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="1" stop-color="#0c1d32"/>
+    </linearGradient>
+    <style>
+      text { font-family: Inter, "Segoe UI", Arial, sans-serif; }
+      .eyebrow { font-size: 14px; font-weight: 700; letter-spacing: 2px; fill: #7f96ad; }
+      .title { font-size: 38px; font-weight: 700; fill: #f4f8fc; }
+      .dataset { font-size: 18px; font-weight: 700; fill: #dce8f3; }
+      .backend { font-size: 16px; font-weight: 700; fill: #f4f8fc; }
+      .metric { font-size: 14px; font-weight: 400; fill: #a9bbcd; }
+      .value { font-size: 18px; font-weight: 700; fill: #f4f8fc; }
+      .footnote { font-size: 13px; font-weight: 600; fill: #7f96ad; }
+    </style>
+  </defs>
+  <rect width="1200" height="404" fill="url(#background)"/>
+  <text x="56" y="48" class="eyebrow">FORMAL LOCAL BENCHMARK</text>
+  <text x="56" y="100" class="title">Reproducible multimodal evidence</text>
+  <text x="56" y="132" class="metric">One warm-up + three measured repeats · batch 1 · deterministic decoding</text>
+  <line x1="56" y1="154" x2="1144" y2="154" stroke="#27415c"/>
+  <text x="56" y="194" class="dataset">synthetic-docs-v1, synthetic-robustness-v1, synthetic-v1.1, synthetic-video-v1 · 102 tasks</text>
+  <rect x="56" y="208" width="1088" height="54" rx="12" fill="#10243a"/>
+  <circle cx="78" cy="235" r="6" fill="#58b8ff"/>
+  <text x="94" y="241" class="backend">qwen3-vl</text>
+  <text x="310" y="228" class="metric">MEAN SCORE</text>
+  <text x="310" y="250" class="value">0.784</text>
+  <text x="490" y="228" class="metric">MEDIAN TTFT</text>
+  <text x="490" y="250" class="value">120.5 ms</text>
+  <text x="680" y="228" class="metric">THROUGHPUT</text>
+  <text x="680" y="250" class="value">12.7 tok/s</text>
+  <text x="870" y="228" class="metric">PEAK MEMORY</text>
+  <text x="870" y="250" class="value">4180.5 MiB</text>
+  <text x="1060" y="228" class="metric">SUCCESS</text>
+  <text x="1060" y="250" class="value">306/306</text>
+  <rect x="56" y="274" width="1088" height="54" rx="12" fill="#10243a"/>
+  <circle cx="78" cy="301" r="6" fill="#ffb45e"/>
+  <text x="94" y="307" class="backend">smolvlm2</text>
+  <text x="310" y="294" class="metric">MEAN SCORE</text>
+  <text x="310" y="316" class="value">0.690</text>
+  <text x="490" y="294" class="metric">MEDIAN TTFT</text>
+  <text x="490" y="316" class="value">260.0 ms</text>
+  <text x="680" y="294" class="metric">THROUGHPUT</text>
+  <text x="680" y="316" class="value">10.1 tok/s</text>
+  <text x="870" y="294" class="metric">PEAK MEMORY</text>
+  <text x="870" y="316" class="value">1265.3 MiB</text>
+  <text x="1060" y="294" class="metric">SUCCESS</text>
+  <text x="1060" y="316" class="value">306/306</text>
+  <line x1="56" y1="356" x2="1144" y2="356" stroke="#27415c"/>
+  <text x="56" y="384" class="footnote">PINNED MODELS AND DATA · HASH-VERIFIED SOURCES · NOT A UNIVERSAL RANKING</text>
+</svg>

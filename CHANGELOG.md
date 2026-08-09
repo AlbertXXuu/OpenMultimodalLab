@@ -60,17 +60,17 @@ All notable changes to this project will be documented in this file.
 - Exact one-warm-up/three-repeat formal-grid validation and a deterministic multi-model report bundle with Markdown, CSV, complete failure data, SVG, source/generator/output hashes, and tamper verification.
 - Approved `synthetic-video-v1` with 24 licensed short-video tasks, eight deterministic AVI clips, contact sheets, and a validated SHA-bound owner-review record.
 - Approved `synthetic-robustness-v1` with 36 licensed robustness tasks, 12 deterministic PNG images, an overview sheet, and a validated SHA-bound owner-review record.
-- A 102-task reviewed final-corpus candidate whose remaining release work begins with the two pinned-model formal runs.
+- A 102-task reviewed final-corpus candidate spanning image, document,
+  short-video, and controlled visual-robustness tasks.
 - A SHA-256-bound formal-evaluation configuration and builder that assembles
   all 102 approved tasks without introducing a new dataset version.
+- Same-commit Qwen3-VL-2B and SmolVLM2-500M formal runs over all 102 reviewed
+  image, document, short-video, and robustness tasks, with 612 measured
+  attempts, zero runtime failures, and a byte-rebuildable report bundle.
 
 ### Fixed
 
 - Enforced LF checkouts for deterministic CSV report artifacts on Windows.
-
-### Planned
-
-- Protocol-compliant final-corpus runs for both pinned model families.
 
 ## [0.1.0] - 2026-07-28
 
