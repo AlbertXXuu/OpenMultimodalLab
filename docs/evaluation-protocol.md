@@ -24,6 +24,32 @@ Every task must:
 If a task changes semantically, create a new task ID or dataset version instead
 of silently replacing it.
 
+### 2.1 Frozen formal-evaluation input
+
+The v1.0.0 candidate runs use one byte-exact input assembled from the four
+approved datasets. This aggregate is an internal run input, not a fifth
+dataset release: every task retains its existing `metadata.dataset_version`.
+
+`configs/formal-evaluation.json` fixes the source order, each source SHA-256,
+the expected 102-task count, and the aggregate SHA-256. Build and immediately
+verify the ignored run input before either model run:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/build_formal_input.py `
+  --config configs/formal-evaluation.json `
+  --output runs/formal-evaluation-input.jsonl
+
+.\.venv\Scripts\python.exe scripts/build_formal_input.py `
+  --config configs/formal-evaluation.json `
+  --output runs/formal-evaluation-input.jsonl `
+  --verify
+```
+
+The frozen aggregate SHA-256 is
+`d18e6dce941cfac1fee0d637449229d786d7d6b601c063c0af2266b7e2d7a5a8`.
+Both model runs must use this same file and hash. Any source change invalidates
+the configuration and must be reviewed before another formal run.
+
 ## 3. Versioned synthetic dataset
 
 `examples/tasks/synthetic-v1.jsonl` contains ten project-generated tasks:

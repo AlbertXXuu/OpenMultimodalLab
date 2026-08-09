@@ -107,6 +107,10 @@ class RepositoryCheckTests(unittest.TestCase):
         result = self._run_checker(PROJECT_ROOT)
 
         self.assertEqual(result.returncode, 0, result.stderr)
+        attributes = (PROJECT_ROOT / ".gitattributes").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("*.csv text eol=lf\n", attributes)
 
 
 if __name__ == "__main__":

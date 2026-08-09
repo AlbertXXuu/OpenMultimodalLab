@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "purpose": "formal-evaluation-input",
+  "public_version": "v1.0.0",
+  "expected_task_count": 102,
+  "expected_dataset_versions": [
+    "synthetic-v1.1",
+    "synthetic-docs-v1",
+    "synthetic-video-v1",
+    "synthetic-robustness-v1"
+  ],
+  "expected_output_sha256": "d18e6dce941cfac1fee0d637449229d786d7d6b601c063c0af2266b7e2d7a5a8",
+  "sources": [
+    {
+      "path": "examples/tasks/synthetic-v1.1.jsonl",
+      "sha256": "682e4089fc2f9793209b40beb0026279bd0f58d3ec4fcf75d3f65abba88e4692"
+    },
+    {
+      "path": "examples/tasks/synthetic-docs-v1.jsonl",
+      "sha256": "79b9f2c25f2985b6ccbd6fba2e44d234685338534d3d810f4f2931eacdb9d610"
+    },
+    {
+      "path": "examples/tasks/synthetic-video-v1.jsonl",
+      "sha256": "3d5c8449a1a63e7f115ba65a2d687c76fbe1aaf7021ad0d271581144966c7331"
+    },
+    {
+      "path": "examples/tasks/synthetic-robustness-v1.jsonl",
+      "sha256": "e63e291e9bbaf62aa2521080a0e3c9e3ee8ec56a90df4ccd18b1624c5b25f757"
+    }
+  ]
+}
