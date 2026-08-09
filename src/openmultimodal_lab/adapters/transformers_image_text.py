@@ -117,6 +117,13 @@ class TransformersImageTextAdapter:
     def _move_inputs_to_model(self, inputs: Any) -> Any:
         return inputs.to(self._model.device)
 
+    def _loaded_dependencies(self) -> TransformersDependencies:
+        if self._dependencies is None:
+            raise ModelLoadError(
+                "adapter dependencies are unavailable after model loading"
+            )
+        return self._dependencies
+
     def _ensure_loaded(self) -> float:
         if self._model is not None and self._processor is not None:
             return 0.0
@@ -244,8 +251,8 @@ class TransformersImageTextAdapter:
         task: EvaluationTask,
         path: Path,
     ) -> tuple[Any, int, Any, list[int]]:
-        assert self._dependencies is not None
-        if self._dependencies.video_loader is None:
+        dependencies = self._loaded_dependencies()
+        if dependencies.video_loader is None:
             raise AdapterInputError(
                 f"video decoding is unavailable for task '{task.id}'; "
                 "install the backend's optional dependencies"
@@ -259,7 +266,7 @@ class TransformersImageTextAdapter:
             return indices
 
         try:
-            decoded = self._dependencies.video_loader(
+            decoded = dependencies.video_loader(
                 str(path),
                 num_frames=self.video_num_frames,
                 backend="pyav",
@@ -493,7 +500,7 @@ class TransformersImageTextAdapter:
 
         media_paths = self._resolve_media(task)
         model_load_ms = self._ensure_loaded()
-        assert self._dependencies is not None
+        dependencies = self._loaded_dependencies()
         inference_start_ns = perf_counter_ns()
 
         images: list[Any] = []
@@ -538,7 +545,7 @@ class TransformersImageTextAdapter:
                     content.append({"type": "video", "video": frames})
                     continue
                 try:
-                    with self._dependencies.image_module.open(path) as source:
+                    with dependencies.image_module.open(path) as source:
                         self._validate_image_dimensions(task, source)
                         image = source.convert("RGB")
                         images.append(image)
@@ -611,7 +618,7 @@ class TransformersImageTextAdapter:
                         "before generation started"
                     )
                 generation_arguments["max_time"] = remaining_seconds
-            with self._dependencies.torch.inference_mode():
+            with dependencies.torch.inference_mode():
                 generated_ids = self._model.generate(
                     **inputs,
                     **generation_arguments,

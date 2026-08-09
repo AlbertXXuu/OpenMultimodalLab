@@ -76,8 +76,8 @@ class SmolVLM2Adapter(TransformersImageTextAdapter):
         }
 
     def _move_inputs_to_model(self, inputs: Any) -> Any:
-        assert self._dependencies is not None
+        dependencies = self._loaded_dependencies()
         return inputs.to(
             self._model.device,
-            dtype=self._dependencies.torch.bfloat16,
+            dtype=dependencies.torch.bfloat16,
         )

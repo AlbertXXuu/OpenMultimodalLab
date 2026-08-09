@@ -49,6 +49,16 @@ inspect the preserved
 and their SHA-bound manifests. Historical ten-task and document-only reports
 remain available in the evidence index below.
 
+## Short-video demo
+
+![A red square moving right, with the two preserved model answers](docs/assets/video-benchmark-demo.gif)
+
+This is a deliberately non-cherry-picked temporal-position example from the
+formal grid: Qwen answered the final position correctly in all three measured
+repetitions, while SmolVLM2 failed all three. The
+[copyable video tutorial](docs/tutorials/video-benchmark.md) connects this GIF
+to the exact task, commands, raw records, and deterministic rebuild script.
+
 ## What is already implemented
 
 - A dependency-free core and deterministic `mock` backend for offline CI.

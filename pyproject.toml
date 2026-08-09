@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openmultimodal-lab"
-version = "0.1.0"
+version = "1.0.0"
 description = "A local-first, reproducible benchmark toolkit for multimodal models."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -20,7 +20,7 @@ keywords = [
   "machine-learning"
 ]
 classifiers = [
-  "Development Status :: 2 - Pre-Alpha",
+  "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
   "Intended Audience :: Science/Research",
   "License :: OSI Approved :: Apache Software License",

@@ -67,6 +67,11 @@ All notable changes to this project will be documented in this file.
 - Same-commit Qwen3-VL-2B and SmolVLM2-500M formal runs over all 102 reviewed
   image, document, short-video, and robustness tasks, with 612 measured
   attempts, zero runtime failures, and a byte-rebuildable report bundle.
+- A factual, reproducible short-video GIF and copyable tutorial built directly
+  from the committed formal task and results, including a disclosed model
+  failure rather than a cherry-picked all-pass example.
+- Final candidate package metadata for the owner-approved `v1.0.0` public
+  version. Creating a GitHub Release remains a separate owner action.
 
 ### Fixed
 
