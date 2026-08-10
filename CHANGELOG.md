@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-08-10
+
 ### Added
 
 - Versioned benchmark tasks with required `schema_version: "1.0"`.
@@ -60,7 +62,7 @@ All notable changes to this project will be documented in this file.
 - Exact one-warm-up/three-repeat formal-grid validation and a deterministic multi-model report bundle with Markdown, CSV, complete failure data, SVG, source/generator/output hashes, and tamper verification.
 - Approved `synthetic-video-v1` with 24 licensed short-video tasks, eight deterministic AVI clips, contact sheets, and a validated SHA-bound owner-review record.
 - Approved `synthetic-robustness-v1` with 36 licensed robustness tasks, 12 deterministic PNG images, an overview sheet, and a validated SHA-bound owner-review record.
-- A 102-task reviewed final-corpus candidate spanning image, document,
+- A 102-task reviewed v1.0 corpus spanning image, document,
   short-video, and controlled visual-robustness tasks.
 - A SHA-256-bound formal-evaluation configuration and builder that assembles
   all 102 approved tasks without introducing a new dataset version.
@@ -70,11 +72,11 @@ All notable changes to this project will be documented in this file.
 - A factual, reproducible short-video GIF and copyable tutorial built directly
   from the committed formal task and results, including a disclosed model
   failure rather than a cherry-picked all-pass example.
-- Final candidate package metadata for the owner-approved `v1.0.0` public
-  version. Creating a GitHub Release remains a separate owner action.
+- Final package metadata for the owner-approved `v1.0.0` public version and
+  formal GitHub Release.
 - Final source-security, dependency-license, Python 3.11/3.13, fresh Windows
   wheel, deterministic rebuild, and GitHub Linux CI evidence, with a strict
-  technical-readiness gate that leaves publication to the repository owner.
+  release-readiness gate backed by explicit repository-owner approval.
 
 ### Fixed
 

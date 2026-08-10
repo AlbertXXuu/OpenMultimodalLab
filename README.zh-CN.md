@@ -14,13 +14,14 @@ OpenMultimodalLab 用统一 Adapter 运行版本化任务，把每次输出和�
 JSONL，按任务选择确定性评分规则，并记录模型、环境、输入哈希和性能边界，
 从而不用重新推理也能重建报告。
 
-> 当前为技术门槛全部通过的 v1.0.0 候选。两个固定模型已经完成同一套 102
+> OpenMultimodalLab v1.0.0 是首个公开正式版。两个固定模型已经完成同一套 102
 > 条图片、文档、短视频和鲁棒性任务的正式网格；原始结果、确定性报告、视频
 > 演示、许可证与安全审计、Python 3.11/3.13、全新 Windows wheel 和 GitHub
-> Linux CI 证据均已保存。仓库已于 2026-08-10 公开；是否创建正式 GitHub
-> Release 仍需所有者单独确认。
+> Linux CI 证据均已保存。仓库和正式
+> [v1.0.0 GitHub Release](https://github.com/AlbertXXuu/OpenMultimodalLab/releases/tag/v1.0.0)
+> 已于 2026-08-10 经所有者明确授权发布。
 
-## v1.0.0 候选正式对比
+## v1.0.0 正式基准对比
 
 硬件为 NVIDIA RTX 4060 Laptop GPU（8,188 MiB）。两个模型使用相同的 102
 条人工检查任务、相同干净 Git 提交、1 次 warm-up、3 次完整正式重复、贪心
@@ -99,7 +100,7 @@ flowchart LR
 面向发布的重建流程见[确定性报告包说明](docs/report-bundles.md)。它会先验证
 “恰好一次 warm-up + 三次完整重复”、来源 manifest、模型/数据集身份和媒体哈希，
 再生成完整对比包。仓库中的
-[v1.0.0 候选报告](docs/reports/v1.0.0-candidate/report.md)已经覆盖完整的
+[v1.0.0 正式报告](docs/reports/v1.0.0-candidate/report.md)已经覆盖完整的
 102 条任务双模型正式网格；旧的
 [重建基线](docs/reports/rebuilt-baseline/report.md)仅作为历史审计证据保留。
 
@@ -218,7 +219,7 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 | 运行记录、manifest 和恢复 | [产物契约](docs/run-records-and-manifests.md) |
 | 双模型正式结果 | [Qwen3-VL vs SmolVLM2](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md) |
 | 32 条文档任务对比 | [Qwen3-VL 与 SmolVLM2 文档评测](docs/reports/2026-08-02-document-model-comparison.md) |
-| 102 条 v1.0.0 候选对比 | [可逐字节重建的完整语料报告](docs/reports/v1.0.0-candidate/report.md) |
+| 102 条 v1.0.0 正式对比 | [可逐字节重建的完整语料报告](docs/reports/v1.0.0-candidate/report.md) |
 | 性能方法 | [Qwen 正式性能基线](docs/reports/2026-07-31-qwen3-vl-formal-performance.md) |
 | 质量与公开门槛 | [质量标准](docs/06-quality-and-open-source.md) |
 | 实时公开准备状态 | [证据矩阵与严格验收命令](docs/public-release-readiness.md) |
@@ -250,10 +251,10 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 | 性能协议 | warm-up、三次重复、TTFT、吞吐、延迟、峰值显存 |
 | 可靠性 | 逐条持久化、严格恢复、完整性哈希、失败分类 |
 | 自动质量 | Python 3.11/3.12 Linux CI、本地 3.11/3.13、仓库审计、全新 Windows wheel 冒烟 |
-| 剩余发布动作 | 所有者决定是否创建正式 GitHub Release |
+| 发布状态 | 公开仓库与正式 `v1.0.0` GitHub Release |
 
-至少 100 条人工检查任务的目标已经完成，仓库也已公开。创建正式 GitHub
-Release 仍是需要所有者单独确认的外部动作。
+至少 100 条人工检查任务的目标已经完成，仓库与正式 `v1.0.0` Release 均已
+公开。未来版本必须重新完成同样的证据与授权流程，不得原地修改本次发布。
 
 ## 贡献
 

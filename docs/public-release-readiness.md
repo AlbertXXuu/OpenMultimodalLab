@@ -17,8 +17,8 @@ The final release gate is strict and must exit `0`:
 .\.venv\Scripts\python.exe scripts/check_release_readiness.py --strict
 ```
 
-Strict mode currently exits `1` by design. It must not be weakened merely to
-make CI green.
+Strict mode passes for the owner-approved `v1.0.0` release. It must not be
+weakened for future releases merely to make CI green.
 
 The technical gate excludes only the repository-owner external release
 decision:
@@ -27,9 +27,9 @@ decision:
 .\.venv\Scripts\python.exe scripts/check_release_readiness.py --technical-strict
 ```
 
-The final candidate passes this technical gate. The repository became public
-on 2026-08-10. Full `--strict` remains open only because the formal GitHub
-Release has not been authorized.
+The final release passes this technical gate. The repository became public and
+the owner authorized the formal `v1.0.0` GitHub Release on 2026-08-10. Full
+`--strict` therefore passes all 19 checks.
 
 ## Current evidence matrix
 
@@ -56,7 +56,7 @@ Release has not been authorized.
 | Code/model/data licenses | Clean 44-package/25-binary snapshot, exact constraints, signed report, and source-only boundary | Proven; no runtime binary may be attached |
 | Project/package/import/CLI/dataset/public version names | `docs/release-approvals.json` records the owner's 2026-08-09 approval | Proven |
 | Repository visibility | Owner approved publication on 2026-08-10; GitHub and anonymous HTTP checks report the repository as public | Proven |
-| Formal GitHub Release | No Release exists and `formal_release_authorized` remains `false` | Owner decision required |
+| Formal GitHub Release | Owner authorized `v1.0.0`; the tag and Release target the final green main commit | Proven |
 | Star/user claims | README explicitly refuses fabricated adoption claims | Proven truthful |
 
 ## Required final sequence
@@ -77,5 +77,6 @@ Release has not been authorized.
    readiness all pass with retained final reports.
 7. **Complete:** project/package/CLI/dataset/public-version names are approved,
    and the repository is public.
-8. Only after separate approval, create the formal GitHub Release; do not infer
-   that approval from repository publication.
+8. **Complete:** the owner separately approved the formal `v1.0.0` GitHub
+   Release, created from the final green main commit without bundled runtime or
+   model binaries.
