@@ -14,6 +14,7 @@ from scripts.check_release_readiness import (
     _formal_result_status,
     _license_report_status,
     _license_snapshot_status,
+    _validation_report_status,
     audit_release_readiness,
 )
 
@@ -191,24 +192,50 @@ class ReleaseReadinessTests(unittest.TestCase):
             "DOCUMENTATION",
             "REPORT-BUNDLE-TOOLING",
             "VIDEO-TASKS",
+            "VIDEO-DEMO",
             "LINUX-CI-CONTRACT",
+            "FINAL-LICENSE-AUDIT",
+            "FINAL-FRESH-WINDOWS",
+            "FINAL-CANDIDATE-VALIDATION",
+            "FINAL-LINUX-CI",
         ):
             with self.subTest(check_id=check_id):
                 self.assertTrue(checks[check_id].passed)
 
         for check_id in (
-            "VIDEO-DEMO",
-            "FINAL-LICENSE-AUDIT",
-            "FINAL-FRESH-WINDOWS",
-            "FINAL-LINUX-CI",
             "OWNER-PUBLICATION-APPROVAL",
-            "FINAL-CANDIDATE-VALIDATION",
         ):
             with self.subTest(check_id=check_id):
                 self.assertFalse(checks[check_id].passed)
 
         self.assertTrue(checks["OWNER-NAMING-APPROVAL"].passed)
         self.assertIn("import", checks["OWNER-NAMING-APPROVAL"].evidence)
+
+    def test_validation_report_requires_result_commit_and_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            report = Path(temp_dir) / "validation.md"
+            report.write_text(
+                "# Example validation\n\n"
+                "Outcome: PASS\n\n"
+                "Validation date: 2026-08-10\n\n"
+                f"Candidate commit: `{'a' * 40}`\n\n"
+                "Required evidence: PASS\n",
+                encoding="utf-8",
+            )
+            passed, _ = _validation_report_status(
+                report,
+                heading="# Example validation",
+                required_markers=("Required evidence: PASS",),
+            )
+            report.write_text("Outcome: PASS\n", encoding="utf-8")
+            incomplete, _ = _validation_report_status(
+                report,
+                heading="# Example validation",
+                required_markers=("Required evidence: PASS",),
+            )
+
+        self.assertTrue(passed)
+        self.assertFalse(incomplete)
 
     def test_owner_naming_approval_matches_recorded_decision(self) -> None:
         approvals = json.loads(

@@ -14,11 +14,11 @@ OpenMultimodalLab 用统一 Adapter 运行版本化任务，把每次输出和�
 JSONL，按任务选择确定性评分规则，并记录模型、环境、输入哈希和性能边界，
 从而不用重新推理也能重建报告。
 
-> 当前为发布前开发阶段。图片、文档、表格和图表任务、两个真实本地模型、
-> 正式性能协议、严格断点续跑、有限重试、协作式推理截止时间和 CI 质量门
-> 已经可用。两个真实 Adapter 已支持通过统一的 8 帧有界路径读取本地短视频；
-> 两个固定模型已经完成同一套 102 条图片、文档、短视频和鲁棒性任务的正式
-> 网格；原始证据和可逐字节重建的候选报告均已保存在仓库中。
+> 当前为技术门槛全部通过的 v1.0.0 候选。两个固定模型已经完成同一套 102
+> 条图片、文档、短视频和鲁棒性任务的正式网格；原始结果、确定性报告、视频
+> 演示、许可证与安全审计、Python 3.11/3.13、全新 Windows wheel 和 GitHub
+> Linux CI 证据均已保存。仓库仍为私有；公开仓库和正式 Release 是两个需要
+> 所有者分别确认的外部决定。
 
 ## v1.0.0 候选正式对比
 
@@ -42,6 +42,14 @@ OCR、事件顺序等部分分类领先。这是基于固定硬件和任务的�
 [SmolVLM2 JSONL](docs/reports/results/2026-08-10-smolvlm2-v1.0.0-formal.jsonl)
 及其 SHA 绑定 manifest 均已保存。早期 10 条任务和文档专项报告仍保留在下方
 证据索引中供审计。
+
+## 短视频演示
+
+![红色方块向右移动，以及两个模型保存下来的回答](docs/assets/video-benchmark-demo.gif)
+
+这个时序位置样例没有隐藏失败：Qwen 在三次正式重复中都正确判断了最终位置，
+SmolVLM2 则三次都失败。[可复制的视频教程](docs/tutorials/video-benchmark.md)
+把动画与原始任务、运行命令、JSONL 记录和确定性重建脚本对应起来。
 
 ## 已实现能力
 
@@ -216,16 +224,21 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 | 实时公开准备状态 | [证据矩阵与严格验收命令](docs/public-release-readiness.md) |
 | 真实短视频运行冒烟 | [两个后端的 Windows GPU 证据](docs/reports/2026-08-02-video-runtime-smoke.md) |
 | 短视频语料工具链 | [确定性生成与人工复核流程](docs/video-corpus-tooling.md) |
+| 短视频演示 | [可复制评测与证据生成 GIF](docs/tutorials/video-benchmark.md) |
 | 视觉鲁棒性语料工具链 | [四类压力因素与人工复核流程](docs/robustness-corpus-tooling.md) |
 | 全新 wheel 安装 | [Windows 审计与永久 CI 门禁](docs/reports/2026-08-01-fresh-wheel-install.md) |
 | 依赖供应链 | [Action 固定与更新审计](docs/reports/2026-08-01-supply-chain-audit.md) |
 | 可复现许可证审计 | [Python 包、模型、PyAV 与 FFmpeg 策略](docs/license-audit.md) |
 | 安全审查 | [本地输入边界与路径隐私审计](docs/reports/2026-08-02-security-review.md) |
+| 最终安全证据 | [Bandit、依赖漏洞与剩余风险](docs/reports/final-security-review.md) |
+| 最终发布验证 | [Python、Windows、wheel、报告与 CI 证据](docs/reports/final-candidate-validation.md) |
+| 最终 Linux CI | [已记录的 GitHub Actions 成功运行](docs/reports/final-linux-ci-validation.md) |
 | 文档、表格与图表任务集 | [`synthetic-docs-v1` 证据报告](docs/reports/2026-08-01-synthetic-docs-v1.md) |
 | 超时与重试溯源 | [Run record schema 0.4 报告](docs/reports/2026-08-01-run-record-0.4.md) |
 | 第一份完整实验 | [分步教程（英文）](docs/tutorials/first-reproducible-benchmark.md) |
 | 当前工作 | [任务清单](TASKS.md) |
 | 第三方许可证 | [Third-party notices](THIRD_PARTY_NOTICES.md) |
+| 最终依赖与许可证审计 | [干净快照、精确约束与分发边界](docs/reports/final-dependency-license-audit.md) |
 
 ## 当前状态
 
@@ -236,8 +249,8 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 | 已保存真实模型对比 | 两个固定模型、102 条任务、1 次 warm-up、3 次重复、612 次正式测量 |
 | 性能协议 | warm-up、三次重复、TTFT、吞吐、延迟、峰值显存 |
 | 可靠性 | 逐条持久化、严格恢复、完整性哈希、失败分类 |
-| 自动质量 | 离线测试、Python 3.11/3.12 CI、仓库审计、全新 wheel 冒烟测试 |
-| 下一阶段 | 完成视频教程、许可证快照和全新环境发布验证 |
+| 自动质量 | Python 3.11/3.12 Linux CI、本地 3.11/3.13、仓库审计、全新 Windows wheel 冒烟 |
+| 剩余发布动作 | 所有者决定是否公开仓库，之后再单独决定是否创建正式 Release |
 
 至少 100 条人工检查任务的目标已经完成。仓库公开与正式 Release 仍是两个
 需要所有者单独确认的外部动作。

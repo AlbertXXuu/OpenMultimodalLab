@@ -711,7 +711,9 @@ def main() -> int:
         print(f"License audit could not run: {type(exc).__name__}: {exc}")
         return 2
 
-    assert args.output is not None
+    if args.output is None:  # Guard remains active under optimized Python.
+        print("License audit could not run: output path is missing")
+        return 2
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
         json.dumps(snapshot, ensure_ascii=False, indent=2) + "\n",

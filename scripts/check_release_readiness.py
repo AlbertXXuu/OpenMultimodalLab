@@ -89,7 +89,9 @@ PERFORMANCE_FIELDS = (
 MAX_LICENSE_SNAPSHOT_BYTES = 4 * 1024 * 1024
 MAX_LICENSE_REPORT_BYTES = 1024 * 1024
 MAX_CONSTRAINTS_BYTES = 1024 * 1024
+MAX_VALIDATION_REPORT_BYTES = 1024 * 1024
 PACKAGE_PIN = re.compile(r"[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?==\S+")
+COMMIT_LINE = re.compile(r"Candidate commit: `[0-9a-f]{40}`")
 
 
 @dataclass(frozen=True, slots=True)
@@ -410,6 +412,68 @@ def _license_report_status(
     )
 
 
+def _video_demo_status(root: Path) -> tuple[bool, str]:
+    tutorial = root / "docs/tutorials/video-benchmark.md"
+    artifact = root / "docs/assets/video-benchmark-demo.gif"
+    generator = root / "scripts/build_video_demo.py"
+    missing = [
+        path.relative_to(root).as_posix()
+        for path in (tutorial, artifact, generator)
+        if not path.is_file()
+    ]
+    if missing:
+        return False, f"missing={missing}"
+    data = artifact.read_bytes()
+    if not data.startswith((b"GIF87a", b"GIF89a")):
+        return False, "demo artifact is not a GIF"
+    if not 10_000 < len(data) < 4 * 1024 * 1024:
+        return False, f"demo GIF has unexpected size={len(data)}"
+    tutorial_text = tutorial.read_text(encoding="utf-8")
+    markers = (
+        "video-benchmark-demo.gif",
+        "video-right-end",
+        "Qwen3-VL-2B answered `right` and passed",
+        "SmolVLM2-500M",
+        "answered `left.` and failed",
+        "scripts/build_video_demo.py",
+    )
+    missing_markers = [
+        marker for marker in markers if marker not in tutorial_text
+    ]
+    return not missing_markers, (
+        f"GIF bytes={len(data)} and tutorial provenance markers are complete"
+        if not missing_markers
+        else f"tutorial markers missing={missing_markers}"
+    )
+
+
+def _validation_report_status(
+    path: Path,
+    *,
+    heading: str,
+    required_markers: tuple[str, ...],
+) -> tuple[bool, str]:
+    if not path.is_file():
+        return False, f"{path.name} is missing"
+    with path.open("rb") as handle:
+        raw = handle.read(MAX_VALIDATION_REPORT_BYTES + 1)
+    if len(raw) > MAX_VALIDATION_REPORT_BYTES:
+        return False, f"{path.name} exceeds 1 MiB"
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeError:
+        return False, f"{path.name} is not UTF-8"
+    markers = (heading, "Outcome: PASS", "Validation date:", *required_markers)
+    missing = [marker for marker in markers if marker not in text]
+    if not COMMIT_LINE.search(text):
+        missing.append("Candidate commit: `<40 lowercase hex>`")
+    return not missing, (
+        "validation evidence markers complete"
+        if not missing
+        else f"validation markers missing={missing}"
+    )
+
+
 def audit_release_readiness(root: Path) -> list[ReadinessCheck]:
     """Return the current requirement/evidence matrix."""
 
@@ -609,14 +673,12 @@ def audit_release_readiness(root: Path) -> list[ReadinessCheck]:
             bundle_evidence,
         )
     )
-    video_tutorial = root / "docs/tutorials/video-benchmark.md"
+    video_demo_passed, video_demo_evidence = _video_demo_status(root)
     checks.append(
         ReadinessCheck(
             "VIDEO-DEMO",
-            video_tutorial.is_file(),
-            "copyable canonical short-video tutorial/demo exists"
-            if video_tutorial.is_file()
-            else "canonical short-video tutorial/demo is not yet present",
+            video_demo_passed,
+            video_demo_evidence,
         )
     )
     workflow = (root / ".github/workflows/ci.yml").read_text(encoding="utf-8")
@@ -668,23 +730,38 @@ def audit_release_readiness(root: Path) -> list[ReadinessCheck]:
         )
     )
     final_windows = root / "docs/reports/final-fresh-windows-validation.md"
+    windows_passed, windows_evidence = _validation_report_status(
+        final_windows,
+        heading="# Final fresh Windows validation",
+        required_markers=(
+            "Fresh environment:",
+            "Wheel SHA-256:",
+            "Outside-checkout smoke: PASS",
+        ),
+    )
     checks.append(
         ReadinessCheck(
             "FINAL-FRESH-WINDOWS",
-            final_windows.is_file(),
-            "final clean Windows installation and execution evidence exists"
-            if final_windows.is_file()
-            else "final candidate must be rebuilt in a fresh Windows environment",
+            windows_passed,
+            windows_evidence,
         )
     )
     final_linux_ci = root / "docs/reports/final-linux-ci-validation.md"
+    linux_passed, linux_evidence = _validation_report_status(
+        final_linux_ci,
+        heading="# Final GitHub Linux CI validation",
+        required_markers=(
+            "GitHub Actions run: https://github.com/",
+            "test (3.11): PASS",
+            "test (3.12): PASS",
+            "repository-quality: PASS",
+        ),
+    )
     checks.append(
         ReadinessCheck(
             "FINAL-LINUX-CI",
-            final_linux_ci.is_file(),
-            "final candidate GitHub Linux CI evidence exists"
-            if final_linux_ci.is_file()
-            else "final candidate GitHub Linux CI evidence is still required",
+            linux_passed,
+            linux_evidence,
         )
     )
 
@@ -731,13 +808,23 @@ def audit_release_readiness(root: Path) -> list[ReadinessCheck]:
         )
     )
     final_validation = root / "docs/reports/final-candidate-validation.md"
+    candidate_passed, candidate_evidence = _validation_report_status(
+        final_validation,
+        heading="# Final candidate validation",
+        required_markers=(
+            "Python 3.11: PASS",
+            "Python 3.13: PASS",
+            "Repository audit: PASS",
+            "Wheel verification: PASS",
+            "Report rebuild: PASS",
+            "Security review: PASS",
+        ),
+    )
     checks.append(
         ReadinessCheck(
             "FINAL-CANDIDATE-VALIDATION",
-            final_validation.is_file(),
-            "final Windows/Python/Linux/package validation report exists"
-            if final_validation.is_file()
-            else "final candidate validation must be rerun after corpus completion",
+            candidate_passed,
+            candidate_evidence,
         )
     )
     return checks
@@ -753,6 +840,15 @@ def _render_text(checks: Iterable[ReadinessCheck]) -> str:
         f"Ready: {'yes' if all(check.passed for check in rows) else 'no'} "
         f"({sum(check.passed for check in rows)}/{len(rows)} checks passed)"
     )
+    technical = [
+        check for check in rows if check.id != "OWNER-PUBLICATION-APPROVAL"
+    ]
+    lines.append(
+        "Technically ready: "
+        f"{'yes' if all(check.passed for check in technical) else 'no'} "
+        f"({sum(check.passed for check in technical)}/{len(technical)} "
+        "technical checks passed)"
+    )
     return "\n".join(lines)
 
 
@@ -764,19 +860,34 @@ def main(argv: list[str] | None = None) -> int:
         default=Path(__file__).resolve().parents[1],
     )
     parser.add_argument("--json", action="store_true", dest="as_json")
-    parser.add_argument(
+    strict_group = parser.add_mutually_exclusive_group()
+    strict_group.add_argument(
         "--strict",
         action="store_true",
         help="Return non-zero until every release requirement passes.",
     )
+    strict_group.add_argument(
+        "--technical-strict",
+        action="store_true",
+        help=(
+            "Return non-zero until every technical requirement passes; "
+            "the separate owner publication decision is excluded."
+        ),
+    )
     args = parser.parse_args(argv)
     checks = audit_release_readiness(args.root)
     ready = all(check.passed for check in checks)
+    technically_ready = all(
+        check.passed
+        for check in checks
+        if check.id != "OWNER-PUBLICATION-APPROVAL"
+    )
     if args.as_json:
         print(
             json.dumps(
                 {
                     "ready": ready,
+                    "technically_ready": technically_ready,
                     "checks": [asdict(check) for check in checks],
                 },
                 ensure_ascii=False,
@@ -786,7 +897,11 @@ def main(argv: list[str] | None = None) -> int:
         )
     else:
         print(_render_text(checks))
-    return 1 if args.strict and not ready else 0
+    if args.strict and not ready:
+        return 1
+    if args.technical_strict and not technically_ready:
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

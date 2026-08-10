@@ -15,13 +15,12 @@ adapters, preserves every output and failure as JSONL, applies deterministic
 task-selected scoring, and records enough configuration and environment data
 to rebuild a report without rerunning the model.
 
-> Status: active pre-release development. Image, document, table, and chart
-> tasks, two real local backends, the formal performance protocol, strict
-> resume, bounded retries, cooperative inference deadlines, and CI quality
-> gates work today. Both real adapters now decode local short video through a
-> bounded eight-frame path. Both pinned models have completed the same formal
-> 102-task image, document, short-video, and robustness grid; the raw evidence
-> and byte-rebuildable candidate report are preserved in the repository.
+> Status: technically release-ready v1.0.0 candidate. Both pinned models have
+> completed the same formal 102-task image, document, short-video, and
+> robustness grid. Raw results, deterministic reports, video demo, license and
+> security audits, Python 3.11/3.13 checks, fresh Windows wheel verification,
+> and GitHub Linux CI evidence are preserved. The repository remains private;
+> public visibility and the formal Release are separate owner decisions.
 
 ## v1.0.0 candidate comparison
 
@@ -48,6 +47,16 @@ inspect the preserved
 [SmolVLM2 JSONL](docs/reports/results/2026-08-10-smolvlm2-v1.0.0-formal.jsonl),
 and their SHA-bound manifests. Historical ten-task and document-only reports
 remain available in the evidence index below.
+
+## Short-video demo
+
+![A red square moving right, with the two preserved model answers](docs/assets/video-benchmark-demo.gif)
+
+This is a deliberately non-cherry-picked temporal-position example from the
+formal grid: Qwen answered the final position correctly in all three measured
+repetitions, while SmolVLM2 failed all three. The
+[copyable video tutorial](docs/tutorials/video-benchmark.md) connects this GIF
+to the exact task, commands, raw records, and deterministic rebuild script.
 
 ## What is already implemented
 
@@ -245,16 +254,21 @@ equivalent because tokenizers differ.
 | Live public-release status | [Evidence matrix and strict readiness check](docs/public-release-readiness.md) |
 | Real short-video runtime smoke | [Two-backend Windows GPU evidence](docs/reports/2026-08-02-video-runtime-smoke.md) |
 | Short-video corpus tooling | [Deterministic generation and human-review workflow](docs/video-corpus-tooling.md) |
+| Short-video demonstration | [Copyable benchmark and evidence-built GIF](docs/tutorials/video-benchmark.md) |
 | Visual-robustness corpus tooling | [Four-factor deterministic draft and review workflow](docs/robustness-corpus-tooling.md) |
 | Fresh wheel installation | [Windows audit and permanent CI gate](docs/reports/2026-08-01-fresh-wheel-install.md) |
 | Dependency supply chain | [Action pinning and update audit](docs/reports/2026-08-01-supply-chain-audit.md) |
 | Security review | [Bounded local-input and privacy audit](docs/reports/2026-08-02-security-review.md) |
+| Final security evidence | [Bandit, dependency advisories, and residual risks](docs/reports/final-security-review.md) |
+| Final release validation | [Python, Windows, wheel, report, and CI evidence](docs/reports/final-candidate-validation.md) |
+| Final Linux CI | [Recorded successful GitHub Actions run](docs/reports/final-linux-ci-validation.md) |
 | Document/table/chart task set | [`synthetic-docs-v1` evidence report](docs/reports/2026-08-01-synthetic-docs-v1.md) |
 | Timeout and retry provenance | [Run record schema 0.4 report](docs/reports/2026-08-01-run-record-0.4.md) |
 | First complete experiment | [Step-by-step tutorial](docs/tutorials/first-reproducible-benchmark.md) |
 | Current work | [Task board](TASKS.md) |
 | Third-party licenses | [Third-party notices](THIRD_PARTY_NOTICES.md) |
 | Reproducible license audit | [Package, model, PyAV, and FFmpeg policy](docs/license-audit.md) |
+| Final dependency/license audit | [Clean snapshot, exact constraints, and distribution boundary](docs/reports/final-dependency-license-audit.md) |
 
 ## Project status
 
@@ -265,8 +279,8 @@ equivalent because tokenizers differ.
 | Preserved real-model comparison | Both pinned models, 102 tasks, 1 warm-up + 3 repetitions, 612 measured attempts |
 | Performance protocol | Warm-up, three repetitions, TTFT, throughput, latency, peak memory |
 | Reliability | Durable records, strict resume, integrity hashes, typed failures |
-| Automated quality | Offline tests, Python 3.11/3.12 CI, repository audit, fresh-wheel smoke test |
-| Next capability work | Final tutorial, license snapshot, and fresh-environment release validation |
+| Automated quality | Python 3.11/3.12 Linux CI, local 3.11/3.13 tests, repository audit, fresh Windows wheel smoke |
+| Remaining release action | Owner decision on public visibility, followed separately by the formal Release |
 
 The target of at least 100 human-checked tasks is complete. Repository
 publication and a formal Release remain separate owner-authorized actions.

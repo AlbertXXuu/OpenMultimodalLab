@@ -5,8 +5,9 @@ licensed under Apache-2.0. Real-model support is optional and installs
 independent third-party packages and model weights under their own terms.
 
 This file records the dependency and model-license evidence reviewed for the
-local baseline environment through 2026-08-02. It is an engineering inventory,
-not legal advice. The project does not vendor these packages or model weights.
+final Windows Python 3.11 candidate environment on 2026-08-10. It is an
+engineering inventory, not legal advice. The project does not vendor these
+packages or model weights.
 
 ## Optional Python runtime
 
@@ -28,9 +29,12 @@ Python 3.11 model environment:
 | `transformers` | 5.14.1 | Apache 2.0 | Model and processor loading |
 
 Version ranges in `pyproject.toml` may resolve to different releases in a new
-environment. Before a public release, regenerate this inventory from the
-actual lock or baseline environment and retain upstream license files when
-redistribution requires them.
+environment. The exact verified baseline is retained at
+`requirements/model-windows-py311-constraints.txt`, and the machine-readable
+package and binary inventory is retained at
+`docs/reports/results/final-runtime-license-audit.json`.
+Redistributors must retain upstream license files when their distribution
+method requires them.
 
 The LGPL dependency is dynamically imported from the user's Python
 environment; its source is not copied into this repository or linked into a
@@ -44,7 +48,8 @@ for this binary combination is `GPL-3.0-or-later`, distinct from PyAV's own
 BSD-3-Clause source license. OpenMultimodalLab does not vendor or redistribute
 the wheel or those DLLs. The public v1.0 must remain source-only; anyone
 redistributing a bundled runtime or executable must perform a separate
-compliance review. The exact binaries, versions, and hashes are captured by
+compliance review. The exact binaries, versions, and hashes are captured by the
+final runtime snapshot generated with
 [`scripts/audit_runtime_licenses.py`](scripts/audit_runtime_licenses.py).
 
 ## Model weights and processors
@@ -62,8 +67,9 @@ acceptable-use terms, and laws applicable to their inputs and outputs.
 
 ## Dataset and media
 
-The committed `synthetic-v1`, `synthetic-v1.1`, and `synthetic-docs-v1` tasks
-and PNG files are project-generated and declare `license: "Apache-2.0"` in
-every task. Their generators and byte-for-byte regeneration tests are included
-in the repository. No third-party image or video is copied into these
-datasets. A licensed short-video dataset has not yet been committed.
+The canonical `synthetic-v1.1`, `synthetic-docs-v1`, `synthetic-video-v1`, and
+`synthetic-robustness-v1` tasks and media are project-generated and declare
+`license: "Apache-2.0"` in every task. Their generators and reproducibility
+tests are included in the repository. The 24 short-video tasks and 36 visual
+robustness tasks additionally have SHA-bound owner-review records. No
+third-party image or video is copied into these datasets.
