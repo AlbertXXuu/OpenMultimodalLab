@@ -2,8 +2,9 @@
 
 ## Supported state
 
-OpenMultimodalLab is in pre-release development. Security fixes are applied to
-the current `main` branch; no stable release line is supported yet.
+OpenMultimodalLab `v1.0.0` is the current stable release. Security fixes land
+on `main`; backports and a patch release are decided case by case from impact
+and compatibility. No long-term-support branch is promised.
 
 ## Report a vulnerability
 
@@ -24,9 +25,8 @@ Include privately:
   involved;
 - suggested mitigation, if known.
 
-No response-time or embargo SLA is promised during pre-release development.
-Please allow the maintainer to confirm impact and coordinate a fix before
-public disclosure.
+No response-time or embargo SLA is promised. Please allow the maintainer to
+confirm impact and coordinate a fix before public disclosure.
 
 ## Current security boundaries
 

@@ -53,6 +53,40 @@ class LoadTasksTests(unittest.TestCase):
             ):
                 load_tasks(dataset)
 
+    def test_rejects_nonstandard_json_numbers(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dataset = Path(temp_dir) / "nonstandard.jsonl"
+            dataset.write_text(
+                '{"schema_version":"1.0","id":"bad","prompt":"x",'
+                '"metadata":{"value":NaN}}\n',
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(
+                DatasetError,
+                "non-standard JSON numeric constant 'NaN'",
+            ):
+                load_tasks(dataset, require_media=False)
+
+    def test_rejects_blank_media_references(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dataset = Path(temp_dir) / "blank-media.jsonl"
+            dataset.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "1.0",
+                        "id": "blank-media",
+                        "prompt": "Prompt",
+                        "media": ["  "],
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(DatasetError, "non-empty strings"):
+                load_tasks(dataset, require_media=False)
+
     def test_loads_valid_task(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -235,6 +269,53 @@ class LoadTasksTests(unittest.TestCase):
             with self.assertRaisesRegex(DatasetError, "must have equal length"):
                 load_tasks(dataset)
 
+    def test_rejects_invalid_or_duplicate_scoring_references(self) -> None:
+        invalid_cases = (
+            (
+                {
+                    "type": "normalized_exact_match",
+                    "groups": "not-a-list",
+                },
+                ["red"],
+                "must be a list",
+            ),
+            (
+                {
+                    "type": "attribute_groups",
+                    "groups": [["red", "RED"]],
+                },
+                ["red object"],
+                "duplicate terms",
+            ),
+            (
+                {
+                    "type": "normalized_exact_match",
+                },
+                ["yes", "YES"],
+                "must not contain duplicates",
+            ),
+        )
+        for scoring, keywords, message in invalid_cases:
+            with self.subTest(message=message):
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    dataset = Path(temp_dir) / "invalid-scoring.jsonl"
+                    dataset.write_text(
+                        json.dumps(
+                            {
+                                "schema_version": "1.1",
+                                "id": "invalid-scoring",
+                                "prompt": "Prompt",
+                                "expected_keywords": keywords,
+                                "scoring": scoring,
+                            }
+                        )
+                        + "\n",
+                        encoding="utf-8",
+                    )
+
+                    with self.assertRaisesRegex(DatasetError, message):
+                        load_tasks(dataset, require_media=False)
+
     def test_loads_schema_v1_2_numeric_tolerance(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             dataset = Path(temp_dir) / "tasks.jsonl"
@@ -288,7 +369,11 @@ class LoadTasksTests(unittest.TestCase):
         invalid_values = (
             (True, 0.01, "finite number"),
             (8.37, -0.01, "at least 0"),
-            (8.37, float("inf"), "finite number"),
+            (
+                8.37,
+                float("inf"),
+                "non-standard JSON numeric constant 'Infinity'",
+            ),
         )
         for target, tolerance, message in invalid_values:
             with self.subTest(target=target, tolerance=tolerance):

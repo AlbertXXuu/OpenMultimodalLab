@@ -1,7 +1,7 @@
 # Deterministic visual-robustness corpus tooling
 
-This tooling generated the approved `synthetic-robustness-v1` 36-task
-candidate. Its dataset, 12 images, overview sheet, and SHA-bound review record
+This tooling generated the released `synthetic-robustness-v1` 36-task corpus.
+Its dataset, 12 images, overview sheet, and SHA-bound review record
 are committed. `AlbertXXuu` completed all 36 review entries on 2026-08-10, and
 the record validates against the unchanged dataset hash.
 
@@ -29,24 +29,31 @@ answers are all stored in the repository. Assets have no encoder timestamps,
 downloaded media, host paths, or third-party creative content, so independent
 generations are byte-identical and licensed under Apache-2.0 with the project.
 
-## Rebuild the approved candidate
+## Rebuild a disposable verification copy
 
-Use a temporary directory until the public dataset name is approved:
+Use a temporary directory so the completed review record and released assets
+cannot be overwritten:
 
 ```powershell
+$reviewBuild = Join-Path ([IO.Path]::GetTempPath()) `
+  ("oml-robustness-review-" + [guid]::NewGuid())
+
 .\.venv\Scripts\python.exe scripts/generate_robustness_images.py `
-  --output-dir examples\assets\synthetic-robustness-v1 `
-  --review-sheet docs\reviews\synthetic-robustness-v1-overview.png `
-  --dataset-output examples\tasks\synthetic-robustness-v1.jsonl `
+  --output-dir "$reviewBuild\assets" `
+  --review-sheet "$reviewBuild\overview.png" `
+  --dataset-output "$reviewBuild\tasks.jsonl" `
   --dataset-version synthetic-robustness-v1 `
   --media-prefix examples/assets/synthetic-robustness-v1 `
-  --review-output docs\reviews\synthetic-robustness-v1.json
+  --review-output "$reviewBuild\review.json"
 ```
 
 The generator still has no inferred output name. It rejects an empty version,
 partial dataset configuration, absolute media paths, Windows drive paths, and
 parent-directory traversal. Rebuilding the review template resets every human
 check to `false`, so do not run this command over a completed review record.
+The logical media prefix remains canonical so the regenerated dataset bytes
+can be compared with the released JSONL even though all output files are
+written under the temporary directory.
 
 ## Review-sheet order
 
@@ -79,8 +86,8 @@ Validate a completed record with:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts/validate_human_review.py `
-  --dataset "$draft/tasks.jsonl" `
-  --review "$draft/review.json"
+  --dataset "$reviewBuild\tasks.jsonl" `
+  --review "$reviewBuild\review.json"
 ```
 
 The validator requires exactly one entry per task, the static-image check
@@ -113,11 +120,10 @@ They prove runtime compatibility and diagnostic value only; they are not
 formal model-quality/performance results and do not increase the canonical
 task count.
 
-## Remaining freeze and formal-run steps
+## Released status
 
-Generation, hash binding, and owner review are complete. The remaining steps
-are to freeze the reviewed bytes and include the tasks in both pinned-model
-formal comparison runs.
+Generation, hash binding, owner review, byte freeze, and inclusion in both
+pinned-model formal runs are complete in v1.0.0.
 
 Do not rename the canonical dataset after review or formal runs. A content
 change requires a new version and a new review hash.

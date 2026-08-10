@@ -1,7 +1,7 @@
 # Reproducible short-video benchmark
 
 This tutorial runs the canonical `synthetic-video-v1` tasks through the same
-bounded local-video path used by the v1.0.0 candidate. The media, prompts,
+bounded local-video path used by the v1.0.0 release. The media, prompts,
 expected answers, model revisions, and preserved results are all reviewable in
 the repository.
 
@@ -23,8 +23,9 @@ Use the Python 3.11 model environment described in the
 .\.venv-ml\Scripts\oml.exe doctor --backend smolvlm2
 ```
 
-Both commands must report a CUDA runtime, BF16 support, and ready status before
-a real-model run.
+Both commands must report a CUDA runtime and ready status. The SmolVLM2
+diagnostic must additionally report BF16 support because that backend loads in
+native BF16; the Qwen diagnostic does not use BF16 as a readiness gate.
 
 ## 2. Run a small video slice
 
@@ -72,7 +73,7 @@ repetitions:
   --output runs/video-smolvlm2-formal.jsonl
 ```
 
-The published v1.0.0 candidate instead used the single SHA-bound
+The published v1.0.0 release used the single SHA-bound
 `runs/formal-evaluation-input.jsonl`, which includes all 102 image, document,
 video, and robustness tasks. Its raw evidence and manifests are retained under
 `docs/reports/results/`.
@@ -94,7 +95,7 @@ not a hand-authored model claim.
 ## 5. Interpret the result
 
 This one task demonstrates temporal-position behavior, not general model
-quality. The complete candidate report compares 102 tasks and shows the larger
+quality. The complete release report compares 102 tasks and shows the larger
 trade-off: Qwen has the higher aggregate score and lower median latency, while
 SmolVLM2 uses substantially less peak GPU memory. Always cite the
 [complete report](../reports/v1.0.0-candidate/report.md) alongside a single

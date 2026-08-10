@@ -257,8 +257,8 @@ def _doctor(backend: str) -> int:
         return 1
     if sys.version_info >= (3, 13):
         print(
-            "Note: the core works on Python 3.13+, but real ML backends target "
-            "Python 3.11/3.12."
+            "Note: the core is verified on Python 3.13, but real ML "
+            "backends target Python 3.11/3.12."
         )
     if backend in {"qwen3-vl", "smolvlm2"}:
         backend_label = {
@@ -517,14 +517,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"Wrote run manifest to {manifest_path}")
         print(
             format_summary(
-                summarize(
-                    [
-                        json.loads(line)
-                        for line in args.output.read_text(
-                            encoding="utf-8"
-                        ).splitlines()
-                    ]
-                )
+                summarize(load_records(args.output))
             )
         )
         return 0

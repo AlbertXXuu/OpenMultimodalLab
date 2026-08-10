@@ -79,25 +79,25 @@ Primary sources:
 - [FFmpeg legal and LGPL/GPL compliance guidance](https://ffmpeg.org/legal.html)
 - [FFmpeg license and external-library rules](https://ffmpeg.org/doxygen/trunk/md_LICENSE.html)
 
-## Final-candidate procedure
+## Reproduce the v1.0 audit safely
 
-After the canonical corpus, reports, and version metadata are complete, begin
-from a clean commit and run:
+The committed v1.0 audit is historical evidence and must not be overwritten.
+To reproduce it, check out the `v1.0.0` tag in a disposable worktree, begin
+from a clean state, and write regenerated files to ignored `runs/` paths:
 
 ```powershell
 .\.venv-ml\Scripts\python.exe scripts/audit_runtime_licenses.py `
   --require-clean `
-  --output docs/reports/results/final-runtime-license-audit.json `
-  --constraints-output requirements/model-windows-py311-constraints.txt
+  --output runs/rebuilt-v1.0-runtime-license-audit.json `
+  --constraints-output runs/rebuilt-v1.0-model-constraints.txt
 ```
 
-Then review the generated package versions, license classifications, model
-records, FFmpeg binaries, warnings, and snapshot SHA-256. Write
-`docs/reports/final-dependency-license-audit.md` with the command, source
-commit, constraints hash, snapshot hash, distribution boundary, reviewer, and
-date.
+Then compare the regenerated package versions, license classifications, model
+records, FFmpeg binaries, warnings, and snapshot SHA-256 with the committed
+v1.0 report. A future public version must use newly named evidence files and a
+new owner-approved release process.
 
-The signed report must include these exact machine-checked fields:
+The signed v1.0 report used these exact machine-checked fields:
 
 ```markdown
 # Final dependency and license audit

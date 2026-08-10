@@ -164,9 +164,12 @@ class ReportBundleTests(unittest.TestCase):
             project_root=PROJECT_ROOT,
         )
 
-        for name, content in generated.items():
+        for name in BUNDLE_FILENAMES[:-1]:
             with self.subTest(name=name):
-                self.assertEqual((COMMITTED_BUNDLE / name).read_bytes(), content)
+                self.assertEqual(
+                    (COMMITTED_BUNDLE / name).read_bytes(),
+                    generated[name],
+                )
         manifest = verify_report_bundle(
             COMMITTED_BUNDLE,
             project_root=PROJECT_ROOT,
@@ -188,9 +191,12 @@ class ReportBundleTests(unittest.TestCase):
             {FINAL_INPUT_SHA256},
         )
         generated = build_report_bundle(sources, project_root=PROJECT_ROOT)
-        for name, content in generated.items():
+        for name in BUNDLE_FILENAMES[:-1]:
             with self.subTest(name=name):
-                self.assertEqual((FINAL_BUNDLE / name).read_bytes(), content)
+                self.assertEqual(
+                    (FINAL_BUNDLE / name).read_bytes(),
+                    generated[name],
+                )
 
         manifest = verify_report_bundle(FINAL_BUNDLE, project_root=PROJECT_ROOT)
         self.assertEqual(len(manifest["sources"]), 2)
@@ -216,6 +222,26 @@ class ReportBundleTests(unittest.TestCase):
 
             (output / "report.md").write_text("tampered\n", encoding="utf-8")
             with self.assertRaisesRegex(ReportError, "mismatch"):
+                verify_report_bundle(output, project_root=PROJECT_ROOT)
+
+    def test_bundle_manifest_rejects_nonstandard_json_numbers(self) -> None:
+        bundle = build_report_bundle(
+            self.sources,
+            project_root=PROJECT_ROOT,
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir)
+            write_report_bundle(output, bundle)
+            manifest_path = output / "build-manifest.json"
+            manifest_path.write_text(
+                manifest_path.read_text(encoding="utf-8").replace(
+                    '"batch_size": 1',
+                    '"batch_size": NaN',
+                ),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(ReportError, "not valid UTF-8 JSON"):
                 verify_report_bundle(output, project_root=PROJECT_ROOT)
 
     def test_failed_measurement_is_preserved_and_path_redacted(self) -> None:

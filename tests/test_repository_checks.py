@@ -103,6 +103,23 @@ class RepositoryCheckTests(unittest.TestCase):
         self.assertIn("requires top-level 'body'", result.stderr)
         self.assertIn("must be pinned to a full commit SHA", result.stderr)
 
+    def test_rejects_nonstandard_json_numbers(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            (root / "config.json").write_text(
+                '{"value": NaN}\n',
+                encoding="utf-8",
+            )
+            (root / "records.jsonl").write_text(
+                '{"value": Infinity}\n',
+                encoding="utf-8",
+            )
+
+            result = self._run_checker(root)
+
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.stderr.count("non-standard JSON"), 2)
+
     def test_current_repository_passes(self) -> None:
         result = self._run_checker(PROJECT_ROOT)
 

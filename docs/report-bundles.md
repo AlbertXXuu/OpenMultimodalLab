@@ -7,13 +7,13 @@ can be verified without running a model. `scripts/build_benchmark_report.py`
 provides that release-oriented path using only the Python standard library and
 the installed project package.
 
-The committed `v1.0.0-candidate` bundle covers the complete 102-task reviewed
-input. Both pinned models completed the same one-warm-up/three-repeat grid on
-the same clean commit and RTX 4060 Laptop GPU. This proves the technical
-benchmark evidence; it does not by itself authorize repository publication or
-a formal GitHub Release.
+The committed directory named `v1.0.0-candidate` contains the exact bundle
+that was reviewed and released as v1.0.0. Its historical directory name is
+preserved because changing it would rewrite links and evidence after release.
+Both pinned models completed the same one-warm-up/three-repeat grid on the same
+clean commit and RTX 4060 Laptop GPU.
 
-## Build the v1.0.0 candidate bundle
+## Rebuild the v1.0.0 release evidence
 
 From the repository root:
 
@@ -77,7 +77,7 @@ binds the exact legacy result and manifest bytes by SHA-256.
 ```powershell
 .\.venv\Scripts\python.exe scripts\build_benchmark_report.py `
   --verify `
-  --output-dir runs/rebuilt-evidence
+  --output-dir docs/reports/v1.0.0-candidate
 ```
 
 Verification checks:
@@ -87,17 +87,23 @@ Verification checks:
 3. the exact bytes and sizes of all generator source files;
 4. the exact bytes and sizes of all five derived outputs.
 
+On a post-release branch, generator files may legitimately have evolved. The
+verifier accepts the exact generator bytes from local Git history and still
+rebuilds all five derived outputs with the current compatible implementation.
+CI therefore checks out full history (`fetch-depth: 0`). For an archive without
+Git history, check out the `v1.0.0` source tag before verifying this historical
+bundle. A future output-changing generator requires a new bundle
+contract/version; released hashes are never rewritten.
+
 Changing a reported number, deleting a failure row, modifying an input, or
 editing the generator after the build makes verification fail.
 
 ## v1.0 release use
 
-The corpus review, two-model formal grid, source preservation, candidate
-bundle, independent byte comparison, and repository publication are complete.
-The Windows/Linux verification, dependency and license snapshot, video
-tutorial, and final candidate evidence reports are also complete. The only
-remaining action is to request separate authorization before creating the
-formal GitHub Release.
+The corpus review, two-model formal grid, source preservation, byte comparison,
+Windows/Linux verification, dependency/license snapshot, video tutorial,
+repository publication, and formal GitHub Release are complete. Future
+releases must generate new evidence rather than edit this bundle in place.
 
 The generated report describes only the pinned task/model/hardware evidence.
 It never infers a universal ranking, user preference, adoption, or GitHub Star

@@ -572,6 +572,25 @@ class RunCommandTests(unittest.TestCase):
         self.assertIn("output size", stderr.getvalue())
 
 
+class ReportCommandTests(unittest.TestCase):
+    def test_report_returns_stable_error_for_invalid_record(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source = Path(temp_dir) / "invalid.jsonl"
+            source.write_text(
+                '{"task_id":"x","status":"success","latency_ms":1,'
+                '"cumulative_latency_ms":"bad","score":1,"usage":{}}\n',
+                encoding="utf-8",
+            )
+            stderr = io.StringIO()
+            with redirect_stderr(stderr):
+                exit_code = main(["report", "--input", str(source)])
+
+        self.assertEqual(exit_code, 2)
+        self.assertIn("Report error:", stderr.getvalue())
+        self.assertIn("cumulative_latency_ms", stderr.getvalue())
+        self.assertNotIn("Traceback", stderr.getvalue())
+
+
 class DoctorCommandTests(unittest.TestCase):
     def test_hugging_face_cache_path_respects_environment(self) -> None:
         cases = (

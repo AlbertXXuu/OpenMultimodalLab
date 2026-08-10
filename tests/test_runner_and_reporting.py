@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -35,6 +36,68 @@ class RunnerAndReportingTests(unittest.TestCase):
             invalid.write_bytes(b"\xff\n")
             with self.assertRaisesRegex(ReportError, "not valid UTF-8"):
                 load_records(invalid)
+
+    def test_report_rejects_invalid_record_fields_and_json_numbers(self) -> None:
+        invalid_records = (
+            (
+                {
+                    "task_id": "task-1",
+                    "status": "success",
+                    "latency_ms": 1,
+                    "cumulative_latency_ms": "bad",
+                    "score": 1,
+                    "usage": {},
+                },
+                "cumulative_latency_ms",
+            ),
+            (
+                {
+                    "task_id": "task-1",
+                    "status": "success",
+                    "latency_ms": 1,
+                    "score": True,
+                    "usage": {},
+                },
+                "score",
+            ),
+            (
+                {
+                    "task_id": "task-1",
+                    "status": "success",
+                    "latency_ms": 1,
+                    "score": 1,
+                    "usage": {"ttft_ms": -1},
+                },
+                "usage.ttft_ms",
+            ),
+        )
+        for record, message in invalid_records:
+            with self.subTest(message=message):
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    source = Path(temp_dir) / "invalid-record.jsonl"
+                    source.write_text(
+                        json.dumps(record) + "\n",
+                        encoding="utf-8",
+                    )
+                    with self.assertRaisesRegex(ReportError, message):
+                        load_records(source)
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source = Path(temp_dir) / "nan-record.jsonl"
+            source.write_text(
+                '{"task_id":"task-1","status":"success",'
+                '"latency_ms":1,"score":NaN,"usage":{}}\n',
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                ReportError,
+                "non-standard JSON numeric constant 'NaN'",
+            ):
+                load_records(source)
+
+    def test_summary_rejects_incomplete_records(self) -> None:
+        with self.assertRaisesRegex(ReportError, "task_id"):
+            summarize([{}])
 
     def test_end_to_end_mock_run(self) -> None:
         tasks = [

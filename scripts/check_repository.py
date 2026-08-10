@@ -106,6 +106,17 @@ class Statistics:
     json_documents: int = 0
 
 
+def _reject_nonstandard_json_constant(value: str) -> None:
+    raise ValueError(f"non-standard JSON numeric constant '{value}'")
+
+
+def _strict_json_loads(value: str) -> object:
+    return json.loads(
+        value,
+        parse_constant=_reject_nonstandard_json_constant,
+    )
+
+
 def _is_excluded(path: Path, root: Path) -> bool:
     relative_parts = path.relative_to(root).parts
     return any(
@@ -198,10 +209,14 @@ def _check_json(
     if path.suffix.casefold() == ".json":
         statistics.json_documents += 1
         try:
-            json.loads(text)
-        except json.JSONDecodeError as exc:
+            _strict_json_loads(text)
+        except (json.JSONDecodeError, ValueError) as exc:
             issues.append(
-                Issue(path, exc.lineno, f"invalid JSON: {exc.msg}")
+                Issue(
+                    path,
+                    getattr(exc, "lineno", 1),
+                    f"invalid JSON: {getattr(exc, 'msg', str(exc))}",
+                )
             )
         return issues
 
@@ -215,10 +230,14 @@ def _check_json(
             continue
         statistics.json_documents += 1
         try:
-            value = json.loads(line)
-        except json.JSONDecodeError as exc:
+            value = _strict_json_loads(line)
+        except (json.JSONDecodeError, ValueError) as exc:
             issues.append(
-                Issue(path, line_number, f"invalid JSONL: {exc.msg}")
+                Issue(
+                    path,
+                    line_number,
+                    f"invalid JSONL: {getattr(exc, 'msg', str(exc))}",
+                )
             )
             continue
         if not isinstance(value, dict):

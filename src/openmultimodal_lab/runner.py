@@ -14,6 +14,7 @@ from typing import Any, Iterable, Mapping
 
 from .adapters.base import ModelAdapter
 from .adapters.errors import AdapterError
+from .json_utils import strict_json_loads
 from .metrics import score_response
 from .models import EvaluationTask, RunRecord
 from .privacy import portable_media_references, redact_local_paths
@@ -135,11 +136,12 @@ def _load_resume_records(path: Path) -> list[RunRecord]:
                 f"existing output line {line_number} is unexpectedly empty"
             )
         try:
-            value = json.loads(line)
-        except json.JSONDecodeError as exc:
+            value = strict_json_loads(line)
+        except ValueError as exc:
+            detail = getattr(exc, "msg", str(exc))
             raise ResumeError(
                 f"existing output line {line_number} is invalid JSON: "
-                f"{exc.msg}"
+                f"{detail}"
             ) from exc
         if not isinstance(value, dict):
             raise ResumeError(
@@ -603,7 +605,14 @@ def run_benchmark(
                 prior_latency_ms=cumulative_latency_ms,
             )
             records.append(record)
-            handle.write(json.dumps(asdict(record), ensure_ascii=False) + "\n")
+            handle.write(
+                json.dumps(
+                    asdict(record),
+                    ensure_ascii=False,
+                    allow_nan=False,
+                )
+                + "\n"
+            )
             handle.flush()
             os.fsync(handle.fileno())
             if on_record_persisted is not None:

@@ -8,10 +8,12 @@ import html
 import io
 import json
 import statistics
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
 
+from .json_utils import strict_json_loads
 from .privacy import redact_local_paths
 from .reporting import ReportError, load_records, summarize, validate_formal_run
 
@@ -96,7 +98,7 @@ def _read_manifest(path: Path) -> tuple[dict[str, Any], bytes]:
     if len(raw) > MAX_MANIFEST_BYTES:
         raise ReportError("Run manifest exceeds the 4 MiB safety limit")
     try:
-        value = json.loads(raw.decode("utf-8"))
+        value = strict_json_loads(raw.decode("utf-8"))
     except (UnicodeError, ValueError) as exc:
         raise ReportError(f"Run manifest is not valid UTF-8 JSON: {path.name}") from exc
     if not isinstance(value, dict):
@@ -914,6 +916,66 @@ def _generator_inventory(project_root: Path) -> list[dict[str, object]]:
     return inventory
 
 
+def _artifact_matches(path: Path, artifact: dict[str, Any]) -> bool:
+    return (
+        path.is_file()
+        and path.stat().st_size == artifact.get("size_bytes")
+        and _sha256_path(path) == artifact.get("sha256")
+    )
+
+
+def _generator_exists_in_git_history(
+    project_root: Path,
+    reference: str,
+    artifact: dict[str, Any],
+) -> bool:
+    """Return whether Git preserves the exact historical generator bytes."""
+
+    try:
+        history = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(project_root),
+                "log",
+                "--format=%H",
+                "--all",
+                "--",
+                reference,
+            ],
+            check=False,
+            capture_output=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    if history.returncode != 0:
+        return False
+    for commit in history.stdout.decode("ascii", errors="ignore").splitlines():
+        try:
+            content = subprocess.run(
+                [
+                    "git",
+                    "-C",
+                    str(project_root),
+                    "show",
+                    f"{commit}:{reference}",
+                ],
+                check=False,
+                capture_output=True,
+                timeout=10,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return False
+        if (
+            content.returncode == 0
+            and len(content.stdout) == artifact.get("size_bytes")
+            and _sha256_bytes(content.stdout) == artifact.get("sha256")
+        ):
+            return True
+    return False
+
+
 def build_report_bundle(
     sources: tuple[FormalSource, ...],
     *,
@@ -989,6 +1051,7 @@ def build_report_bundle(
             ensure_ascii=False,
             sort_keys=True,
             separators=(",", ":"),
+            allow_nan=False,
         ).encode("utf-8")
     )
     outputs["build-manifest.json"] = (
@@ -997,6 +1060,7 @@ def build_report_bundle(
             ensure_ascii=False,
             indent=2,
             sort_keys=True,
+            allow_nan=False,
         )
         + "\n"
     ).encode("utf-8")
@@ -1040,6 +1104,7 @@ def verify_report_bundle(
             ensure_ascii=False,
             sort_keys=True,
             separators=(",", ":"),
+            allow_nan=False,
         ).encode("utf-8")
     )
     if recorded_hash != calculated_hash:
@@ -1071,11 +1136,25 @@ def verify_report_bundle(
         or set(output_names) != set(BUNDLE_FILENAMES[:-1])
     ):
         raise ReportError("Build manifest output inventory is incomplete")
-    artifacts: list[tuple[Path, dict[str, Any]]] = []
+    current_generators = True
     for generator in manifest["generators"]:
         if not isinstance(generator, dict):
             raise ReportError("Build manifest generator record is invalid")
-        artifacts.append((_project_artifact(root, generator.get("path")), generator))
+        reference = generator.get("path")
+        generator_path = _project_artifact(root, reference)
+        if _artifact_matches(generator_path, generator):
+            continue
+        current_generators = False
+        if not isinstance(reference, str) or not _generator_exists_in_git_history(
+            root,
+            reference,
+            generator,
+        ):
+            raise ReportError(
+                "Report generator bytes are absent from the current checkout "
+                f"and Git history: {generator_path.name}"
+            )
+    artifacts: list[tuple[Path, dict[str, Any]]] = []
     source_paths: list[Path] = []
     for source in manifest["sources"]:
         if not isinstance(source, dict):
@@ -1109,7 +1188,10 @@ def verify_report_bundle(
         project_root=root,
     )
     rebuilt = build_report_bundle(rebuilt_sources, project_root=root)
-    for name in BUNDLE_FILENAMES:
+    rebuild_names = (
+        BUNDLE_FILENAMES if current_generators else BUNDLE_FILENAMES[:-1]
+    )
+    for name in rebuild_names:
         path = output / name
         if not path.is_file() or path.read_bytes() != rebuilt[name]:
             raise ReportError(

@@ -117,7 +117,7 @@ without evidence.
 
 - Images and local short videos use one Adapter contract. The complete formal
   image/document/video result is preserved in the
-  [v1.0.0 candidate bundle](../reports/v1.0.0-candidate/report.md).
+  [v1.0.0 release bundle](../reports/v1.0.0-candidate/report.md).
 - Video uses a fixed eight-frame uniform sample selected before the native
   processor; changing that policy requires a distinct recorded experiment.
 - The adapter uses batch size 1 and greedy decoding.
