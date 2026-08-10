@@ -5,10 +5,12 @@ from __future__ import annotations
 import json
 import math
 import statistics
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, cast
 
+from .json_utils import strict_json_loads
 from .privacy import portable_path_reference
 
 
@@ -20,6 +22,13 @@ PERFORMANCE_FIELDS = (
     "generation_ms",
     "output_tokens_per_second",
     "peak_gpu_memory_mb",
+)
+OPTIONAL_NUMERIC_USAGE_FIELDS = PERFORMANCE_FIELDS + (
+    "decode_tokens_per_second",
+    "model_load_ms",
+    "media_load_ms",
+    "video_decode_ms",
+    "text_decode_ms",
 )
 
 
@@ -56,6 +65,88 @@ class FormalRunValidation:
             f"retries={self.retry_attempts}, "
             f"measurement_reloads={self.measurement_model_reloads}"
         )
+
+
+def _is_finite_number(value: object) -> bool:
+    return (
+        isinstance(value, (int, float))
+        and not isinstance(value, bool)
+        and math.isfinite(float(value))
+    )
+
+
+def _validate_record(record: Mapping[str, Any], context: str) -> None:
+    task_id = record.get("task_id")
+    if not isinstance(task_id, str) or not task_id.strip():
+        raise ReportError(f"{context}: 'task_id' must be a non-empty string")
+
+    status = record.get("status")
+    if not isinstance(status, str) or not status.strip():
+        raise ReportError(f"{context}: 'status' must be a non-empty string")
+
+    latency = record.get("latency_ms")
+    if not _is_finite_number(latency) or float(latency) < 0:
+        raise ReportError(
+            f"{context}: 'latency_ms' must be a finite non-negative number"
+        )
+
+    score = record.get("score")
+    if score is not None and (
+        not _is_finite_number(score) or not 0.0 <= float(score) <= 1.0
+    ):
+        raise ReportError(
+            f"{context}: 'score' must be null or a finite number from 0 to 1"
+        )
+
+    usage = record.get("usage")
+    if not isinstance(usage, Mapping):
+        raise ReportError(f"{context}: 'usage' must be an object")
+    for field in OPTIONAL_NUMERIC_USAGE_FIELDS:
+        value = usage.get(field)
+        if value is not None and (
+            not _is_finite_number(value) or float(value) < 0
+        ):
+            raise ReportError(
+                f"{context}: 'usage.{field}' must be null or a finite "
+                "non-negative number"
+            )
+
+    phase = record.get("phase", "measurement")
+    if phase not in {"warmup", "measurement"}:
+        raise ReportError(
+            f"{context}: 'phase' must be 'warmup' or 'measurement'"
+        )
+
+    repetition = record.get("repetition", 1)
+    if (
+        not isinstance(repetition, int)
+        or isinstance(repetition, bool)
+        or repetition < 1
+    ):
+        raise ReportError(
+            f"{context}: 'repetition' must be an integer above 0"
+        )
+
+    terminal = record.get("terminal", True)
+    if not isinstance(terminal, bool):
+        raise ReportError(f"{context}: 'terminal' must be a boolean")
+
+    cumulative = record.get("cumulative_latency_ms")
+    if cumulative is not None and (
+        not _is_finite_number(cumulative)
+        or float(cumulative) < float(latency)
+    ):
+        raise ReportError(
+            f"{context}: 'cumulative_latency_ms' must be null or a finite "
+            "number at least as large as 'latency_ms'"
+        )
+
+
+def _validate_records(records: list[dict[str, Any]]) -> None:
+    for index, record in enumerate(records, start=1):
+        if not isinstance(record, dict):
+            raise ReportError(f"record {index}: record must be an object")
+        _validate_record(record, f"record {index}")
 
 
 def load_records(path: str | Path) -> list[dict[str, Any]]:
@@ -96,15 +187,17 @@ def load_records(path: str | Path) -> list[dict[str, Any]]:
             if not line:
                 continue
             try:
-                value = json.loads(line)
-            except json.JSONDecodeError as exc:
+                value = strict_json_loads(line)
+            except ValueError as exc:
+                detail = getattr(exc, "msg", str(exc))
                 raise ReportError(
-                    f"{source_label}:{line_number}: invalid JSON: {exc.msg}"
+                    f"{source_label}:{line_number}: invalid JSON: {detail}"
                 ) from exc
             if not isinstance(value, dict):
                 raise ReportError(
                     f"{source_label}:{line_number}: record must be an object"
                 )
+            _validate_record(value, f"{source_label}:{line_number}")
             records.append(value)
 
     if not records:
@@ -127,6 +220,7 @@ def validate_formal_run(
 ) -> FormalRunValidation:
     """Validate exactly one warm-up and a complete three-repeat task grid."""
 
+    _validate_records(records)
     terminal_records = [
         record for record in records if record.get("terminal", True)
     ]
@@ -267,6 +361,7 @@ def validate_formal_run(
 
 
 def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
+    _validate_records(records)
     terminal_records = [
         record for record in records if record.get("terminal", True)
     ]
@@ -291,7 +386,7 @@ def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
     scores = [
         float(record["score"])
         for record in measurement_records
-        if isinstance(record.get("score"), (int, float))
+        if _is_finite_number(record.get("score"))
     ]
     latencies = [
         float(record.get("cumulative_latency_ms") or record["latency_ms"])
@@ -316,7 +411,7 @@ def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
             if not isinstance(usage, dict):
                 continue
             value = usage.get(key)
-            if isinstance(value, (int, float)) and not isinstance(value, bool):
+            if _is_finite_number(value):
                 values.append(float(value))
         return values
 
@@ -338,6 +433,7 @@ def summarize(records: list[dict[str, Any]]) -> dict[str, Any]:
         int(record.get("repetition", 1))
         for record in measurement_records
         if isinstance(record.get("repetition", 1), int)
+        and not isinstance(record.get("repetition", 1), bool)
     }
     successful_measurements = [
         record

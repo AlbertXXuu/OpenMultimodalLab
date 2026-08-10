@@ -1,9 +1,9 @@
 # Public-release readiness
 
-This is the living, evidence-backed gate for a job-showcase-quality public
-v1.0. It deliberately distinguishes implemented behavior, locally verified
-evidence, remaining engineering work, and decisions that only the repository
-owner can authorize.
+This records the evidence-backed gate that v1.0.0 passed and remains the
+reusable minimum for future releases. It distinguishes implemented behavior,
+verified evidence, future work, and decisions only the repository owner can
+authorize.
 
 Run the informational audit at any time:
 
@@ -40,17 +40,17 @@ the owner authorized the formal `v1.0.0` GitHub Release on 2026-08-10. Full
 | Document/table/chart input and formal comparison | Same final grid includes all 32 document tasks | Proven |
 | Short-video runtime | Same final grid includes all 24 reviewed video tasks with bounded eight-frame decoding | Proven formally |
 | Licensed versioned short-video tasks | 24 `synthetic-video-v1` tasks over eight project-generated AVI clips | Generated, SHA-bound, and owner-reviewed |
-| Short-video corpus tooling | Byte-stable eight-clip/24-task generator plus SHA-bound human-review validator | Proven tooling and reviewed candidate |
-| Visual-robustness corpus tooling | Byte-stable 12-image/36-task generator across four controlled factors plus SHA-bound review | Proven tooling and reviewed candidate |
+| Short-video corpus tooling | Byte-stable eight-clip/24-task generator plus SHA-bound human-review validator | Released and owner-reviewed |
+| Visual-robustness corpus tooling | Byte-stable 12-image/36-task generator across four controlled factors plus SHA-bound review | Released and owner-reviewed |
 | At least 100 unique, human-checked tasks | 102 unique licensed tasks: 42 covered by existing reports and 60 covered by validated owner-signed records | Proven for the current corpus |
 | Formal video metrics for both models | One warm-up plus three complete repetitions for both pinned models | Proven |
 | Quality, TTFT, throughput, memory, and failures | Preserved for all 612 measured attempts; zero runtime failures | Proven for all 102 tasks |
-| Rebuildable reports and visuals | Final raw JSONL/manifests plus deterministic Markdown/CSV/failure/SVG bundle and self-hashed manifest | Proven for the 102-task candidate |
+| Rebuildable reports and visuals | Final raw JSONL/manifests plus deterministic Markdown/CSV/failure/SVG bundle and self-hashed manifest | Proven for the released 102-task corpus |
 | English main README and Chinese guide | `README.md` and `README.zh-CN.md` | Proven |
 | Tutorial/demo | First experiment tutorial plus a reproducible GIF and short-video benchmark tutorial | Proven; the demo discloses one preserved model failure |
 | Tests and Linux CI | Python 3.11/3.12, wheel build, fresh install, outside-checkout smoke | Proven on final PR evidence commit |
 | Final GitHub Linux CI | Three successful jobs on main run `31363336845` | Proven for merge commit `62536b0af804579593ed0bef1f02e2281a8ff0ef` |
-| Local Python 3.11/3.13 | 155 tests passed in each environment; Python 3.11 includes PyAV decoding | Proven on the frozen candidate |
+| Local Python 3.11/3.13 | 155 tests passed in each environment; Python 3.11 includes PyAV decoding | Proven on the frozen v1.0 evidence commit |
 | Fresh Windows environment | New Python 3.13 build and Python 3.11 install environments outside checkout | Proven for the 1.0.0 wheel |
 | Security | Final Bandit and dependency-advisory evidence plus bounded-input/path-privacy controls | Proven with disclosed low/residual risks |
 | Code/model/data licenses | Clean 44-package/25-binary snapshot, exact constraints, signed report, and source-only boundary | Proven; no runtime binary may be attached |

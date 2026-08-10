@@ -1,6 +1,6 @@
 # Deterministic short-video corpus tooling
 
-This tooling generated the approved `synthetic-video-v1` 24-task candidate.
+This tooling generated the released `synthetic-video-v1` 24-task corpus.
 Its dataset, eight clips, eight contact sheets, and SHA-bound review record are
 committed. `AlbertXXuu` completed all 24 review entries on 2026-08-10, and the
 record validates against the unchanged dataset hash.
@@ -28,23 +28,30 @@ top-left, top-right, bottom-left, and bottom-right order. Runtime inference
 uses frames `0, 2, 4, 6, 8, 10, 12, 14`; the human review record requires the
 reviewer to confirm that the answer remains visible under that exact sample.
 
-## Rebuild the approved candidate
+## Rebuild a disposable verification copy
 
-Use a temporary directory while the public dataset name is unapproved:
+Use a temporary directory so the completed review record and released assets
+cannot be overwritten:
 
 ```powershell
+$reviewBuild = Join-Path ([IO.Path]::GetTempPath()) `
+  ("oml-video-review-" + [guid]::NewGuid())
+
 .\.venv\Scripts\python.exe scripts/generate_synthetic_videos.py `
-  --output-dir examples\assets\synthetic-video-v1 `
-  --review-dir docs\reviews\synthetic-video-v1 `
-  --dataset-output examples\tasks\synthetic-video-v1.jsonl `
+  --output-dir "$reviewBuild\assets" `
+  --review-dir "$reviewBuild\review-sheets" `
+  --dataset-output "$reviewBuild\tasks.jsonl" `
   --dataset-version synthetic-video-v1 `
   --media-prefix examples/assets/synthetic-video-v1 `
-  --review-output docs\reviews\synthetic-video-v1.json
+  --review-output "$reviewBuild\review.json"
 ```
 
 The script still has no inferred output name and refuses a partial dataset
 configuration. Rebuilding the review template resets every human check to
 `false`, so do not run this command over a completed review record.
+The logical media prefix remains canonical so the regenerated dataset bytes
+can be compared with the released JSONL even though all output files are
+written under the temporary directory.
 
 ## Human review protocol
 
@@ -65,8 +72,8 @@ Validate the completed record with:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts/validate_human_review.py `
-  --dataset "$draft/tasks.jsonl" `
-  --review "$draft/review.json"
+  --dataset "$reviewBuild\tasks.jsonl" `
+  --review "$reviewBuild\review.json"
 ```
 
 The validator requires exactly one entry for every task, the expected check
@@ -93,11 +100,10 @@ On 2026-08-02, the tooling was checked without committing a canonical draft:
 This is one cold diagnostic invocation per model. It proves format/runtime
 compatibility only and is not a formal quality or performance result.
 
-## Remaining freeze and formal-run steps
+## Released status
 
-Generation, hash binding, and owner review are complete. The remaining steps
-are to freeze the reviewed bytes and run both pinned models with one warm-up
-and exactly three repetitions.
+Generation, hash binding, owner review, byte freeze, and both pinned-model
+formal runs are complete in v1.0.0.
 
 Do not rename a canonical dataset after formal runs. A content change requires
 a new version and new review hash.

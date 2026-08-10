@@ -86,7 +86,7 @@ Qwen3-VL 与 SmolVLM2 通过共享的 `TransformersImageTextAdapter` 执行
 当前已区分模型加载、协作式超时、OOM、通用生成和评分失败。只有超时和通用
 生成失败可以在显式有限预算内重试；其他失败直接终止，避免无意义重复。
 
-## 6. 计划中的仓库结构
+## 6. 当前仓库结构
 
 ```text
 OpenMultimodalLab/

@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
+from .json_utils import strict_json_loads
 from .models import EvaluationTask, RunRecord
 from .privacy import portable_path_reference
 
@@ -147,10 +148,10 @@ def load_run_manifest(path: str | Path) -> dict[str, Any]:
                 f"{MAX_MANIFEST_BYTES // (1024 * 1024)} MiB safety limit: "
                 f"{source_label}"
             )
-        value = json.loads(raw.decode("utf-8"))
+        value = strict_json_loads(raw)
     except ManifestResumeError:
         raise
-    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+    except (OSError, UnicodeError, ValueError) as exc:
         raise ManifestResumeError(
             f"cannot resume because manifest is unreadable: {source_label}: "
             f"{type(exc).__name__}"
@@ -527,7 +528,13 @@ def write_run_manifest(path: str | Path, manifest: Mapping[str, Any]) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_suffix(destination.suffix + ".tmp")
     serialized = (
-        json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True)
+        json.dumps(
+            manifest,
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+            allow_nan=False,
+        )
         + "\n"
     )
     with temporary.open("w", encoding="utf-8", newline="\n") as handle:

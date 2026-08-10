@@ -26,7 +26,7 @@ of silently replacing it.
 
 ### 2.1 Frozen formal-evaluation input
 
-The v1.0.0 candidate runs use one byte-exact input assembled from the four
+The v1.0.0 release runs use one byte-exact input assembled from the four
 approved datasets. This aggregate is an internal run input, not a fifth
 dataset release: every task retains its existing `metadata.dataset_version`.
 
@@ -122,7 +122,7 @@ Backend-required formatting differences are allowed only when documented.
 
 ### 5.1 Local-input safety limits
 
-The built-in local adapters reject inputs outside these fixed pre-release
+The built-in local adapters reject inputs outside these fixed release safety
 boundaries:
 
 | Input | Limit |

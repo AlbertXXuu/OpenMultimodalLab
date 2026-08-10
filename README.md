@@ -267,6 +267,7 @@ equivalent because tokenizers differ.
 | Timeout and retry provenance | [Run record schema 0.4 report](docs/reports/2026-08-01-run-record-0.4.md) |
 | First complete experiment | [Step-by-step tutorial](docs/tutorials/first-reproducible-benchmark.md) |
 | Current work | [Task board](TASKS.md) |
+| Post-v1 direction | [Evidence-led maintenance roadmap](docs/post-v1-roadmap.md) |
 | Third-party licenses | [Third-party notices](THIRD_PARTY_NOTICES.md) |
 | Reproducible license audit | [Package, model, PyAV, and FFmpeg policy](docs/license-audit.md) |
 | Final dependency/license audit | [Clean snapshot, exact constraints, and distribution boundary](docs/reports/final-dependency-license-audit.md) |
@@ -286,6 +287,15 @@ equivalent because tokenizers differ.
 The target of at least 100 human-checked tasks is complete, and the repository
 and formal `v1.0.0` Release are public. Future versions must repeat the same
 evidence and approval workflow rather than modifying this release in place.
+
+## Why follow the project
+
+Post-v1 work focuses on questions the released evidence does not yet answer:
+first-user reproducibility, stricter artifact validation, and one justified
+low-VRAM comparison at a time. New adapters must bring immutable revisions,
+license evidence, contract tests, and a distinct evaluation question. The
+[maintenance roadmap](docs/post-v1-roadmap.md) separates measured results from
+targets and defines when proposed work should be rejected.
 
 ## Contributing
 

@@ -364,6 +364,14 @@ class RunManifestTests(unittest.TestCase):
             ):
                 load_run_manifest(manifest)
 
+    def test_manifest_loader_rejects_nonstandard_json_numbers(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            manifest = Path(temp_dir) / "nonstandard.manifest.json"
+            manifest.write_text('{"value": NaN}\n', encoding="utf-8")
+
+            with self.assertRaisesRegex(ManifestResumeError, "ValueError"):
+                load_run_manifest(manifest)
+
 
 if __name__ == "__main__":
     unittest.main()

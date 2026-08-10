@@ -55,6 +55,8 @@ class ScoringConfig:
             )
         if not isinstance(ordered, bool):
             raise ValueError("'scoring.ordered' must be a boolean")
+        if not isinstance(groups, list):
+            raise ValueError("'scoring.groups' must be a list")
         if scorer_type == "numeric_tolerance":
             if groups:
                 raise ValueError(
@@ -118,7 +120,15 @@ class ScoringConfig:
                     f"'scoring.groups[{group_index}]' must contain "
                     "non-empty strings"
                 )
-            normalized_groups.append(tuple(term.strip() for term in group))
+            normalized_group = tuple(term.strip() for term in group)
+            if len({term.casefold() for term in normalized_group}) != len(
+                normalized_group
+            ):
+                raise ValueError(
+                    f"'scoring.groups[{group_index}]' must not contain "
+                    "duplicate terms"
+                )
+            normalized_groups.append(normalized_group)
 
         return cls(
             type=scorer_type,
@@ -158,14 +168,23 @@ class EvaluationTask:
             raise ValueError("'id' must be a non-empty string")
         if not isinstance(prompt, str) or not prompt.strip():
             raise ValueError("'prompt' must be a non-empty string")
-        if not isinstance(media, list) or not all(isinstance(item, str) for item in media):
-            raise ValueError("'media' must be a list of strings")
+        if not isinstance(media, list) or not all(
+            isinstance(item, str) and item.strip() for item in media
+        ):
+            raise ValueError("'media' must be a list of non-empty strings")
         if not isinstance(expected_keywords, list) or not all(
             isinstance(item, str) and item.strip() for item in expected_keywords
         ):
             raise ValueError("'expected_keywords' must be a list of non-empty strings")
         if not isinstance(metadata, dict):
             raise ValueError("'metadata' must be an object")
+        normalized_keywords = tuple(
+            item.strip() for item in expected_keywords
+        )
+        if len(
+            {item.casefold() for item in normalized_keywords}
+        ) != len(normalized_keywords):
+            raise ValueError("'expected_keywords' must not contain duplicates")
         if schema_version != LEGACY_TASK_SCHEMA_VERSION:
             if not isinstance(scoring, dict):
                 raise ValueError(
@@ -213,8 +232,8 @@ class EvaluationTask:
             id=task_id.strip(),
             prompt=prompt.strip(),
             schema_version=schema_version,
-            media=tuple(media),
-            expected_keywords=tuple(item.strip() for item in expected_keywords),
+            media=tuple(item.strip() for item in media),
+            expected_keywords=normalized_keywords,
             scoring=scoring_config,
             metadata=metadata,
         )

@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- Reject malformed, incomplete, or non-finite run records with a stable report
+  error instead of a traceback or misleading summary.
+- Reject blank media references, invalid scoring groups, and duplicate
+  case-insensitive scoring references in versioned tasks.
+
+### Changed
+
+- Apply standards-compliant JSON parsing to datasets, run records, resume
+  state, run manifests, and the repository audit (`NaN`/`Infinity` are
+  rejected).
+- Reconcile post-release documentation and define an evidence-led maintenance
+  roadmap without treating adoption targets as completed results.
+- Preserve verification of immutable v1.0 report bundles after generator code
+  evolves by resolving exact source bytes from full local Git history.
+
 ## [1.0.0] - 2026-08-10
 
 ### Added

@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import json
 from collections.abc import Iterable
 from pathlib import Path
 
+from .json_utils import strict_json_loads
 from .models import EvaluationTask
 from .privacy import portable_media_references, portable_path_reference
 
@@ -101,10 +101,11 @@ def load_tasks(
             continue
 
         try:
-            value = json.loads(line)
-        except json.JSONDecodeError as exc:
+            value = strict_json_loads(line)
+        except ValueError as exc:
+            detail = getattr(exc, "msg", str(exc))
             raise DatasetError(
-                f"{path_label}:{line_number}: invalid JSON: {exc.msg}"
+                f"{path_label}:{line_number}: invalid JSON: {detail}"
             ) from exc
 
         if not isinstance(value, dict):

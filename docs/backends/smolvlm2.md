@@ -119,7 +119,7 @@ repeated measurements of that model.
   media field. Video is uniformly sampled to eight frames before the native
   processor so both model families observe the same frames. The complete
   formal result is preserved in the
-  [v1.0.0 candidate bundle](../reports/v1.0.0-candidate/report.md).
+  [v1.0.0 release bundle](../reports/v1.0.0-candidate/report.md).
 - It uses native, unquantized BF16 loading so the repository's FP32 storage
   dtype does not force CPU offload on the 8 GB target. Quantized runs would be
   a separate configuration and cannot be mixed into the native comparison.

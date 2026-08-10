@@ -238,6 +238,7 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 | 超时与重试溯源 | [Run record schema 0.4 报告](docs/reports/2026-08-01-run-record-0.4.md) |
 | 第一份完整实验 | [分步教程（英文）](docs/tutorials/first-reproducible-benchmark.md) |
 | 当前工作 | [任务清单](TASKS.md) |
+| v1 之后的方向 | [证据驱动的维护路线图（英文）](docs/post-v1-roadmap.md) |
 | 第三方许可证 | [Third-party notices](THIRD_PARTY_NOTICES.md) |
 | 最终依赖与许可证审计 | [干净快照、精确约束与分发边界](docs/reports/final-dependency-license-audit.md) |
 
@@ -255,6 +256,14 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 
 至少 100 条人工检查任务的目标已经完成，仓库与正式 `v1.0.0` Release 均已
 公开。未来版本必须重新完成同样的证据与授权流程，不得原地修改本次发布。
+
+## 为什么值得持续关注
+
+v1 之后只推进现有证据还不能回答的问题：非作者首次使用是否顺畅、产物校验
+是否足够严格，以及新的低显存对比能否回答一个明确问题。新增 Adapter 必须
+同时提供固定 revision、许可证证据、契约测试和独立研究问题。
+[维护路线图](docs/post-v1-roadmap.md)明确区分已测结果与未来目标，也规定何时
+应该拒绝无意义扩张。
 
 ## 贡献
 

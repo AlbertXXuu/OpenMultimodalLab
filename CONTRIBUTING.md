@@ -1,10 +1,12 @@
 # Contributing
 
-OpenMultimodalLab 当前处于早期阶段，优先接受小型、可测试、能改善可复现性的贡献。
+OpenMultimodalLab 已发布 `v1.0.0`。优先接受小型、可测试、能改善可复现性
+或解决已记录使用问题的贡献；不以 Adapter 数量或提交数量作为质量指标。
 
 ## 开发环境
 
-正式支持 Python 3.11 和 3.12。
+真实模型后端正式支持 Python 3.11 和 3.12；无 ML 依赖的核心同时在 Python
+3.13 上验证。新增真实后端仍应以 3.11/3.12 为目标环境。
 
 ```powershell
 python -m venv .venv
