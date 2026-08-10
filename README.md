@@ -15,14 +15,15 @@ adapters, preserves every output and failure as JSONL, applies deterministic
 task-selected scoring, and records enough configuration and environment data
 to rebuild a report without rerunning the model.
 
-> Status: technically release-ready v1.0.0 candidate. Both pinned models have
-> completed the same formal 102-task image, document, short-video, and
+> Status: OpenMultimodalLab v1.0.0 is the first public release. Both pinned
+> models completed the same formal 102-task image, document, short-video, and
 > robustness grid. Raw results, deterministic reports, video demo, license and
 > security audits, Python 3.11/3.13 checks, fresh Windows wheel verification,
-> and GitHub Linux CI evidence are preserved. The repository has been public
-> since 2026-08-10; the formal GitHub Release remains a separate owner decision.
+> and GitHub Linux CI evidence are preserved. The repository and formal
+> [v1.0.0 GitHub Release](https://github.com/AlbertXXuu/OpenMultimodalLab/releases/tag/v1.0.0)
+> were published with explicit owner approval on 2026-08-10.
 
-## v1.0.0 candidate comparison
+## v1.0.0 benchmark comparison
 
 One NVIDIA RTX 4060 Laptop GPU (8,188 MiB), the same 102 human-checked tasks,
 one warm-up, three complete measured repetitions, greedy decoding, batch size
@@ -114,7 +115,7 @@ For release-grade reconstruction, the
 [deterministic report-bundle workflow](docs/report-bundles.md) validates exact
 one-warm-up/three-repeat grids, source manifests, model and dataset identities,
 and dataset/media hashes before generating a complete comparison bundle. The
-committed [v1.0.0 candidate report](docs/reports/v1.0.0-candidate/report.md)
+committed [v1.0.0 release report](docs/reports/v1.0.0-candidate/report.md)
 applies that path to the complete 102-task, two-model formal grid. The older
 [rebuilt baseline](docs/reports/rebuilt-baseline/report.md) remains available
 for historical auditability.
@@ -248,7 +249,7 @@ equivalent because tokenizers differ.
 | Run records, manifests, and resume | [Artifact contract](docs/run-records-and-manifests.md) |
 | Two-model formal result | [Qwen3-VL vs SmolVLM2](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md) |
 | 32-task document comparison | [Qwen3-VL vs SmolVLM2 on documents](docs/reports/2026-08-02-document-model-comparison.md) |
-| 102-task v1.0.0 candidate comparison | [Byte-rebuildable final-corpus bundle](docs/reports/v1.0.0-candidate/report.md) |
+| 102-task v1.0.0 benchmark comparison | [Byte-rebuildable final-corpus bundle](docs/reports/v1.0.0-candidate/report.md) |
 | Performance methodology | [Qwen formal performance baseline](docs/reports/2026-07-31-qwen3-vl-formal-performance.md) |
 | Quality and public-release gates | [Quality standard](docs/06-quality-and-open-source.md) |
 | Live public-release status | [Evidence matrix and strict readiness check](docs/public-release-readiness.md) |
@@ -280,11 +281,11 @@ equivalent because tokenizers differ.
 | Performance protocol | Warm-up, three repetitions, TTFT, throughput, latency, peak memory |
 | Reliability | Durable records, strict resume, integrity hashes, typed failures |
 | Automated quality | Python 3.11/3.12 Linux CI, local 3.11/3.13 tests, repository audit, fresh Windows wheel smoke |
-| Remaining release action | Owner decision on whether to create the formal GitHub Release |
+| Release status | Public repository and formal `v1.0.0` GitHub Release |
 
 The target of at least 100 human-checked tasks is complete, and the repository
-is public. Creating a formal GitHub Release remains a separate owner-authorized
-action.
+and formal `v1.0.0` Release are public. Future versions must repeat the same
+evidence and approval workflow rather than modifying this release in place.
 
 ## Contributing
 

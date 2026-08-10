@@ -198,15 +198,10 @@ class ReleaseReadinessTests(unittest.TestCase):
             "FINAL-FRESH-WINDOWS",
             "FINAL-CANDIDATE-VALIDATION",
             "FINAL-LINUX-CI",
-        ):
-            with self.subTest(check_id=check_id):
-                self.assertTrue(checks[check_id].passed)
-
-        for check_id in (
             "OWNER-PUBLICATION-APPROVAL",
         ):
             with self.subTest(check_id=check_id):
-                self.assertFalse(checks[check_id].passed)
+                self.assertTrue(checks[check_id].passed)
 
         self.assertTrue(checks["OWNER-NAMING-APPROVAL"].passed)
         self.assertIn("import", checks["OWNER-NAMING-APPROVAL"].evidence)
@@ -263,7 +258,7 @@ class ReleaseReadinessTests(unittest.TestCase):
             approvals["target_repository_visibility"], "public"
         )
         self.assertTrue(approvals["make_repository_public"])
-        self.assertFalse(approvals["formal_release_authorized"])
+        self.assertTrue(approvals["formal_release_authorized"])
 
     def test_final_candidate_corpus_has_valid_owner_review(self) -> None:
         checks = {
@@ -281,7 +276,7 @@ class ReleaseReadinessTests(unittest.TestCase):
             checks["HUMAN-REVIEW"].evidence,
         )
 
-    def test_strict_mode_fails_while_release_requirements_are_open(self) -> None:
+    def test_strict_mode_passes_for_owner_approved_release(self) -> None:
         completed = subprocess.run(
             [sys.executable, str(CHECKER), "--strict"],
             cwd=PROJECT_ROOT,
@@ -290,11 +285,11 @@ class ReleaseReadinessTests(unittest.TestCase):
             check=False,
         )
 
-        self.assertEqual(completed.returncode, 1)
-        self.assertIn("Ready: no", completed.stdout)
+        self.assertEqual(completed.returncode, 0)
+        self.assertIn("Ready: yes", completed.stdout)
         self.assertIn("[PASS] TASK-COUNT", completed.stdout)
         self.assertIn("[PASS] HUMAN-REVIEW", completed.stdout)
-        self.assertIn("[OPEN] OWNER-PUBLICATION-APPROVAL", completed.stdout)
+        self.assertIn("[PASS] OWNER-PUBLICATION-APPROVAL", completed.stdout)
 
 
 if __name__ == "__main__":

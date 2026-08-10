@@ -16,6 +16,6 @@
   "current_repository_visibility": "public",
   "target_repository_visibility": "public",
   "make_repository_public": true,
-  "formal_release_authorized": false,
-  "note": "The repository owner approved the recorded names on 2026-08-09 and explicitly approved public visibility on 2026-08-10. The repository is public. A formal GitHub Release remains a separate, unauthorized decision."
+  "formal_release_authorized": true,
+  "note": "The repository owner approved the recorded names on 2026-08-09, public visibility on 2026-08-10, and the formal v1.0.0 GitHub Release on 2026-08-10."
 }
