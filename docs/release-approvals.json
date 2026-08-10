@@ -13,9 +13,9 @@
   "video_dataset_name": "synthetic-video-v1",
   "robustness_dataset_name": "synthetic-robustness-v1",
   "public_version": "v1.0.0",
-  "current_repository_visibility": "private",
-  "target_repository_visibility": null,
-  "make_repository_public": false,
+  "current_repository_visibility": "public",
+  "target_repository_visibility": "public",
+  "make_repository_public": true,
   "formal_release_authorized": false,
-  "note": "The repository owner approved the recorded names on 2026-08-09. Repository publication and a formal Release remain separate, unauthorized decisions."
+  "note": "The repository owner approved the recorded names on 2026-08-09 and explicitly approved public visibility on 2026-08-10. The repository is public. A formal GitHub Release remains a separate, unauthorized decision."
 }

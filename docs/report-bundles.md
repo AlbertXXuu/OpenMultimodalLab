@@ -90,16 +90,14 @@ Verification checks:
 Changing a reported number, deleting a failure row, modifying an input, or
 editing the generator after the build makes verification fail.
 
-## Remaining v1.0 use
+## v1.0 release use
 
 The corpus review, two-model formal grid, source preservation, candidate
-bundle, and independent byte comparison are complete. The remaining release
-workflow is:
-
-1. run `--verify` during the final Windows and Linux validation passes;
-2. finish the dependency/license snapshot, video tutorial, and final candidate
-   evidence reports;
-3. request publication and formal Release authorization as separate actions.
+bundle, independent byte comparison, and repository publication are complete.
+The Windows/Linux verification, dependency and license snapshot, video
+tutorial, and final candidate evidence reports are also complete. The only
+remaining action is to request separate authorization before creating the
+formal GitHub Release.
 
 The generated report describes only the pinned task/model/hardware evidence.
 It never infers a universal ranking, user preference, adoption, or GitHub Star

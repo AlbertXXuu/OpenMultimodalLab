@@ -78,3 +78,8 @@ acceptance decision.
 - Dependency updates must pass tests and be reviewed; they are not auto-merged.
 - GitHub private vulnerability reporting remains a public-release action and
   cannot be enabled meaningfully while the repository is private.
+
+Update on 2026-08-10: after the owner authorized public visibility, GitHub
+private vulnerability reporting, Dependabot security updates, Secret Scanning,
+and push protection were enabled for the public repository. The portable
+`SECURITY.md` reporting path remains available.

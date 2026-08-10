@@ -19,8 +19,8 @@ to rebuild a report without rerunning the model.
 > completed the same formal 102-task image, document, short-video, and
 > robustness grid. Raw results, deterministic reports, video demo, license and
 > security audits, Python 3.11/3.13 checks, fresh Windows wheel verification,
-> and GitHub Linux CI evidence are preserved. The repository remains private;
-> public visibility and the formal Release are separate owner decisions.
+> and GitHub Linux CI evidence are preserved. The repository has been public
+> since 2026-08-10; the formal GitHub Release remains a separate owner decision.
 
 ## v1.0.0 candidate comparison
 
@@ -280,10 +280,11 @@ equivalent because tokenizers differ.
 | Performance protocol | Warm-up, three repetitions, TTFT, throughput, latency, peak memory |
 | Reliability | Durable records, strict resume, integrity hashes, typed failures |
 | Automated quality | Python 3.11/3.12 Linux CI, local 3.11/3.13 tests, repository audit, fresh Windows wheel smoke |
-| Remaining release action | Owner decision on public visibility, followed separately by the formal Release |
+| Remaining release action | Owner decision on whether to create the formal GitHub Release |
 
-The target of at least 100 human-checked tasks is complete. Repository
-publication and a formal Release remain separate owner-authorized actions.
+The target of at least 100 human-checked tasks is complete, and the repository
+is public. Creating a formal GitHub Release remains a separate owner-authorized
+action.
 
 ## Contributing
 

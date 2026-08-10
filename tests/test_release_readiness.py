@@ -237,7 +237,7 @@ class ReleaseReadinessTests(unittest.TestCase):
         self.assertTrue(passed)
         self.assertFalse(incomplete)
 
-    def test_owner_naming_approval_matches_recorded_decision(self) -> None:
+    def test_owner_approvals_match_recorded_decisions(self) -> None:
         approvals = json.loads(
             (PROJECT_ROOT / "docs/release-approvals.json").read_text(
                 encoding="utf-8"
@@ -256,7 +256,13 @@ class ReleaseReadinessTests(unittest.TestCase):
             "synthetic-robustness-v1",
         )
         self.assertEqual(approvals["public_version"], "v1.0.0")
-        self.assertFalse(approvals["make_repository_public"])
+        self.assertEqual(
+            approvals["current_repository_visibility"], "public"
+        )
+        self.assertEqual(
+            approvals["target_repository_visibility"], "public"
+        )
+        self.assertTrue(approvals["make_repository_public"])
         self.assertFalse(approvals["formal_release_authorized"])
 
     def test_final_candidate_corpus_has_valid_owner_review(self) -> None:
