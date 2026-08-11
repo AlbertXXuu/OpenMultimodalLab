@@ -15,6 +15,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Preserve Studio video uploads instead of invoking an undeclared system
+  FFmpeg executable to remove audio; document upload boundaries and keep image
+  and video previews aspect-safe within bounded heights. Detect HEVC preview
+  compatibility separately from model decoding, use safer generation defaults,
+  and warn when a response consumes its full output-token allowance. Raise the
+  Playground default to 512 tokens and retain 1,024-token retry headroom so
+  normal image and video descriptions are less likely to end mid-sentence.
 - Reject malformed, incomplete, or non-finite run records with a stable report
   error instead of a traceback or misleading summary.
 - Reject blank media references, invalid scoring groups, and duplicate
@@ -23,8 +30,12 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - Restyle Ailumetra Studio with an explicit light theme, white surfaces,
-  accessible dark text, and restrained blue-teal accents across desktop and
-  mobile layouts.
+  accessible dark text, and restrained blue-to-violet gradients limited to
+  hero emphasis and primary actions across desktop and mobile layouts.
+- Lock the complete Studio type system to a self-hosted, integrity-bound
+  Instrument Sans variable font with its OFL notice, coordinated weights and
+  spacing, a single-storey lowercase `a`, tabular evidence figures, and a
+  balanced `AI` wordmark treatment across desktop and mobile layouts.
 - Apply standards-compliant JSON parsing to datasets, run records, resume
   state, run manifests, and the repository audit (`NaN`/`Infinity` are
   rejected).

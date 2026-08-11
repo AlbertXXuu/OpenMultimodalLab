@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import hashlib
 import importlib.util
 import sys
 import tempfile
@@ -15,11 +17,18 @@ from openmultimodal_lab.studio import (
     MAX_REPORT_ROWS,
     PLAYGROUND_MAX_NEW_TOKENS,
     PLAYGROUND_MAX_TIMEOUT_SECONDS,
+    PLAYGROUND_UI_DEFAULT_NEW_TOKENS,
+    PLAYGROUND_UI_DEFAULT_TIMEOUT_SECONDS,
+    PLAYGROUND_UI_MIN_NEW_TOKENS,
+    PLAYGROUND_UI_MIN_TIMEOUT_SECONDS,
     STUDIO_BRAND,
     STUDIO_NAME,
     STUDIO_TAGLINE,
     StudioInputError,
     StudioRuntime,
+    PlaygroundResult,
+    VideoUploadInfo,
+    inspect_video_upload,
     load_report_view,
     safe_studio_error,
     select_media,
@@ -27,9 +36,17 @@ from openmultimodal_lab.studio import (
 from openmultimodal_lab.studio_assets import (
     BRAND_HEADER_HTML,
     EASTER_EGG_JS,
+    IMAGE_UPLOAD_GUIDANCE_HTML,
+    INSTRUMENT_SANS_REVISION,
+    INSTRUMENT_SANS_SHA256,
     STUDIO_CSS,
+    VIDEO_UPLOAD_GUIDANCE_HTML,
+    render_playground_metrics,
+    render_success_status,
+    render_video_upload_info,
 )
 from openmultimodal_lab.studio_ui import (
+    _inspect_video_upload,
     _open_report,
     _run_playground,
     build_app,
@@ -287,6 +304,146 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertNotIn("--ail-bg: #070b12", STUDIO_CSS)
         self.assertNotIn("--ail-panel: #0d1420", STUDIO_CSS)
 
+    def test_studio_uses_one_locked_brand_type_system(self) -> None:
+        self.assertIn('font-family: "Instrument Sans"', STUDIO_CSS)
+        self.assertIn('--ail-font-sans: "Instrument Sans"', STUDIO_CSS)
+        self.assertIn('font-feature-settings: "ss01" 1, "ss02" 1', STUDIO_CSS)
+        self.assertIn('class="brand-ai">Ai</span>', BRAND_HEADER_HTML)
+        self.assertIn("text-transform: uppercase", STUDIO_CSS)
+        self.assertIn("font-variant-numeric: tabular-nums", STUDIO_CSS)
+        self.assertEqual(STUDIO_CSS.count("linear-gradient"), 2)
+        self.assertIn("var(--ail-blue) 0%", STUDIO_CSS)
+        self.assertNotIn("#0f766e", STUDIO_CSS)
+        self.assertNotIn("--ail-teal", STUDIO_CSS)
+        self.assertNotIn(
+            "font-family: Arial, Helvetica, ui-sans-serif, sans-serif",
+            STUDIO_CSS,
+        )
+
+    def test_vendored_brand_font_is_integrity_and_license_bound(self) -> None:
+        project_root = Path(__file__).resolve().parents[1]
+        font_root = project_root / "src/openmultimodal_lab/assets/fonts"
+        encoded = "".join(
+            (font_root / "InstrumentSans-wdth-wght.woff2.b64")
+            .read_text(encoding="ascii")
+            .split()
+        )
+        payload = base64.b64decode(encoded, validate=True)
+        license_text = (font_root / "InstrumentSans-OFL.txt").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertEqual(payload[:4], b"wOF2")
+        self.assertEqual(hashlib.sha256(payload).hexdigest(), INSTRUMENT_SANS_SHA256)
+        self.assertEqual(
+            INSTRUMENT_SANS_REVISION,
+            "7fa22308a3d0c94ee2b3cd537a1196b65db34a3e",
+        )
+        self.assertIn("SIL OPEN FONT LICENSE Version 1.1", license_text)
+
+    def test_public_wordmark_uses_portable_font_outlines(self) -> None:
+        project_root = Path(__file__).resolve().parents[1]
+        wordmark = (project_root / "docs/assets/ailumetra-wordmark.svg").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("Instrument Sans outlines", wordmark)
+        self.assertGreaterEqual(wordmark.count('class="ai"'), 2)
+        self.assertNotIn("teal", wordmark.casefold())
+        self.assertGreater(wordmark.count("<path"), 10)
+        self.assertNotIn("<text", wordmark)
+        self.assertNotIn("font-family", wordmark)
+
+    def test_media_guidance_documents_bounded_aspect_safe_inputs(self) -> None:
+        self.assertIn("25 MiB", IMAGE_UPLOAD_GUIDANCE_HTML)
+        self.assertIn("never crops", IMAGE_UPLOAD_GUIDANCE_HTML)
+        self.assertIn("50 MiB", VIDEO_UPLOAD_GUIDANCE_HTML)
+        self.assertIn("60 seconds", VIDEO_UPLOAD_GUIDANCE_HTML)
+        self.assertIn("H.265/HEVC", VIDEO_UPLOAD_GUIDANCE_HTML)
+        self.assertIn("object-fit: contain", STUDIO_CSS)
+        self.assertIn("max-height: 420px", STUDIO_CSS)
+
+    def test_hevc_notice_explains_browser_model_compatibility_split(self) -> None:
+        info = VideoUploadInfo(
+            codec="hevc",
+            width=1280,
+            height=720,
+            duration_seconds=8.9,
+            frame_count=267,
+            fps=30.0,
+            size_bytes=3_266_915,
+        )
+
+        notice = render_video_upload_info(info)
+
+        self.assertIn("HEVC/H.265 detected", notice)
+        self.assertIn("play only the audio", notice)
+        self.assertIn("Local model analysis still uses PyAV", notice)
+        self.assertIn("1280×720", notice)
+        with patch(
+            "openmultimodal_lab.studio_ui.inspect_video_upload",
+            return_value=info,
+        ):
+            self.assertEqual(_inspect_video_upload("video.mp4"), notice)
+        self.assertEqual(_inspect_video_upload(None), VIDEO_UPLOAD_GUIDANCE_HTML)
+
+    @unittest.skipUnless(
+        importlib.util.find_spec("av") is not None,
+        "PyAV is an optional real-model dependency",
+    )
+    def test_video_upload_inspection_reads_path_free_metadata(self) -> None:
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "examples"
+            / "assets"
+            / "synthetic-video-v1"
+            / "count-increase.avi"
+        )
+
+        info = inspect_video_upload(source)
+
+        self.assertEqual(info.width, 160)
+        self.assertEqual(info.height, 120)
+        self.assertGreater(info.size_bytes, 0)
+        self.assertNotIn(str(source), repr(info))
+
+    def test_token_limit_is_visible_when_response_may_be_truncated(self) -> None:
+        self.assertEqual(PLAYGROUND_UI_DEFAULT_NEW_TOKENS, 512)
+        self.assertEqual(PLAYGROUND_MAX_NEW_TOKENS, 1_024)
+        self.assertGreater(
+            PLAYGROUND_MAX_NEW_TOKENS,
+            PLAYGROUND_UI_DEFAULT_NEW_TOKENS,
+        )
+
+        result = PlaygroundResult(
+            response_text="An incomplete sentence",
+            backend="qwen3-vl",
+            model_revision="revision-1",
+            latency_ms=100.0,
+            usage={"output_tokens": 64, "max_new_tokens": 64},
+            media_kind="video",
+        )
+
+        status = render_success_status(result)
+        metrics = render_playground_metrics(result)
+
+        self.assertIn("may be truncated", status)
+        self.assertIn("Increase Max new tokens", status)
+        self.assertIn("64 / 64 tokens", metrics)
+
+        maxed_result = PlaygroundResult(
+            response_text="Still incomplete",
+            backend="qwen3-vl",
+            model_revision="revision-1",
+            latency_ms=100.0,
+            usage={
+                "output_tokens": PLAYGROUND_MAX_NEW_TOKENS,
+                "max_new_tokens": PLAYGROUND_MAX_NEW_TOKENS,
+            },
+            media_kind="video",
+        )
+        self.assertIn("split the prompt", render_success_status(maxed_result))
+
     def test_safe_error_redacts_absolute_paths(self) -> None:
         local_path = "C:" + "\\Users\\Albert\\secret.png"
         result = safe_studio_error(ValueError(local_path))
@@ -307,7 +464,7 @@ class StudioGradioTests(unittest.TestCase):
         app = build_app()
         try:
             dependencies = app.config["dependencies"]
-            self.assertEqual(len(dependencies), 3)
+            self.assertEqual(len(dependencies), 4)
             self.assertTrue(
                 all(
                     item["api_visibility"] == "private"
@@ -323,6 +480,35 @@ class StudioGradioTests(unittest.TestCase):
             ]
             self.assertEqual(len(image_components), 1)
             self.assertIsNone(image_components[0]["props"].get("format"))
+            video_components = [
+                item
+                for item in app.config["components"]
+                if item.get("type") == "video"
+                and item["props"].get("label") == "Short video"
+            ]
+            self.assertEqual(len(video_components), 1)
+            self.assertTrue(video_components[0]["props"].get("include_audio"))
+            sliders = {
+                item["props"].get("label"): item["props"]
+                for item in app.config["components"]
+                if item.get("type") == "slider"
+            }
+            self.assertEqual(
+                sliders["Max new tokens"]["minimum"],
+                PLAYGROUND_UI_MIN_NEW_TOKENS,
+            )
+            self.assertEqual(
+                sliders["Max new tokens"]["value"],
+                PLAYGROUND_UI_DEFAULT_NEW_TOKENS,
+            )
+            self.assertEqual(
+                sliders["Timeout (seconds)"]["minimum"],
+                PLAYGROUND_UI_MIN_TIMEOUT_SECONDS,
+            )
+            self.assertEqual(
+                sliders["Timeout (seconds)"]["value"],
+                PLAYGROUND_UI_DEFAULT_TIMEOUT_SECONDS,
+            )
         finally:
             app.close(verbose=False)
 
