@@ -279,6 +279,14 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertNotIn("http://", combined)
         self.assertNotIn("https://", combined)
 
+    def test_studio_uses_an_explicit_light_surface_palette(self) -> None:
+        self.assertIn("--ail-bg: #ffffff", STUDIO_CSS)
+        self.assertIn("--ail-panel: #ffffff", STUDIO_CSS)
+        self.assertIn("--ail-text: #0f172a", STUDIO_CSS)
+        self.assertIn("color-scheme: light", STUDIO_CSS)
+        self.assertNotIn("--ail-bg: #070b12", STUDIO_CSS)
+        self.assertNotIn("--ail-panel: #0d1420", STUDIO_CSS)
+
     def test_safe_error_redacts_absolute_paths(self) -> None:
         local_path = "C:" + "\\Users\\Albert\\secret.png"
         result = safe_studio_error(ValueError(local_path))
