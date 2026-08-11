@@ -34,8 +34,12 @@ BACKEND_LABELS = {
     "mock": "Mock · interface test only",
 }
 PLAYGROUND_PROMPT_MAX_CHARS = 4_000
-PLAYGROUND_MAX_NEW_TOKENS = 256
+PLAYGROUND_MAX_NEW_TOKENS = 1_024
 PLAYGROUND_MAX_TIMEOUT_SECONDS = 600.0
+PLAYGROUND_UI_MIN_NEW_TOKENS = 64
+PLAYGROUND_UI_DEFAULT_NEW_TOKENS = 512
+PLAYGROUND_UI_MIN_TIMEOUT_SECONDS = 60
+PLAYGROUND_UI_DEFAULT_TIMEOUT_SECONDS = 300
 MAX_IMAGE_BYTES = 25 * 1024 * 1024
 MAX_VIDEO_BYTES = 50 * 1024 * 1024
 MAX_REPORT_ROWS = 2_000
@@ -69,6 +73,19 @@ class ReportView:
     summary: Mapping[str, Any]
     summary_text: str
     rows: tuple[tuple[Any, ...], ...]
+
+
+@dataclass(frozen=True, slots=True)
+class VideoUploadInfo:
+    """Path-free metadata used to explain browser preview compatibility."""
+
+    codec: str
+    width: int
+    height: int
+    duration_seconds: float | None
+    frame_count: int | None
+    fps: float | None
+    size_bytes: int
 
 
 def _finite_non_negative(value: object) -> float | None:
@@ -136,6 +153,60 @@ def select_media(
         raise StudioInputError("use either the image input or video input, not both")
     path_value, media_kind = selected[0]
     return _validated_media(path_value, media_kind), media_kind
+
+
+def inspect_video_upload(path_value: str | Path) -> VideoUploadInfo:
+    """Read bounded video metadata without decoding frames or exposing its path."""
+
+    path = _validated_media(path_value, "video")
+    try:
+        import av
+    except ImportError as exc:
+        raise StudioInputError(
+            "video metadata inspection requires the selected backend dependencies"
+        ) from exc
+
+    try:
+        with av.open(str(path), mode="r") as container:
+            if not container.streams.video:
+                raise StudioInputError("video contains no visual stream")
+            stream = container.streams.video[0]
+            codec = str(stream.codec_context.name or "unknown").casefold()
+            width = int(stream.codec_context.width)
+            height = int(stream.codec_context.height)
+            raw_frame_count = int(stream.frames or 0)
+            frame_count = raw_frame_count if raw_frame_count > 0 else None
+            raw_fps = (
+                _finite_non_negative(float(stream.average_rate))
+                if stream.average_rate is not None
+                else None
+            )
+            fps = raw_fps if raw_fps is not None and raw_fps > 0 else None
+            duration_seconds = None
+            if stream.duration is not None and stream.time_base is not None:
+                duration_seconds = _finite_non_negative(
+                    float(stream.duration * stream.time_base)
+                )
+            elif container.duration is not None:
+                duration_seconds = _finite_non_negative(
+                    float(container.duration / av.time_base)
+                )
+    except StudioInputError:
+        raise
+    except Exception as exc:
+        raise StudioInputError(
+            f"video metadata could not be read: {type(exc).__name__}"
+        ) from exc
+
+    return VideoUploadInfo(
+        codec=codec,
+        width=width,
+        height=height,
+        duration_seconds=duration_seconds,
+        frame_count=frame_count,
+        fps=fps,
+        size_bytes=path.stat().st_size,
+    )
 
 
 def _validate_playground_parameters(

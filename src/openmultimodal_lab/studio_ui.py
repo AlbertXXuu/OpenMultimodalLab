@@ -14,7 +14,12 @@ from .studio import (
     PLAYGROUND_MAX_NEW_TOKENS,
     PLAYGROUND_MAX_TIMEOUT_SECONDS,
     PLAYGROUND_PROMPT_MAX_CHARS,
+    PLAYGROUND_UI_DEFAULT_NEW_TOKENS,
+    PLAYGROUND_UI_DEFAULT_TIMEOUT_SECONDS,
+    PLAYGROUND_UI_MIN_NEW_TOKENS,
+    PLAYGROUND_UI_MIN_TIMEOUT_SECONDS,
     StudioRuntime,
+    inspect_video_upload,
     load_report_view,
     safe_studio_error,
 )
@@ -24,14 +29,17 @@ from .studio_assets import (
     EMPTY_METRICS_HTML,
     EMPTY_REPORT_HTML,
     EMPTY_STATUS_HTML,
+    IMAGE_UPLOAD_GUIDANCE_HTML,
     OVERVIEW_HTML,
     PLAYGROUND_INTRO_HTML,
     REPORT_INTRO_HTML,
     STUDIO_CSS,
+    VIDEO_UPLOAD_GUIDANCE_HTML,
     render_error_status,
     render_playground_metrics,
     render_report_summary,
     render_success_status,
+    render_video_upload_info,
 )
 
 
@@ -111,6 +119,16 @@ def _open_report(path_value: str | None) -> tuple[str, str, list[list[Any]]]:
     )
 
 
+def _inspect_video_upload(path_value: str | None) -> str:
+    if not path_value:
+        return VIDEO_UPLOAD_GUIDANCE_HTML
+    try:
+        info = inspect_video_upload(path_value)
+    except Exception as exc:
+        return render_error_status(safe_studio_error(exc))
+    return render_video_upload_info(info)
+
+
 def build_app(runtime: StudioRuntime | None = None) -> Any:
     """Build the local Studio without starting a network listener."""
 
@@ -145,21 +163,29 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                         )
                         with gr.Tabs(selected="image-input"):
                             with gr.Tab("Image / document", id="image-input"):
+                                gr.HTML(IMAGE_UPLOAD_GUIDANCE_HTML)
                                 image_input = gr.Image(
                                     type="filepath",
                                     format=None,
                                     sources=["upload", "clipboard"],
                                     label="Image or document screenshot",
                                     buttons=["fullscreen"],
-                                    height=260,
+                                    height=None,
+                                    elem_id="studio-image-input",
+                                    elem_classes="studio-media-input",
                                 )
                             with gr.Tab("Short video", id="video-input"):
+                                video_guidance = gr.HTML(
+                                    VIDEO_UPLOAD_GUIDANCE_HTML
+                                )
                                 video_input = gr.Video(
                                     sources=["upload"],
                                     label="Short video",
-                                    buttons=[],
-                                    height=260,
-                                    include_audio=False,
+                                    buttons=["fullscreen"],
+                                    height=None,
+                                    include_audio=True,
+                                    elem_id="studio-video-input",
+                                    elem_classes="studio-media-input",
                                 )
                         prompt = gr.Textbox(
                             value=DEFAULT_PROMPT,
@@ -172,20 +198,28 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                         )
                         with gr.Row():
                             max_tokens = gr.Slider(
-                                minimum=16,
+                                minimum=PLAYGROUND_UI_MIN_NEW_TOKENS,
                                 maximum=PLAYGROUND_MAX_NEW_TOKENS,
-                                value=64,
+                                value=PLAYGROUND_UI_DEFAULT_NEW_TOKENS,
                                 step=16,
                                 precision=0,
                                 label="Max new tokens",
+                                info=(
+                                    "Output length limit. Lower values can finish "
+                                    "faster but may truncate; 512 is recommended."
+                                ),
                             )
                             timeout = gr.Slider(
-                                minimum=30,
+                                minimum=PLAYGROUND_UI_MIN_TIMEOUT_SECONDS,
                                 maximum=PLAYGROUND_MAX_TIMEOUT_SECONDS,
-                                value=180,
+                                value=PLAYGROUND_UI_DEFAULT_TIMEOUT_SECONDS,
                                 step=30,
                                 precision=0,
                                 label="Timeout (seconds)",
+                                info=(
+                                    "Includes first model load. Increase this "
+                                    "if a cold run times out."
+                                ),
                             )
                         with gr.Row():
                             run_button = gr.Button(
@@ -224,6 +258,14 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                     concurrency_id="ailumetra-gpu",
                     show_progress="minimal",
                 )
+                video_input.change(
+                    fn=_inspect_video_upload,
+                    inputs=video_input,
+                    outputs=video_guidance,
+                    api_visibility="private",
+                    show_progress="hidden",
+                    queue=False,
+                )
                 clear_button.click(
                     fn=lambda: (
                         None,
@@ -231,6 +273,7 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                         "",
                         EMPTY_METRICS_HTML,
                         EMPTY_STATUS_HTML,
+                        VIDEO_UPLOAD_GUIDANCE_HTML,
                     ),
                     outputs=[
                         image_input,
@@ -238,6 +281,7 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                         response,
                         metrics,
                         status,
+                        video_guidance,
                     ],
                     api_visibility="private",
                     queue=False,

@@ -2,17 +2,63 @@
 
 from __future__ import annotations
 
+import base64
+import hashlib
 from html import escape
+from importlib.resources import files
 from typing import Any
 
-from .studio import PlaygroundResult, ReportView
+from .studio import (
+    PLAYGROUND_MAX_NEW_TOKENS,
+    PlaygroundResult,
+    ReportView,
+    VideoUploadInfo,
+)
+
+
+INSTRUMENT_SANS_REVISION = "7fa22308a3d0c94ee2b3cd537a1196b65db34a3e"
+INSTRUMENT_SANS_SHA256 = (
+    "aa72922aafcc0dc18f36ec1d805b0212057dabe8b9d5b8b57f67035aea1b826d"
+)
+
+
+def _instrument_sans_base64() -> str:
+    payload = (
+        files("openmultimodal_lab")
+        .joinpath("assets/fonts/InstrumentSans-wdth-wght.woff2.b64")
+        .read_text(encoding="ascii")
+    )
+    encoded = "".join(payload.split())
+    try:
+        decoded = base64.b64decode(encoded, validate=True)
+    except (ValueError, TypeError) as exc:
+        raise RuntimeError("The bundled Instrument Sans font is corrupt.") from exc
+    if (
+        not decoded.startswith(b"wOF2")
+        or hashlib.sha256(decoded).hexdigest() != INSTRUMENT_SANS_SHA256
+    ):
+        raise RuntimeError("The bundled Instrument Sans font failed integrity check.")
+    return encoded
+
+
+_INSTRUMENT_SANS_FONT_FACE = f"""
+@font-face {{
+  font-family: "Instrument Sans";
+  src: url("data:font/woff2;base64,{_instrument_sans_base64()}") format("woff2");
+  font-style: normal;
+  font-weight: 400 700;
+  font-stretch: 75% 100%;
+  font-display: swap;
+}}
+"""
 
 
 BRAND_HEADER_HTML = """
 <header id="ailumetra-header" class="studio-shell">
   <button id="ailumetra-wordmark-button" class="brand-wordmark" type="button"
           aria-label="Ailumetra wordmark" title="Ailumetra">
-    <span class="brand-name">Ailumetra</span>
+    <span class="brand-name" aria-hidden="true"><span class="brand-ai">Ai</span><span
+      class="brand-rest">lumetra</span></span>
     <span class="brand-product">STUDIO</span>
   </button>
   <div class="header-tagline">Measure multimodal AI. See clearly.</div>
@@ -101,6 +147,71 @@ PLAYGROUND_INTRO_HTML = """
 """.strip()
 
 
+IMAGE_UPLOAD_GUIDANCE_HTML = """
+<div class="media-guidance" role="note">
+  <strong>Image boundary</strong>
+  <span>Up to 25 MiB. The preview preserves the original aspect ratio and never crops
+        the uploaded evidence.</span>
+</div>
+""".strip()
+
+
+VIDEO_UPLOAD_GUIDANCE_HTML = """
+<div class="media-guidance" role="note">
+  <strong>Short-video boundary</strong>
+  <span>Up to 50 MiB, 60 seconds, 3,600 frames, and 4K frame area. H.264 MP4 is best
+        for browser preview. If H.265/HEVC playback has sound but a still frame, the
+        model can still analyse it; use H.264 when moving browser preview matters.</span>
+</div>
+""".strip()
+
+
+def render_video_upload_info(info: VideoUploadInfo) -> str:
+    """Explain the difference between browser playback and model decoding."""
+
+    codec = info.codec.casefold()
+    if codec in {"hevc", "h265"}:
+        status_class = "warning"
+        title = "HEVC/H.265 detected · model-compatible"
+        message = (
+            "Some browsers play only the audio or hold one frame. Local model "
+            "analysis still uses PyAV; use H.264 MP4 for portable moving preview."
+        )
+    elif codec in {"h264", "avc", "avc1"}:
+        status_class = "compatible"
+        title = "H.264 detected · portable browser preview"
+        message = "The original upload remains the source used by the local model."
+    else:
+        status_class = "neutral"
+        title = f"{info.codec.upper() or 'UNKNOWN'} video detected"
+        message = (
+            "Browser playback depends on installed codecs; local model validation "
+            "runs separately."
+        )
+
+    duration = (
+        f"{info.duration_seconds:.1f} s"
+        if info.duration_seconds is not None
+        else "duration n/a"
+    )
+    frames = (
+        f"{info.frame_count:,} frames"
+        if info.frame_count is not None
+        else "frame count n/a"
+    )
+    fps = f"{info.fps:.1f} FPS" if info.fps is not None else "FPS n/a"
+    size_mib = info.size_bytes / (1024 * 1024)
+    return (
+        f'<div class="media-guidance {status_class}" role="status">'
+        f"<strong>{escape(title)}</strong>"
+        f"<span>{escape(message)}</span>"
+        '<small class="media-facts">'
+        f"{info.width}×{info.height} · {escape(duration)} · "
+        f"{escape(frames)} · {escape(fps)} · {size_mib:.2f} MiB"
+        "</small></div>"
+    )
+
+
 REPORT_INTRO_HTML = """
 <section class="tab-intro">
   <div><span class="eyebrow">REPORT EXPLORER</span><h2>Open durable run evidence</h2></div>
@@ -143,6 +254,12 @@ def _metric_value(value: object, suffix: str, digits: int = 1) -> str:
     return f"{numeric:,.{digits}f}{suffix}"
 
 
+def _usage_integer(value: object) -> int | None:
+    if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+        return value
+    return None
+
+
 def _metric_card(label: str, value: str, note: str = "") -> str:
     note_html = f"<small>{escape(note)}</small>" if note else ""
     return (
@@ -167,6 +284,13 @@ def render_playground_metrics(result: PlaygroundResult) -> str:
         ),
     ]
     model_load = _metric_value(usage.get("model_load_ms"), " ms")
+    output_tokens = _usage_integer(usage.get("output_tokens"))
+    token_limit = _usage_integer(usage.get("max_new_tokens"))
+    output_length = (
+        f"{output_tokens} / {token_limit} tokens"
+        if output_tokens is not None and token_limit is not None
+        else "n/a"
+    )
     backend = escape(result.backend)
     revision = escape(result.model_revision[:12])
     return (
@@ -178,11 +302,30 @@ def render_playground_metrics(result: PlaygroundResult) -> str:
         f"<span>Backend <strong>{backend}</strong></span>"
         f"<span>Revision <code>{revision}</code></span>"
         f"<span>Model load <strong>{escape(model_load)}</strong></span>"
+        f"<span>Output <strong>{escape(output_length)}</strong></span>"
         "</div></section>"
     )
 
 
 def render_success_status(result: PlaygroundResult) -> str:
+    output_tokens = _usage_integer(result.usage.get("output_tokens"))
+    token_limit = _usage_integer(result.usage.get("max_new_tokens"))
+    if (
+        output_tokens is not None
+        and token_limit is not None
+        and output_tokens >= token_limit
+    ):
+        next_step = (
+            "Increase Max new tokens and run again."
+            if token_limit < PLAYGROUND_MAX_NEW_TOKENS
+            else "Ask for a shorter answer or split the prompt into smaller questions."
+        )
+        return (
+            '<div class="run-status warning"><span></span>'
+            f"Completed, but reached the {token_limit}-token output limit; "
+            f"the final sentence may be truncated. {next_step}"
+            "</div>"
+        )
     return (
         '<div class="run-status success"><span></span>'
         f"Completed locally · {escape(result.media_kind)} · no quality score assigned"
@@ -233,27 +376,42 @@ def render_report_summary(view: ReportView) -> str:
     )
 
 
-STUDIO_CSS = """
+STUDIO_CSS = (_INSTRUMENT_SANS_FONT_FACE + """
 :root {
+  --ail-font-sans: "Instrument Sans", "Microsoft YaHei UI", "PingFang SC", Arial, sans-serif;
+  --ail-font-mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
   --ail-bg: #ffffff;
   --ail-panel: #ffffff;
   --ail-panel-2: #f8fafc;
   --ail-border: rgba(15, 23, 42, 0.12);
   --ail-text: #0f172a;
   --ail-muted: #526176;
-  --ail-teal: #0f766e;
   --ail-blue: #2563eb;
+  --ail-blue-strong: #1d4ed8;
+  --ail-blue-soft: #eff6ff;
+  --ail-indigo: #4f46e5;
   --ail-violet: #7c3aed;
   --ail-red: #dc2626;
   --ail-amber: #b45309;
 }
-html, body { color-scheme: light !important; }
+html, body {
+  color-scheme: light !important;
+  font-family: var(--ail-font-sans) !important;
+  font-feature-settings: "ss01" 1, "ss02" 1;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
 body, .gradio-container {
-  background:
-    radial-gradient(circle at 78% -10%, rgba(37,99,235,.055), transparent 34rem),
-    radial-gradient(circle at 20% 20%, rgba(15,118,110,.045), transparent 30rem),
-    var(--ail-bg) !important;
+  background: var(--ail-bg) !important;
   color: var(--ail-text) !important;
+}
+.gradio-container, .gradio-container .prose, .gradio-container button,
+.gradio-container input, .gradio-container textarea, .gradio-container select,
+.gradio-container table {
+  font-family: var(--ail-font-sans) !important;
+  font-feature-settings: "ss01" 1, "ss02" 1;
+  font-synthesis: none;
 }
 .gradio-container {
   max-width: 1480px !important; margin: 0 auto !important;
@@ -298,49 +456,55 @@ body, .gradio-container {
   box-shadow: 0 14px 42px rgba(15,23,42,.08);
 }
 .brand-wordmark { display: inline-flex; flex-direction: column; align-items: flex-start;
-  width: max-content; padding: 4px 6px; border: 0; border-radius: 8px;
+  width: max-content; padding: 6px 8px; border: 0; border-radius: 10px;
   background: transparent; color: inherit; cursor: pointer;
-  font-family: Arial, Helvetica, ui-sans-serif, sans-serif; }
-.brand-wordmark:focus-visible { outline: 2px solid var(--ail-teal); outline-offset: 3px; }
-.brand-name { font-size: 22px; line-height: 1; font-weight: 700; letter-spacing: -.035em; }
-.brand-product { color: var(--ail-muted); font-size: 9px; font-weight: 600;
-  letter-spacing: .28em; margin-top: 6px; }
+  font-family: var(--ail-font-sans); }
+.brand-wordmark:focus-visible { outline: 2px solid var(--ail-blue); outline-offset: 3px; }
+.brand-name { display: inline-flex; align-items: baseline; font-size: clamp(40px,3.8vw,54px);
+  line-height: .82; font-weight: 620; font-stretch: 92%; letter-spacing: -.065em; }
+.brand-ai { display: inline-block; text-transform: uppercase; font-weight: 700;
+  font-stretch: 86%; letter-spacing: -.105em; padding-right: .09em;
+  color: var(--ail-blue); }
+.brand-rest { font-weight: 620; }
+.brand-product { color: var(--ail-muted); font-size: 10px; font-weight: 650;
+  letter-spacing: .3em; margin-top: 11px; padding-left: 2px; }
 .header-tagline { color: #475569; font-size: 13px; letter-spacing: .02em; }
 .local-badge { justify-self: end; display: inline-flex; align-items: center; gap: 7px;
-  color: #0f766e; font-size: 12px; font-weight: 650; padding: 7px 10px;
-  border: 1px solid rgba(15,118,110,.2); background: #ecfdf5;
+  color: var(--ail-blue-strong); font-size: 12px; font-weight: 650; padding: 7px 10px;
+  border: 1px solid rgba(37,99,235,.2); background: var(--ail-blue-soft);
   border-radius: 999px; }
 .local-badge span, .run-status > span { width: 7px; height: 7px; border-radius: 50%;
-  background: var(--ail-teal); box-shadow: 0 0 10px rgba(15,118,110,.38); }
+  background: var(--ail-blue); box-shadow: 0 0 10px rgba(37,99,235,.32); }
 .developer-signal { position: fixed; z-index: 99999; top: 50%; left: 50%;
   transform: translate(-50%,-50%); width: min(440px, calc(100vw - 36px));
-  padding: 30px; border: 1px solid rgba(15,118,110,.3); border-radius: 18px;
+  padding: 30px; border: 1px solid rgba(37,99,235,.28); border-radius: 18px;
   background: #ffffff; color: var(--ail-text); box-shadow: 0 30px 100px rgba(15,23,42,.24);
-  font-family: ui-monospace, "Cascadia Code", Consolas, monospace; }
+  font-family: var(--ail-font-sans); }
 .developer-signal[hidden] { display: none; }
 .developer-signal:before { content: ""; position: absolute; inset: 0; pointer-events: none;
-  border-radius: inherit; background: repeating-linear-gradient(0deg,transparent 0 4px,
-  rgba(15,118,110,.025) 5px); }
+  border-radius: inherit; background: rgba(37,99,235,.018); }
 .developer-signal button { position: absolute; top: 10px; right: 12px; width: 32px;
   border: 0; background: transparent; color: var(--ail-muted); font-size: 24px; cursor: pointer; }
-.signal-kicker, .eyebrow { color: var(--ail-teal); font-size: 10px; font-weight: 750;
+.signal-kicker, .eyebrow { color: var(--ail-blue); font-size: 10px; font-weight: 700;
   letter-spacing: .18em; }
 .developer-signal h2 { margin: 13px 0 4px; font-size: 21px; }
 .developer-signal p { color: #475569; margin: 0 0 18px; }
-.developer-signal code { color: var(--ail-violet); }
+.developer-signal code { color: var(--ail-violet); font-family: var(--ail-font-mono); }
 .overview-stack { display: grid; gap: 14px; padding: 4px; }
 .hero-panel, .comparison-panel, .metric-panel, .workflow-grid article, .proof-grid article {
-  border: 1px solid var(--ail-border); background: linear-gradient(145deg,
-  #ffffff,#f8fafc); box-shadow: 0 16px 42px rgba(15,23,42,.07); }
+  border: 1px solid var(--ail-border); background: #ffffff;
+  box-shadow: 0 16px 42px rgba(15,23,42,.07); }
 .hero-panel { position: relative; overflow: hidden; min-height: 330px; padding: 58px 52px;
   border-radius: 22px; display: flex; flex-direction: column; justify-content: center; }
 .hero-panel:after { content: "A"; position: absolute; right: 4%; top: -25%; font-size: 400px;
-  font-weight: 800; color: transparent; -webkit-text-stroke: 1px rgba(37,99,235,.09);
+  font-weight: 700; font-stretch: 78%; color: transparent;
+  -webkit-text-stroke: 1px rgba(37,99,235,.09);
   transform: rotate(5deg); pointer-events: none; }
 .hero-panel h1 { margin: 15px 0 16px; max-width: 830px; font-size: clamp(38px,6vw,72px);
-  line-height: .98; letter-spacing: -.055em; font-weight: 730; }
+  line-height: .98; letter-spacing: -.058em; font-weight: 680; font-stretch: 94%; }
 .hero-panel h1 span {
-  background-image: linear-gradient(90deg,var(--ail-teal),var(--ail-blue),var(--ail-violet)) !important;
+  background-image: linear-gradient(100deg,var(--ail-blue) 0%,var(--ail-indigo) 58%,
+    var(--ail-violet) 100%) !important;
   -webkit-background-clip: text !important; background-clip: text !important;
   color: transparent !important;
 }
@@ -355,7 +519,11 @@ body, .gradio-container {
 .comparison-panel { padding: 28px; border-radius: 20px; }
 .section-heading, .panel-top { display: flex; justify-content: space-between; align-items: center;
   gap: 18px; margin-bottom: 20px; }
-.section-heading h2, .tab-intro h2 { margin: 7px 0 0; font-size: 25px; letter-spacing: -.035em; }
+.section-heading h2, .tab-intro h2 { margin: 7px 0 0; font-size: 25px;
+  letter-spacing: -.04em; font-weight: 650; font-stretch: 95%; }
+.tab-intro h2, .metric-panel h3 {
+  font-family: var(--ail-font-sans); font-weight: 650; font-synthesis: none;
+}
 .model-lane { display: grid; grid-template-columns: minmax(210px,1.5fr) minmax(160px,1fr)
   minmax(120px,.8fr) minmax(135px,.9fr) 92px; gap: 20px; align-items: center;
   padding: 20px 4px; border-top: 1px solid var(--ail-border); }
@@ -366,38 +534,59 @@ body, .gradio-container {
 .model-dot { width: 10px; height: 10px; border-radius: 50%; }
 .model-dot.qwen { background: var(--ail-violet); box-shadow: 0 0 16px rgba(167,139,250,.65); }
 .model-dot.smol { background: var(--ail-blue); box-shadow: 0 0 16px rgba(96,165,250,.65); }
-.score-cell strong, .number-cell strong { font-family: ui-monospace,"Cascadia Code",Consolas,monospace;
-  font-size: 15px; }
+.score-cell strong, .number-cell strong { font-family: var(--ail-font-sans);
+  font-feature-settings: "ss02" 1, "tnum" 1; font-variant-numeric: tabular-nums;
+  font-size: 15px; font-weight: 620; }
 .score-track { height: 3px; margin-top: 7px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
-.score-track i { display: block; height: 100%; background: linear-gradient(90deg,var(--ail-teal),var(--ail-blue)); }
-.status-cell { justify-self: end; font-family: ui-monospace,"Cascadia Code",Consolas,monospace;
-  font-size: 10px; padding: 6px 8px; border-radius: 7px; }
-.status-cell.success { color: #0f766e; background: #ecfdf5; }
+.score-track i { display: block; height: 100%; background: var(--ail-blue); }
+.status-cell { justify-self: end; font-family: var(--ail-font-sans);
+  font-feature-settings: "ss02" 1, "tnum" 1; font-variant-numeric: tabular-nums;
+  font-size: 10px; font-weight: 620; padding: 6px 8px; border-radius: 7px; }
+.status-cell.success { color: var(--ail-blue-strong); background: var(--ail-blue-soft); }
 .evidence-note { margin: 15px 0 0; color: #64748b; font-size: 11px; line-height: 1.6; }
 .workflow-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; background: transparent;
   border: 0; box-shadow: none; }
 .workflow-grid article { border-radius: 16px; padding: 25px; }
-.workflow-grid article > span { color: var(--ail-teal); font-family: ui-monospace,monospace; font-size: 11px; }
+.workflow-grid article > span { color: var(--ail-blue); font-family: var(--ail-font-sans);
+  font-variant-numeric: tabular-nums; font-size: 11px; font-weight: 650; }
 .workflow-grid h3 { margin: 16px 0 8px; font-size: 16px; }
 .workflow-grid p { margin: 0; color: var(--ail-muted); font-size: 12px; line-height: 1.6; }
 .tab-intro { display: flex; align-items: end; justify-content: space-between; gap: 20px;
   padding: 18px 6px 10px; }
 .tab-intro p { color: var(--ail-muted); font-size: 12px; }
+.media-guidance { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 9px;
+  margin: 2px 0 9px; padding: 9px 11px; border: 1px solid rgba(37,99,235,.14);
+  border-radius: 10px; background: #f8fafc; color: var(--ail-muted); font-size: 10px;
+  line-height: 1.55; }
+.media-guidance strong { color: #334155; font-size: 10px; white-space: nowrap; }
+.media-guidance small.media-facts { flex-basis: 100%; color: #64748b;
+  font-family: var(--ail-font-mono); font-size: 9px; }
+.media-guidance.warning { border-color: rgba(180,83,9,.25); background: #fffbeb; }
+.media-guidance.warning strong { color: #92400e; }
+.media-guidance.compatible { border-color: rgba(37,99,235,.2); background: var(--ail-blue-soft); }
+.media-guidance.compatible strong { color: var(--ail-blue-strong); }
+.studio-media-input { min-height: 260px; overflow: hidden; background: #f8fafc !important; }
+.studio-media-input img, .studio-media-input video {
+  display: block; width: 100% !important; height: auto !important;
+  min-height: 0 !important; max-height: 420px !important;
+  margin: auto; object-fit: contain !important; background: #f8fafc;
+}
 .metric-panel { padding: 24px; border-radius: 18px; min-height: 250px; }
-.metric-panel h3 { margin: 8px 0 0; font-size: 17px; }
+.metric-panel h3 { margin: 8px 0 0; font-size: 17px; letter-spacing: -.018em; }
 .empty-state { display: flex; flex-direction: column; justify-content: center; }
 .empty-state p { color: var(--ail-muted); max-width: 450px; line-height: 1.6; font-size: 12px; }
 .live-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
 .live-card { padding: 16px; border: 1px solid var(--ail-border); border-radius: 12px;
   background: #f8fafc; }
 .live-card span { display: block; color: var(--ail-muted); font-size: 10px; margin-bottom: 7px; }
-.live-card strong { font-family: ui-monospace,"Cascadia Code",Consolas,monospace;
-  font-size: 17px; letter-spacing: -.025em; }
+.live-card strong { font-family: var(--ail-font-sans);
+  font-feature-settings: "ss02" 1, "tnum" 1; font-variant-numeric: tabular-nums;
+  font-size: 17px; font-weight: 650; letter-spacing: -.025em; }
 .live-card small { display: block; margin-top: 6px; color: #64748b; font-size: 9px; }
 .unscored-pill, .protocol-pill { padding: 6px 8px; border-radius: 7px; font-size: 9px;
-  font-weight: 750; letter-spacing: .12em; }
+  font-weight: 700; letter-spacing: .12em; }
 .unscored-pill, .protocol-pill.informal { color: #92400e; background: #fffbeb; }
-.protocol-pill.formal { color: #0f766e; background: #ecfdf5; }
+.protocol-pill.formal { color: var(--ail-blue-strong); background: var(--ail-blue-soft); }
 .runtime-foot { display: flex; flex-wrap: wrap; gap: 14px 20px; border-top: 1px solid var(--ail-border);
   margin-top: 18px; padding-top: 14px; color: var(--ail-muted); font-size: 10px; }
 .runtime-foot strong, .runtime-foot code { color: #334155; }
@@ -406,12 +595,17 @@ body, .gradio-container {
 .run-status.idle > span { background: #64748b; box-shadow: none; }
 .run-status.error { color: #b91c1c; border-color: rgba(220,38,38,.2); background: #fef2f2; }
 .run-status.error > span { background: var(--ail-red); box-shadow: 0 0 10px rgba(220,38,38,.32); }
+.run-status.warning { color: #92400e; border-color: rgba(180,83,9,.24); background: #fffbeb; }
+.run-status.warning > span { background: var(--ail-amber); box-shadow: 0 0 10px rgba(180,83,9,.25); }
 .gradio-container .form, .gradio-container .block { border-color: var(--ail-border) !important; }
-.gradio-container button.primary { background: linear-gradient(100deg,#0f766e,#2563eb) !important;
+.gradio-container button.primary { background: linear-gradient(105deg,var(--ail-blue) 0%,
+  var(--ail-indigo) 100%) !important;
   color: #ffffff !important; border: 0 !important;
   box-shadow: 0 9px 25px rgba(37,99,235,.14) !important; }
+.gradio-container button.primary:hover { filter: brightness(.95); }
 .gradio-container textarea, .gradio-container input { font-size: 13px !important; }
-#studio-report-table { font-family: ui-monospace,"Cascadia Code",Consolas,monospace; font-size: 11px; }
+#studio-report-table { font-family: var(--ail-font-sans); font-feature-settings: "ss02" 1, "tnum" 1;
+  font-variant-numeric: tabular-nums; font-size: 11px; }
 @media (max-width: 940px) {
   #ailumetra-header { grid-template-columns: 1fr auto; }
   .header-tagline { display: none; }
@@ -422,6 +616,7 @@ body, .gradio-container {
 }
 @media (max-width: 620px) {
   #ailumetra-header { margin-top: 8px; }
+  .brand-name { font-size: 36px; }
   .local-badge { font-size: 0; }
   .local-badge span { margin: 3px; }
   .hero-panel { min-height: 300px; padding: 38px 25px; }
@@ -429,8 +624,10 @@ body, .gradio-container {
   .proof-grid, .live-grid { grid-template-columns: 1fr; }
   .model-lane { grid-template-columns: 1fr; gap: 10px; }
   .tab-intro, .section-heading { align-items: flex-start; flex-direction: column; }
+  .studio-media-input { min-height: 220px; }
+  .studio-media-input img, .studio-media-input video { max-height: 360px !important; }
 }
-""".strip()
+""").strip()
 
 
 EASTER_EGG_JS = """

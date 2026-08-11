@@ -42,13 +42,34 @@ Only one queued model call runs at a time. When the backend changes, the old
 adapter is released before the next model loads, which keeps the interface
 practical on the verified 8 GB GPU profile.
 
+### Playground generation controls
+
+- **Max new tokens** is a hard output-length allowance, not a quality setting.
+  Studio defaults to 512, permits up to 1,024, and shows an amber warning when
+  the model consumes the entire allowance because the last sentence may be
+  incomplete. Lower values can be useful for deliberately brief or faster
+  experiments.
+- **Timeout** covers media preprocessing, the first model load, and generation.
+  Studio defaults to 300 seconds. Reducing it does not ask the model for a
+  shorter answer; it makes a timeout failure more likely, especially on a cold
+  first run.
+
 ## Local security boundary
 
 - The CLI accepts loopback hosts only: `127.0.0.1`, `localhost`, or `::1`.
 - Gradio public sharing is always disabled and event APIs are private.
 - Monitoring and telemetry analytics are disabled.
 - Uploads are limited to supported media types; images are capped at 25 MiB,
-  videos and the server upload boundary at 50 MiB.
+  videos and the server upload boundary at 50 MiB. Videos must also remain at
+  or below 60 seconds, 3,600 source frames, and 3840×2160 pixels per frame.
+- Studio preserves the uploaded video instead of requiring a system FFmpeg
+  executable to remove its audio track; model adapters consume the sampled
+  visual frames. H.264 MP4 is the most portable browser-preview format, while
+  H.265/HEVC preview support depends on the browser and operating system. After
+  upload, Studio reports the codec and explains that an audio-only or frozen
+  HEVC preview does not mean local model decoding failed.
+- Media previews preserve the source aspect ratio, use letterboxing rather
+  than cropping, and stop growing at a bounded desktop or mobile height.
 - User-facing exceptions redact common absolute local paths.
 - The Studio has no delete, overwrite, publication, or GitHub action.
 
@@ -74,7 +95,38 @@ project's code or assets:
 
 The Ailumetra logo is an original, text-only sans-serif wordmark. All brand
 layout CSS, copy, and interactions in this repository are original project
-work. No third-party frontend template, font file, or asset is vendored.
+work. No third-party frontend template or artwork is copied.
+
+### Locked typography system
+
+Instrument Sans is the fixed Ailumetra brand and interface family. The
+repository self-hosts the upstream variable WOFF2 file at commit
+`7fa22308a3d0c94ee2b3cd537a1196b65db34a3e`, verifies its SHA-256 as
+`aa72922aafcc0dc18f36ec1d805b0212057dabe8b9d5b8b57f67035aea1b826d`, and
+packages the complete SIL Open Font License 1.1 notice. Studio never downloads
+a font at runtime.
+
+The interface enables Instrument Sans stylistic set 02 so lowercase `a` uses
+one consistent single-storey construction. Headings, body copy, controls, and
+evidence figures share the same family; evidence figures use tabular numerals,
+while only literal code and local paths retain an explicit monospace face. The
+wordmark visually capitalizes the existing `Ai` characters as a compact,
+solid-cobalt `AI` accent without changing the accessible or public name
+`Ailumetra`. Chinese text follows the embedded Latin face with professional
+platform CJK fallbacks.
+The README wordmark stores the same selected glyphs as SVG outlines, so its
+appearance remains identical on GitHub without requiring a local font install.
+
+This font family, upstream revision, feature set, and wordmark construction are
+now a stable design contract. They should change only for a demonstrated
+accessibility, licensing, or rendering defect and after an explicit brand
+decision plus desktop and mobile visual regression review.
+
+The interface palette uses white surfaces, dark ink, and a cobalt-led accent.
+Gradients are intentionally limited to the hero emphasis and primary action:
+both begin in blue and move through indigo toward violet. The wordmark, cards,
+status indicators, evidence figures, and page background remain solid. Green
+is not part of the Studio brand palette.
 
 ## 中文说明
 

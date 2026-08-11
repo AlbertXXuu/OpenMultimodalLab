@@ -4,6 +4,22 @@ OpenMultimodalLab source code and project-generated synthetic media are
 licensed under Apache-2.0. Real-model support is optional and installs
 independent third-party packages and model weights under their own terms.
 
+## Vendored interface font
+
+Ailumetra Studio embeds the unmodified Instrument Sans variable webfont for
+offline, deterministic interface rendering:
+
+| Asset | Upstream revision | SHA-256 | License |
+|---|---|---|---|
+| `InstrumentSans[wdth,wght].woff2` | `7fa22308a3d0c94ee2b3cd537a1196b65db34a3e` | `aa72922aafcc0dc18f36ec1d805b0212057dabe8b9d5b8b57f67035aea1b826d` | SIL OFL 1.1 |
+
+Upstream source: <https://github.com/Instrument/instrument-sans>. The exact
+license text is distributed at
+`src/openmultimodal_lab/assets/fonts/InstrumentSans-OFL.txt`. The WOFF2 bytes
+are base64-wrapped only so the source distribution and wheel can load the font
+without a network request; the decoded upstream bytes are unchanged. The font
+license applies to the font software, not to the Apache-2.0 project source.
+
 This file records the dependency and model-license evidence reviewed for the
 final Windows Python 3.11 candidate environment on 2026-08-10. It is an
 engineering inventory, not legal advice. The project does not vendor these
