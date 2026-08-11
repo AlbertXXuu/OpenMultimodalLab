@@ -168,9 +168,13 @@ model-quality result.
 Ailumetra Studio adds an optional, polished local interface without changing
 the reproducible CLI workflow. It provides a one-input model Playground and a
 read-only report explorer while keeping formal benchmark evidence separate.
+Run it inside an existing Python 3.11/3.12 model environment; the Studio extra
+installs the interface, not the selected model backend or a CUDA-enabled
+PyTorch build.
 
 ```powershell
 .\.venv-ml\Scripts\python.exe -m pip install -e ".[studio]"
+.\.venv-ml\Scripts\oml.exe doctor --backend qwen3-vl
 .\.venv-ml\Scripts\oml.exe studio
 ```
 

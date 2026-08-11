@@ -11,7 +11,13 @@ from openmultimodal_lab.adapters import MockAdapter
 from openmultimodal_lab.models import EvaluationTask, ModelOutput
 from openmultimodal_lab.runner import run_benchmark
 from openmultimodal_lab.studio import (
+    DEVELOPER_ID,
     MAX_REPORT_ROWS,
+    PLAYGROUND_MAX_NEW_TOKENS,
+    PLAYGROUND_MAX_TIMEOUT_SECONDS,
+    STUDIO_BRAND,
+    STUDIO_NAME,
+    STUDIO_TAGLINE,
     StudioInputError,
     StudioRuntime,
     load_report_view,
@@ -173,6 +179,24 @@ class StudioRuntimeTests(unittest.TestCase):
                     max_new_tokens=16,
                     timeout_seconds=30,
                 )
+            with self.assertRaisesRegex(StudioInputError, "max new tokens"):
+                runtime.run_playground(
+                    backend="mock",
+                    prompt="Describe.",
+                    image_path=media,
+                    video_path=None,
+                    max_new_tokens=PLAYGROUND_MAX_NEW_TOKENS + 1,
+                    timeout_seconds=30,
+                )
+            with self.assertRaisesRegex(StudioInputError, "timeout"):
+                runtime.run_playground(
+                    backend="mock",
+                    prompt="Describe.",
+                    image_path=media,
+                    video_path=None,
+                    max_new_tokens=16,
+                    timeout_seconds=PLAYGROUND_MAX_TIMEOUT_SECONDS + 1,
+                )
 
         self.assertEqual(backends, ["mock", "qwen3-vl"])
 
@@ -226,10 +250,30 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertEqual(text, "")
         self.assertEqual(rows, [])
 
+    def test_ui_playground_wrapper_completes_with_mock_backend(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            media = self._media(Path(temp_dir))
+            response, metrics, status = _run_playground(
+                StudioRuntime(),
+                "mock",
+                str(media),
+                None,
+                "Describe.",
+                32,
+                60,
+            )
+
+        self.assertTrue(response)
+        self.assertIn("UNSCORED", metrics)
+        self.assertIn("Completed locally", status)
+
     def test_brand_assets_are_local_and_include_accessible_developer_signal(self) -> None:
         combined = BRAND_HEADER_HTML + STUDIO_CSS + EASTER_EGG_JS
-        self.assertIn("Ailumetra", combined)
-        self.assertIn("ALONICA", combined)
+        self.assertIn(STUDIO_BRAND, combined)
+        self.assertIn(STUDIO_NAME, combined)
+        self.assertIn(STUDIO_TAGLINE, combined)
+        self.assertIn(DEVELOPER_ID, combined)
+        self.assertNotIn("<svg", BRAND_HEADER_HTML.casefold())
         self.assertIn("event.altKey", EASTER_EGG_JS)
         self.assertIn('event.key.toLowerCase() === "a"', EASTER_EGG_JS)
         self.assertNotIn("http://", combined)
@@ -302,3 +346,5 @@ class StudioGradioTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "loopback"):
             launch_studio(host="0.0.0.0")
+        with self.assertRaisesRegex(ValueError, "port"):
+            launch_studio(port=0)

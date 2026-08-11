@@ -139,9 +139,12 @@ Linux 使用同一组 CLI 参数，只需改为 `.venv/bin/python` 和
 
 Ailumetra Studio 是不改变可复现 CLI 流程的可选本地界面。它提供单输入模型
 Playground 和只读报告浏览器，同时严格区分试玩结果与正式评测证据。
+请在已经配置好真实模型的 Python 3.11/3.12 环境中运行；`studio` extra 只安装
+界面，不会替你安装所选模型后端或支持 CUDA 的 PyTorch。
 
 ```powershell
 .\.venv-ml\Scripts\python.exe -m pip install -e ".[studio]"
+.\.venv-ml\Scripts\oml.exe doctor --backend qwen3-vl
 .\.venv-ml\Scripts\oml.exe studio
 ```
 
