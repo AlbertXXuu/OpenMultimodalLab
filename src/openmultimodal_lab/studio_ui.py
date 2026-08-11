@@ -1,0 +1,332 @@
+"""Optional Gradio interface for Ailumetra Studio.
+
+Gradio is imported lazily so the benchmark core keeps its zero-dependency install.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any
+
+from .studio import (
+    BACKEND_LABELS,
+    MAX_VIDEO_BYTES,
+    PLAYGROUND_MAX_NEW_TOKENS,
+    PLAYGROUND_MAX_TIMEOUT_SECONDS,
+    PLAYGROUND_PROMPT_MAX_CHARS,
+    StudioRuntime,
+    load_report_view,
+    safe_studio_error,
+)
+from .studio_assets import (
+    BRAND_HEADER_HTML,
+    EASTER_EGG_JS,
+    EMPTY_METRICS_HTML,
+    EMPTY_REPORT_HTML,
+    EMPTY_STATUS_HTML,
+    OVERVIEW_HTML,
+    PLAYGROUND_INTRO_HTML,
+    REPORT_INTRO_HTML,
+    STUDIO_CSS,
+    render_error_status,
+    render_playground_metrics,
+    render_report_summary,
+    render_success_status,
+)
+
+
+LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
+DEFAULT_PROMPT = "Describe the important visual content and any motion."
+REPORT_HEADERS = [
+    "Phase",
+    "Rep",
+    "Task",
+    "Status",
+    "Score",
+    "Latency ms",
+    "TTFT ms",
+    "Output tok/s",
+    "Peak VRAM MiB",
+]
+
+
+class StudioDependencyError(RuntimeError):
+    """Raised when the optional Studio dependency is not installed."""
+
+
+def _import_gradio() -> Any:
+    try:
+        import gradio as gr
+    except (ImportError, OSError) as exc:
+        raise StudioDependencyError(
+            'Ailumetra Studio requires the optional UI dependencies. Install '
+            'them with: python -m pip install -e ".[studio]"'
+        ) from exc
+    return gr
+
+
+def _run_playground(
+    runtime: StudioRuntime,
+    backend: str,
+    image_path: str | None,
+    video_path: str | None,
+    prompt: str,
+    max_new_tokens: float,
+    timeout_seconds: float,
+) -> tuple[str, str, str]:
+    try:
+        result = runtime.run_playground(
+            backend=backend,
+            prompt=prompt,
+            image_path=image_path,
+            video_path=video_path,
+            max_new_tokens=int(max_new_tokens),
+            timeout_seconds=float(timeout_seconds),
+        )
+    except Exception as exc:  # The UI boundary must return a path-safe message.
+        return (
+            "",
+            EMPTY_METRICS_HTML,
+            render_error_status(safe_studio_error(exc)),
+        )
+    return (
+        result.response_text,
+        render_playground_metrics(result),
+        render_success_status(result),
+    )
+
+
+def _open_report(path_value: str | None) -> tuple[str, str, list[list[Any]]]:
+    if not path_value:
+        message = "Select a JSONL run record first."
+        return render_error_status(message), "", []
+    try:
+        view = load_report_view(path_value)
+    except Exception as exc:
+        return render_error_status(safe_studio_error(exc)), "", []
+    return (
+        render_report_summary(view),
+        view.summary_text,
+        [list(row) for row in view.rows],
+    )
+
+
+def build_app(runtime: StudioRuntime | None = None) -> Any:
+    """Build the local Studio without starting a network listener."""
+
+    gr = _import_gradio()
+    active_runtime = runtime or StudioRuntime()
+
+    with gr.Blocks(
+        title="Ailumetra Studio",
+        fill_width=True,
+        analytics_enabled=False,
+    ) as app:
+        gr.HTML(BRAND_HEADER_HTML, elem_id="studio-brand-header")
+
+        with gr.Tabs(selected="overview", elem_id="studio-tabs"):
+            with gr.Tab("Overview", id="overview"):
+                gr.HTML(OVERVIEW_HTML)
+
+            with gr.Tab("Playground", id="playground"):
+                gr.HTML(PLAYGROUND_INTRO_HTML)
+                with gr.Row(elem_classes="studio-workspace"):
+                    with gr.Column(scale=5, min_width=330):
+                        backend = gr.Dropdown(
+                            choices=[
+                                (label, name)
+                                for name, label in BACKEND_LABELS.items()
+                            ],
+                            value="qwen3-vl",
+                            label="Local backend",
+                            info="Switching backends releases the previous model.",
+                            filterable=False,
+                            elem_classes="studio-control",
+                        )
+                        with gr.Tabs(selected="image-input"):
+                            with gr.Tab("Image / document", id="image-input"):
+                                image_input = gr.Image(
+                                    type="filepath",
+                                    format=None,
+                                    sources=["upload", "clipboard"],
+                                    label="Image or document screenshot",
+                                    buttons=["fullscreen"],
+                                    height=260,
+                                )
+                            with gr.Tab("Short video", id="video-input"):
+                                video_input = gr.Video(
+                                    sources=["upload"],
+                                    label="Short video",
+                                    buttons=[],
+                                    height=260,
+                                    include_audio=False,
+                                )
+                        prompt = gr.Textbox(
+                            value=DEFAULT_PROMPT,
+                            label="Prompt",
+                            lines=4,
+                            max_lines=8,
+                            max_length=PLAYGROUND_PROMPT_MAX_CHARS,
+                            placeholder="Ask about visual content, text, layout, or motion...",
+                            elem_classes="studio-control",
+                        )
+                        with gr.Row():
+                            max_tokens = gr.Slider(
+                                minimum=16,
+                                maximum=PLAYGROUND_MAX_NEW_TOKENS,
+                                value=64,
+                                step=16,
+                                precision=0,
+                                label="Max new tokens",
+                            )
+                            timeout = gr.Slider(
+                                minimum=30,
+                                maximum=PLAYGROUND_MAX_TIMEOUT_SECONDS,
+                                value=180,
+                                step=30,
+                                precision=0,
+                                label="Timeout (seconds)",
+                            )
+                        with gr.Row():
+                            run_button = gr.Button(
+                                "Run locally",
+                                variant="primary",
+                                elem_id="studio-run-button",
+                            )
+                            clear_button = gr.Button("Clear", variant="secondary")
+                        status = gr.HTML(EMPTY_STATUS_HTML)
+
+                    with gr.Column(scale=7, min_width=380):
+                        response = gr.Textbox(
+                            label="Model response",
+                            lines=13,
+                            max_lines=20,
+                            interactive=False,
+                            buttons=["copy"],
+                            placeholder="The local model response will appear here.",
+                            elem_id="studio-response",
+                        )
+                        metrics = gr.HTML(EMPTY_METRICS_HTML)
+
+                run_button.click(
+                    fn=lambda *values: _run_playground(active_runtime, *values),
+                    inputs=[
+                        backend,
+                        image_input,
+                        video_input,
+                        prompt,
+                        max_tokens,
+                        timeout,
+                    ],
+                    outputs=[response, metrics, status],
+                    api_visibility="private",
+                    concurrency_limit=1,
+                    concurrency_id="ailumetra-gpu",
+                    show_progress="minimal",
+                )
+                clear_button.click(
+                    fn=lambda: (
+                        None,
+                        None,
+                        "",
+                        EMPTY_METRICS_HTML,
+                        EMPTY_STATUS_HTML,
+                    ),
+                    outputs=[
+                        image_input,
+                        video_input,
+                        response,
+                        metrics,
+                        status,
+                    ],
+                    api_visibility="private",
+                    queue=False,
+                )
+
+            with gr.Tab("Reports", id="reports"):
+                gr.HTML(REPORT_INTRO_HTML)
+                with gr.Row(elem_classes="report-loader"):
+                    report_file = gr.File(
+                        file_types=[".jsonl"],
+                        file_count="single",
+                        type="filepath",
+                        label="Run record (.jsonl)",
+                        buttons=[],
+                    )
+                    report_button = gr.Button(
+                        "Open report",
+                        variant="primary",
+                        elem_id="studio-report-button",
+                    )
+                report_summary = gr.HTML(EMPTY_REPORT_HTML)
+                with gr.Accordion("Text summary", open=False):
+                    report_text = gr.Code(
+                        language=None,
+                        lines=12,
+                        interactive=False,
+                        show_line_numbers=False,
+                        buttons=["copy"],
+                    )
+                report_table = gr.Dataframe(
+                    headers=REPORT_HEADERS,
+                    datatype=[
+                        "str",
+                        "number",
+                        "str",
+                        "str",
+                        "number",
+                        "number",
+                        "number",
+                        "number",
+                        "number",
+                    ],
+                    value=[],
+                    interactive=False,
+                    wrap=True,
+                    show_row_numbers=True,
+                    show_search="filter",
+                    max_height=520,
+                    elem_id="studio-report-table",
+                )
+                report_button.click(
+                    fn=_open_report,
+                    inputs=[report_file],
+                    outputs=[report_summary, report_text, report_table],
+                    api_visibility="private",
+                    concurrency_limit=1,
+                    show_progress="minimal",
+                )
+
+    app.queue(api_open=False, max_size=8, default_concurrency_limit=1)
+    return app
+
+
+def launch_studio(
+    *,
+    host: str = "127.0.0.1",
+    port: int = 7860,
+    inbrowser: bool = True,
+) -> Any:
+    """Launch Ailumetra Studio on a loopback address only."""
+
+    if host not in LOOPBACK_HOSTS:
+        raise ValueError("Ailumetra Studio only accepts a loopback host")
+    if not isinstance(port, int) or isinstance(port, bool) or not 1 <= port <= 65535:
+        raise ValueError("port must be an integer from 1 to 65535")
+
+    app = build_app()
+    return app.launch(
+        server_name=host,
+        server_port=port,
+        inbrowser=inbrowser,
+        share=False,
+        show_error=False,
+        allowed_paths=[],
+        max_file_size=MAX_VIDEO_BYTES,
+        enable_monitoring=False,
+        strict_cors=True,
+        footer_links=[],
+        theme="base",
+        css=STUDIO_CSS,
+        js=EASTER_EGG_JS,
+    )

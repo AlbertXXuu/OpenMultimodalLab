@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Add the optional, local-only Ailumetra Studio with an unscored single-media
+  playground, read-only JSONL report explorer, bounded uploads, serialized GPU
+  access, and the developer signal `ALONICA`.
+- Introduce the owner-approved Ailumetra public brand while preserving the
+  `OpenMultimodalLab` repository, `openmultimodal-lab` package, `oml` CLI, and
+  immutable v1.0.0 evidence identities.
+
 ### Fixed
 
 - Reject malformed, incomplete, or non-finite run records with a stable report

@@ -85,3 +85,23 @@ jobs:
             --input "$RUNNER_TEMP/wheel-smoke.jsonl"
           "$RUNNER_TEMP/wheel-venv/bin/python" -c \
             "import openmultimodal_lab; from pathlib import Path; location = Path(openmultimodal_lab.__file__).resolve(); workspace = Path('$GITHUB_WORKSPACE').resolve(); assert not location.is_relative_to(workspace), location; print(f'Imported installed package from: {location}')"
+
+  studio-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install Studio extra
+        run: python -m pip install -e ".[studio]"
+      - name: Check Studio dependencies
+        run: python -m pip check
+      - name: Build and test Studio
+        run: python -m unittest tests.test_studio -v

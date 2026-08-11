@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "openmultimodal-lab"
 version = "1.0.0"
-description = "A local-first, reproducible benchmark toolkit for multimodal models."
+description = "The local-first, reproducible multimodal benchmark engine behind Ailumetra."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }
@@ -31,6 +31,9 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
+studio = [
+  "gradio>=6.22,<7",
+]
 qwen3-vl = [
   "accelerate>=1.1",
   "av>=14",

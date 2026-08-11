@@ -1,4 +1,10 @@
-# OpenMultimodalLab
+<p align="center">
+  <img src="docs/assets/ailumetra-wordmark.svg" width="320" alt="Ailumetra 无衬线字标">
+</p>
+
+# Ailumetra
+
+**OpenMultimodalLab 是 Ailumetra 背后的开源评测引擎。**
 
 [![CI](https://github.com/AlbertXXuu/OpenMultimodalLab/actions/workflows/ci.yml/badge.svg)](https://github.com/AlbertXXuu/OpenMultimodalLab/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB)
@@ -128,6 +134,20 @@ Linux 使用同一组 CLI 参数，只需改为 `.venv/bin/python` 和
 `.venv/bin/oml`。
 
 `mock` 只验证基础设施，不能用它的得分描述真实模型能力。
+
+## Ailumetra Studio
+
+Ailumetra Studio 是不改变可复现 CLI 流程的可选本地界面。它提供单输入模型
+Playground 和只读报告浏览器，同时严格区分试玩结果与正式评测证据。
+
+```powershell
+.\.venv-ml\Scripts\python.exe -m pip install -e ".[studio]"
+.\.venv-ml\Scripts\oml.exe studio
+```
+
+Studio 只监听 `127.0.0.1`，关闭公开分享和分析，并把模型调用串行化以适配
+8 GB 显卡。Playground 回答明确不评分；需要可保存、可比较的证据时仍使用
+`oml run`。完整使用方法和安全边界见 [Studio 说明](docs/ailumetra-studio.md)。
 
 ## 运行真实本地模型
 

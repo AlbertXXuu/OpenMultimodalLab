@@ -62,6 +62,13 @@ def _positive_int(value: str) -> int:
     return parsed
 
 
+def _port(value: str) -> int:
+    parsed = _positive_int(value)
+    if parsed > 65535:
+        raise argparse.ArgumentTypeError("must be at most 65535")
+    return parsed
+
+
 def _non_negative_int(value: str) -> int:
     try:
         parsed = int(value)
@@ -180,6 +187,28 @@ def _build_parser() -> argparse.ArgumentParser:
         "--json",
         action="store_true",
         help="Print machine-readable JSON instead of the text summary.",
+    )
+
+    studio_parser = commands.add_parser(
+        "studio",
+        help="Launch the optional Ailumetra Studio on this computer.",
+    )
+    studio_parser.add_argument(
+        "--host",
+        choices=("127.0.0.1", "localhost", "::1"),
+        default="127.0.0.1",
+        help="Loopback address to listen on (default: 127.0.0.1).",
+    )
+    studio_parser.add_argument(
+        "--port",
+        type=_port,
+        default=7860,
+        help="Local port from 1 to 65535 (default: 7860).",
+    )
+    studio_parser.add_argument(
+        "--no-browser",
+        action="store_true",
+        help="Start the Studio without opening the default browser.",
     )
     return parser
 
@@ -532,6 +561,26 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
         else:
             print(format_summary(summary))
+        return 0
+
+    if args.command == "studio":
+        try:
+            from .studio_ui import StudioDependencyError, launch_studio
+
+            launch_studio(
+                host=args.host,
+                port=args.port,
+                inbrowser=not args.no_browser,
+            )
+        except StudioDependencyError as exc:
+            print(f"Studio error: {exc}", file=sys.stderr)
+            return 1
+        except (OSError, ValueError) as exc:
+            print(f"Studio error: {type(exc).__name__}: {exc}", file=sys.stderr)
+            return 2
+        except KeyboardInterrupt:
+            print("Ailumetra Studio stopped.")
+            return 130
         return 0
 
     raise AssertionError(f"Unhandled command: {args.command}")
