@@ -81,6 +81,28 @@ class RunCommandTests(unittest.TestCase):
             ["image-1", "spatial-1"],
         )
 
+    def test_studio_command_passes_loopback_configuration(self) -> None:
+        with patch(
+            "openmultimodal_lab.studio_ui.launch_studio",
+        ) as launch:
+            exit_code = main(
+                [
+                    "studio",
+                    "--host",
+                    "localhost",
+                    "--port",
+                    "8765",
+                    "--no-browser",
+                ]
+            )
+
+        self.assertEqual(exit_code, 0)
+        launch.assert_called_once_with(
+            host="localhost",
+            port=8765,
+            inbrowser=False,
+        )
+
     def test_run_rejects_category_without_matches(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

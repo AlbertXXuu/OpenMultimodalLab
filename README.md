@@ -1,4 +1,10 @@
-# OpenMultimodalLab
+<p align="center">
+  <img src="docs/assets/ailumetra-wordmark.svg" width="320" alt="Ailumetra wordmark">
+</p>
+
+# Ailumetra
+
+**OpenMultimodalLab is the open-source benchmark engine behind Ailumetra.**
 
 [![CI](https://github.com/AlbertXXuu/OpenMultimodalLab/actions/workflows/ci.yml/badge.svg)](https://github.com/AlbertXXuu/OpenMultimodalLab/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB)
@@ -156,6 +162,26 @@ python3.11 -m venv .venv
 
 The `mock` backend verifies infrastructure only. Do not use its score as a
 model-quality result.
+
+## Ailumetra Studio
+
+Ailumetra Studio adds an optional, polished local interface without changing
+the reproducible CLI workflow. It provides a one-input model Playground and a
+read-only report explorer while keeping formal benchmark evidence separate.
+Run it inside an existing Python 3.11/3.12 model environment; the Studio extra
+installs the interface, not the selected model backend or a CUDA-enabled
+PyTorch build.
+
+```powershell
+.\.venv-ml\Scripts\python.exe -m pip install -e ".[studio]"
+.\.venv-ml\Scripts\oml.exe doctor --backend qwen3-vl
+.\.venv-ml\Scripts\oml.exe studio
+```
+
+The Studio listens on `127.0.0.1`, disables public sharing and analytics, and
+serializes model calls for an 8 GB GPU. Playground responses are explicitly
+unscored; use `oml run` for durable, comparable evidence. See the
+[Studio guide and security boundary](docs/ailumetra-studio.md).
 
 ## Run a real local model
 

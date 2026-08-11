@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 160" role="img" aria-labelledby="title desc">
+  <title id="title">Ailumetra wordmark</title>
+  <desc id="desc">The Ailumetra name set in a clean sans-serif typeface.</desc>
+  <style>
+    .name { fill: #0f172a; font: 700 76px Arial, Helvetica, sans-serif; letter-spacing: -2px; }
+    .signal { fill: #475569; font: 600 18px Arial, Helvetica, sans-serif; letter-spacing: 7px; }
+    @media (prefers-color-scheme: dark) {
+      .name { fill: #e7edf6; }
+      .signal { fill: #94a3b8; }
+    }
+  </style>
+  <text class="name" x="20" y="88">Ailumetra</text>
+  <text class="signal" x="24" y="126">MULTIMODAL EVIDENCE</text>
+</svg>

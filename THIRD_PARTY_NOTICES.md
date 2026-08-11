@@ -11,6 +11,13 @@ packages or model weights.
 
 ## Optional Python runtime
 
+The post-v1.0 Ailumetra Studio extra uses Gradio as a separately installed UI
+dependency. The development environment verified Gradio 6.22.0, whose package
+metadata declares Apache-2.0. It is not vendored, bundled, or part of the
+historical v1.0.0 runtime snapshot. A future release must refresh the complete
+runtime-license audit and constraints rather than treating this note as release
+evidence.
+
 The following values come from the installed package metadata in the verified
 Python 3.11 model environment:
 
