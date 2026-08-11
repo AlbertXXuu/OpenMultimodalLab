@@ -22,6 +22,9 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Restyle Ailumetra Studio with an explicit light theme, white surfaces,
+  accessible dark text, and restrained blue-teal accents across desktop and
+  mobile layouts.
 - Apply standards-compliant JSON parsing to datasets, run records, resume
   state, run manifests, and the repository audit (`NaN`/`Infinity` are
   rejected).
