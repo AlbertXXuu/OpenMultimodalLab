@@ -292,7 +292,7 @@ body, .gradio-container {
 .studio-shell { margin-left: auto; margin-right: auto; }
 #ailumetra-header {
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-  margin: 18px 4px 10px; padding: 12px 16px;
+  margin: 18px 4px 10px; padding: 16px 20px;
   border: 1px solid var(--ail-border); border-radius: 16px;
   background: rgba(255,255,255,.9); backdrop-filter: blur(16px);
   box-shadow: 0 14px 42px rgba(15,23,42,.08);
@@ -302,9 +302,10 @@ body, .gradio-container {
   background: transparent; color: inherit; cursor: pointer;
   font-family: Arial, Helvetica, ui-sans-serif, sans-serif; }
 .brand-wordmark:focus-visible { outline: 2px solid var(--ail-teal); outline-offset: 3px; }
-.brand-name { font-size: 22px; line-height: 1; font-weight: 700; letter-spacing: -.035em; }
-.brand-product { color: var(--ail-muted); font-size: 9px; font-weight: 600;
-  letter-spacing: .28em; margin-top: 6px; }
+.brand-name { font-size: clamp(36px,3.8vw,52px); line-height: .92;
+  font-weight: 700; letter-spacing: -.045em; }
+.brand-product { color: var(--ail-muted); font-size: 10px; font-weight: 650;
+  letter-spacing: .3em; margin-top: 9px; }
 .header-tagline { color: #475569; font-size: 13px; letter-spacing: .02em; }
 .local-badge { justify-self: end; display: inline-flex; align-items: center; gap: 7px;
   color: #0f766e; font-size: 12px; font-weight: 650; padding: 7px 10px;

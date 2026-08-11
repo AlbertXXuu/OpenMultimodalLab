@@ -287,6 +287,10 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertNotIn("--ail-bg: #070b12", STUDIO_CSS)
         self.assertNotIn("--ail-panel: #0d1420", STUDIO_CSS)
 
+    def test_studio_wordmark_is_intentionally_prominent(self) -> None:
+        self.assertIn("font-size: clamp(36px,3.8vw,52px)", STUDIO_CSS)
+        self.assertNotIn(".brand-name { font-size: 22px", STUDIO_CSS)
+
     def test_safe_error_redacts_absolute_paths(self) -> None:
         local_path = "C:" + "\\Users\\Albert\\secret.png"
         result = safe_studio_error(ValueError(local_path))

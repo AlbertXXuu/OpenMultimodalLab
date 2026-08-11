@@ -22,6 +22,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Increase the Ailumetra Studio header wordmark size while preserving the
+  responsive local-status layout.
 - Restyle Ailumetra Studio with an explicit light theme, white surfaces,
   accessible dark text, and restrained blue-teal accents across desktop and
   mobile layouts.
