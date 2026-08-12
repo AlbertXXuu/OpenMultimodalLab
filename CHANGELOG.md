@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Add a reproducible 1280×640 Ailumetra social preview, truthful bilingual
+  launch drafts, an external-feedback measurement plan, and an IP/brand
+  readiness checklist that avoids unverified ownership or registration claims.
 - Add the optional, local-only Ailumetra Studio with an unscored single-media
   playground, read-only JSONL report explorer, bounded uploads, serialized GPU
   access, and the developer signal `ALONICA`.

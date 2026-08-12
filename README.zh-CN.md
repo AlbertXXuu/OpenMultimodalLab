@@ -309,5 +309,9 @@ revision、许可证、安装路径、已验证硬件、Adapter 契约测试和�
 各自许可证，不在本仓库分发。详见
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
+Apache-2.0 不会授予超出其第 6 条范围的项目名称或商标使用权。当前品牌保护
+状态，以及提出更强公开权利声明前必须由所有者确认的事项，记录在
+[知识产权与品牌准备清单](docs/ip-and-brand-readiness.md)中。
+
 项目不承诺 Star 数，也不会把计划中的用户写成真实采用。可复现证据、可用
 文档和外部反馈才是有效指标。

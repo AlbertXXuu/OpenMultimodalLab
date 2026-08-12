@@ -346,6 +346,11 @@ Project code and project-generated synthetic media use Apache-2.0. Model
 weights and optional runtime dependencies retain their own licenses and are
 not distributed in this repository. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
+Apache-2.0 does not grant project-name or trademark rights beyond the limits
+in its Section 6. The current brand posture and owner decisions that must
+precede stronger public claims are recorded in
+[IP and brand readiness](docs/ip-and-brand-readiness.md).
+
 This project does not promise a Star count or present planned users as real
 adoption. Reproducible evidence, usable documentation, and external feedback
 are the measures that matter.
