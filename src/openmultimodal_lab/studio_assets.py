@@ -463,8 +463,9 @@ body, .gradio-container {
 .brand-name { display: inline-flex; align-items: baseline; font-size: clamp(40px,3.8vw,54px);
   line-height: .82; font-weight: 620; font-stretch: 92%; letter-spacing: -.065em; }
 .brand-ai { display: inline-block; text-transform: uppercase; font-weight: 700;
-  font-stretch: 86%; letter-spacing: -.105em; padding-right: .09em;
-  color: var(--ail-blue); }
+  font-stretch: 86%; letter-spacing: -.105em; margin-right: -.045em;
+  color: transparent; background: linear-gradient(120deg, #60a5fa 0%, #3b82f6 52%, #2563eb 100%);
+  background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .brand-rest { font-weight: 620; }
 .brand-product { color: var(--ail-muted); font-size: 10px; font-weight: 650;
   letter-spacing: .3em; margin-top: 11px; padding-left: 2px; }

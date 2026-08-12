@@ -110,10 +110,11 @@ The interface enables Instrument Sans stylistic set 02 so lowercase `a` uses
 one consistent single-storey construction. Headings, body copy, controls, and
 evidence figures share the same family; evidence figures use tabular numerals,
 while only literal code and local paths retain an explicit monospace face. The
-wordmark visually capitalizes the existing `Ai` characters as a compact,
-solid-cobalt `AI` accent without changing the accessible or public name
-`Ailumetra`. Chinese text follows the embedded Latin face with professional
-platform CJK fallbacks.
+wordmark visually capitalizes the existing `Ai` characters as a compact `AI`
+accent without changing the accessible or public name `Ailumetra`. Its
+light-blue-to-blue gradient and optically tightened join to `lumetra` are
+shared by the Studio header and portable README artwork. Chinese text follows
+the embedded Latin face with professional platform CJK fallbacks.
 The README wordmark stores the same selected glyphs as SVG outlines, so its
 appearance remains identical on GitHub without requiring a local font install.
 
@@ -123,10 +124,11 @@ accessibility, licensing, or rendering defect and after an explicit brand
 decision plus desktop and mobile visual regression review.
 
 The interface palette uses white surfaces, dark ink, and a cobalt-led accent.
-Gradients are intentionally limited to the hero emphasis and primary action:
-both begin in blue and move through indigo toward violet. The wordmark, cards,
-status indicators, evidence figures, and page background remain solid. Green
-is not part of the Studio brand palette.
+The hero emphasis and primary action both begin in blue and move through
+indigo toward violet. The `AI` wordmark accent uses a separate
+light-blue-to-blue gradient; cards, status indicators, evidence figures, and
+the page background remain solid. Green is not part of the Studio brand
+palette.
 
 ## 中文说明
 
