@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 150" role="img" aria-labelledby="title desc">
   <title id="title">Ailumetra wordmark</title>
-  <desc id="desc">Ailumetra in Instrument Sans outlines, with a balanced cobalt AI accent.</desc>
+  <desc id="desc">Ailumetra in Instrument Sans outlines, with a compact light-blue AI gradient accent.</desc>
   <style>
-    .ai { fill: #2563eb; }
+    .ai { fill: url(#ai-gradient); }
     .name { fill: #0f172a; }
     .signal { fill: #475569; }
     @media (prefers-color-scheme: dark) {
@@ -11,6 +11,11 @@
     }
   </style>
   <defs>
+    <linearGradient id="ai-gradient" x1="0%" y1="0%" x2="100%" y2="70%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="52%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
     <path id="ai-A" d="M17.076416015625 0 207.57147216796875 720H323.993408203125L158.537109375 0ZM426.79852294921875 0 261.7652587890625 720H386.49505615234375L576.9901123046875 0ZM131.1517333984375 270.9224853515625H457.83837890625V156.692138671875H131.1517333984375Z"/>
     <path id="ai-I" d="M50 0V720H197.076416015625V0Z"/>
     <path id="rest-l" d="M59.999267578125 0V720H187.3323974609375V0Z"/>
@@ -40,7 +45,7 @@
     <g class="ai">
       <use href="#ai-I" x="489"/>
     </g>
-    <g class="name" transform="translate(826 0)">
+    <g class="name" transform="translate(690 0)">
       <use href="#rest-l" x="0"/>
       <use href="#rest-u" x="182"/>
       <use href="#rest-m" x="670"/>

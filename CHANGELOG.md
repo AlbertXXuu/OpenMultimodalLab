@@ -36,6 +36,8 @@ All notable changes to this project will be documented in this file.
   Instrument Sans variable font with its OFL notice, coordinated weights and
   spacing, a single-storey lowercase `a`, tabular evidence figures, and a
   balanced `AI` wordmark treatment across desktop and mobile layouts.
+- Refine the `AI` wordmark accent with a lighter blue-only gradient and a
+  tighter optical join to `lumetra` in both Studio and the README artwork.
 - Apply standards-compliant JSON parsing to datasets, run records, resume
   state, run manifests, and the repository audit (`NaN`/`Infinity` are
   rejected).

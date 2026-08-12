@@ -311,8 +311,10 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn('class="brand-ai">Ai</span>', BRAND_HEADER_HTML)
         self.assertIn("text-transform: uppercase", STUDIO_CSS)
         self.assertIn("font-variant-numeric: tabular-nums", STUDIO_CSS)
-        self.assertEqual(STUDIO_CSS.count("linear-gradient"), 2)
+        self.assertEqual(STUDIO_CSS.count("linear-gradient"), 3)
         self.assertIn("var(--ail-blue) 0%", STUDIO_CSS)
+        self.assertIn("#60a5fa 0%", STUDIO_CSS)
+        self.assertIn("margin-right: -.045em", STUDIO_CSS)
         self.assertNotIn("#0f766e", STUDIO_CSS)
         self.assertNotIn("--ail-teal", STUDIO_CSS)
         self.assertNotIn(
@@ -349,6 +351,9 @@ class StudioRuntimeTests(unittest.TestCase):
 
         self.assertIn("Instrument Sans outlines", wordmark)
         self.assertGreaterEqual(wordmark.count('class="ai"'), 2)
+        self.assertIn('id="ai-gradient"', wordmark)
+        self.assertIn('stop-color="#60a5fa"', wordmark)
+        self.assertIn('transform="translate(690 0)"', wordmark)
         self.assertNotIn("teal", wordmark.casefold())
         self.assertGreater(wordmark.count("<path"), 10)
         self.assertNotIn("<text", wordmark)
