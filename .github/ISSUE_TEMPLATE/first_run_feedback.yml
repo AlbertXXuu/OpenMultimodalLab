@@ -1,0 +1,73 @@
+name: First-run feedback
+description: Tell us what worked, what blocked you, and what should improve.
+title: "[First run]: "
+labels:
+  - feedback
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for trying Ailumetra. A successful run and a blocked run are both useful evidence. Do not paste API keys, private media, usernames, or absolute local paths.
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: Outcome
+      options:
+        - Completed a Studio model run
+        - Completed a CLI benchmark run
+        - Installed, but could not complete a run
+        - Could not install
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python version, GPU model and VRAM. Do not include your username or local paths.
+      placeholder: Windows 11, Python 3.11, RTX 4060 Laptop GPU 8 GB
+    validations:
+      required: true
+  - type: dropdown
+    id: interface
+    attributes:
+      label: Interface used
+      options:
+        - Ailumetra Studio
+        - oml CLI
+        - Both
+    validations:
+      required: true
+  - type: textarea
+    id: command_or_flow
+    attributes:
+      label: Command or UI flow
+      description: Show the minimal steps that reproduce the result. Redact local paths.
+      placeholder: oml studio --backend qwen3-vl, then uploaded one JPEG and selected Run locally.
+    validations:
+      required: true
+  - type: textarea
+    id: worked
+    attributes:
+      label: What worked well?
+    validations:
+      required: true
+  - type: textarea
+    id: friction
+    attributes:
+      label: What was confusing or blocked you?
+      description: Include the safe error text or a redacted screenshot if relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: improvement
+    attributes:
+      label: One improvement you would value most
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed secrets, private media, usernames, and absolute local paths.
+          required: true

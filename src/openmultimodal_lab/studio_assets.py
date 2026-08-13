@@ -140,10 +140,31 @@ OVERVIEW_HTML = """
 
 
 PLAYGROUND_INTRO_HTML = """
-<section class="tab-intro">
-  <div><span class="eyebrow">PLAYGROUND</span><h2>Ask one local model</h2></div>
-  <p>This is an unscored interactive inference, not a formal benchmark result.</p>
+<section class="tab-intro workspace-intro">
+  <div><span class="eyebrow">LOCAL WORKSPACE</span><h2>Media in. Evidence out.</h2></div>
+  <div class="workspace-steps" aria-label="Workspace sequence">
+    <span><b>1</b> Choose model</span><span><b>2</b> Add media</span>
+    <span><b>3</b> Ask</span><span><b>4</b> Inspect</span>
+  </div>
 </section>
+""".strip()
+
+
+WORKSPACE_INPUT_HEADER_HTML = """
+<header class="workspace-panel-header">
+  <div><span class="panel-index">01</span><span class="eyebrow">INPUT</span>
+    <h3>Configure a local run</h3></div>
+  <span class="panel-note">One media input</span>
+</header>
+""".strip()
+
+
+WORKSPACE_OUTPUT_HEADER_HTML = """
+<header class="workspace-panel-header">
+  <div><span class="panel-index">02</span><span class="eyebrow">OUTPUT</span>
+    <h3>Response and runtime evidence</h3></div>
+  <span class="panel-note">Unscored preview</span>
+</header>
 """.strip()
 
 
@@ -414,7 +435,8 @@ body, .gradio-container {
   font-synthesis: none;
 }
 .gradio-container {
-  max-width: 1480px !important; margin: 0 auto !important;
+  width: 100% !important; max-width: 1560px !important; margin: 0 auto !important;
+  padding-inline: 18px !important;
   --body-background-fill: var(--ail-bg);
   --body-text-color: var(--ail-text);
   --body-text-color-subdued: var(--ail-muted);
@@ -447,6 +469,15 @@ body, .gradio-container {
 .gradio-container button[role="tab"][aria-selected="true"] {
   color: var(--ail-blue) !important;
 }
+#studio-tabs > .tab-nav, #studio-tabs > div:first-child {
+  border: 1px solid var(--ail-border); border-radius: 14px;
+  background: rgba(255,255,255,.94); padding: 4px;
+  box-shadow: 0 10px 30px rgba(15,23,42,.055);
+}
+#studio-tabs button[role="tab"] { border-radius: 10px !important; min-height: 40px; }
+#studio-tabs button[role="tab"][aria-selected="true"] {
+  background: var(--ail-blue-soft) !important;
+}
 .studio-shell { margin-left: auto; margin-right: auto; }
 #ailumetra-header {
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
@@ -473,7 +504,7 @@ body, .gradio-container {
 .local-badge { justify-self: end; display: inline-flex; align-items: center; gap: 7px;
   color: var(--ail-blue-strong); font-size: 12px; font-weight: 650; padding: 7px 10px;
   border: 1px solid rgba(37,99,235,.2); background: var(--ail-blue-soft);
-  border-radius: 999px; }
+  border-radius: 999px; white-space: nowrap; }
 .local-badge span, .run-status > span { width: 7px; height: 7px; border-radius: 50%;
   background: var(--ail-blue); box-shadow: 0 0 10px rgba(37,99,235,.32); }
 .developer-signal { position: fixed; z-index: 99999; top: 50%; left: 50%;
@@ -553,8 +584,37 @@ body, .gradio-container {
 .workflow-grid h3 { margin: 16px 0 8px; font-size: 16px; }
 .workflow-grid p { margin: 0; color: var(--ail-muted); font-size: 12px; line-height: 1.6; }
 .tab-intro { display: flex; align-items: end; justify-content: space-between; gap: 20px;
-  padding: 18px 6px 10px; }
+  padding: 18px 6px 12px; }
 .tab-intro p { color: var(--ail-muted); font-size: 12px; }
+.workspace-intro { align-items: center; }
+.workspace-steps { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; }
+.workspace-steps span { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px;
+  border: 1px solid var(--ail-border); border-radius: 999px; background: #fff;
+  color: #64748b; font-size: 10px; white-space: nowrap; }
+.workspace-steps b { display: inline-grid; place-items: center; width: 17px; height: 17px;
+  border-radius: 50%; background: var(--ail-blue-soft); color: var(--ail-blue-strong);
+  font-size: 9px; font-weight: 700; }
+.studio-workspace { align-items: stretch !important; gap: 14px !important; }
+.workspace-panel { min-width: 0; padding: 18px !important; border: 1px solid var(--ail-border);
+  border-radius: 22px; background: #fff; box-shadow: 0 18px 46px rgba(15,23,42,.07); }
+.workspace-panel-header { display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 14px; min-height: 58px; margin: 0 0 14px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--ail-border); }
+.workspace-panel-header > div { display: grid; grid-template-columns: auto 1fr; align-items: center;
+  gap: 0 9px; }
+.workspace-panel-header h3 { grid-column: 1 / -1; margin: 8px 0 0; color: var(--ail-text);
+  font-size: 18px; font-weight: 650; font-stretch: 95%; letter-spacing: -.025em; }
+.panel-index { display: inline-grid; place-items: center; width: 24px; height: 24px;
+  border-radius: 8px; background: var(--ail-blue-soft); color: var(--ail-blue-strong);
+  font-size: 10px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.panel-note { padding: 6px 8px; border-radius: 8px; background: #f8fafc;
+  color: #64748b; font-size: 9px; font-weight: 650; letter-spacing: .05em;
+  text-transform: uppercase; white-space: nowrap; }
+.generation-controls { border: 1px solid var(--ail-border) !important; border-radius: 12px !important;
+  background: #f8fafc !important; }
+.workspace-actions { align-items: center !important; }
+.workspace-output #studio-response textarea { min-height: 350px !important; line-height: 1.62; }
+.workspace-output .metric-panel { margin-top: 4px; }
 .media-guidance { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 9px;
   margin: 2px 0 9px; padding: 9px 11px; border: 1px solid rgba(37,99,235,.14);
   border-radius: 10px; background: #f8fafc; color: var(--ail-muted); font-size: 10px;
@@ -566,13 +626,14 @@ body, .gradio-container {
 .media-guidance.warning strong { color: #92400e; }
 .media-guidance.compatible { border-color: rgba(37,99,235,.2); background: var(--ail-blue-soft); }
 .media-guidance.compatible strong { color: var(--ail-blue-strong); }
-.studio-media-input { min-height: 260px; overflow: hidden; background: #f8fafc !important; }
+.studio-media-input { min-height: 230px; overflow: hidden; background: #f8fafc !important;
+  border-radius: 14px !important; }
 .studio-media-input img, .studio-media-input video {
   display: block; width: 100% !important; height: auto !important;
-  min-height: 0 !important; max-height: 420px !important;
+  min-height: 0 !important; max-height: 360px !important;
   margin: auto; object-fit: contain !important; background: #f8fafc;
 }
-.metric-panel { padding: 24px; border-radius: 18px; min-height: 250px; }
+.metric-panel { padding: 22px; border-radius: 16px; min-height: 215px; }
 .metric-panel h3 { margin: 8px 0 0; font-size: 17px; letter-spacing: -.018em; }
 .empty-state { display: flex; flex-direction: column; justify-content: center; }
 .empty-state p { color: var(--ail-muted); max-width: 450px; line-height: 1.6; font-size: 12px; }
@@ -614,17 +675,25 @@ body, .gradio-container {
   .model-lane { grid-template-columns: 1fr 1fr; }
   .status-cell { justify-self: start; }
   .workflow-grid { grid-template-columns: 1fr; }
+  .studio-workspace { flex-direction: column !important; }
+  .workspace-panel { width: 100% !important; }
+  .workspace-output #studio-response textarea { min-height: 300px !important; }
 }
 @media (max-width: 620px) {
+  .gradio-container { padding-inline: 10px !important; }
   #ailumetra-header { margin-top: 8px; }
   .brand-name { font-size: 36px; }
-  .local-badge { font-size: 0; }
-  .local-badge span { margin: 3px; }
+  .local-badge { gap: 5px; padding: 6px 8px; font-size: 10px; }
   .hero-panel { min-height: 300px; padding: 38px 25px; }
   .hero-panel h1 { font-size: 40px; }
   .proof-grid, .live-grid { grid-template-columns: 1fr; }
   .model-lane { grid-template-columns: 1fr; gap: 10px; }
   .tab-intro, .section-heading { align-items: flex-start; flex-direction: column; }
+  .workspace-steps { justify-content: flex-start; }
+  .workspace-steps span { padding: 6px 8px; }
+  .workspace-panel { padding: 13px !important; border-radius: 17px; }
+  .workspace-panel-header { min-height: 0; }
+  .panel-note { display: none; }
   .studio-media-input { min-height: 220px; }
   .studio-media-input img, .studio-media-input video { max-height: 360px !important; }
 }

@@ -65,9 +65,12 @@ FORMAL_RESULTS = (
 REQUIRED_DOCUMENTS = (
     "README.md",
     "README.zh-CN.md",
+    "CITATION.cff",
     "CONTRIBUTING.md",
+    "NOTICE",
     "SECURITY.md",
     "THIRD_PARTY_NOTICES.md",
+    "TRADEMARKS.md",
     "docs/01-goals-and-success.md",
     "docs/03-architecture.md",
     "docs/06-quality-and-open-source.md",

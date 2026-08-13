@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Add a reproducible 1280×640 Ailumetra social preview, truthful bilingual
+  launch drafts, an external-feedback measurement plan, and an IP/brand
+  readiness checklist that avoids unverified ownership or registration claims.
 - Add the optional, local-only Ailumetra Studio with an unscored single-media
   playground, read-only JSONL report explorer, bounded uploads, serialized GPU
   access, and the developer signal `ALONICA`.
@@ -29,6 +32,14 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Make the Studio Workspace the default surface, move preserved project context
+  to a trailing About tab, and rebalance the rounded input/output panels,
+  media preview, response area, advanced controls, and responsive layout.
+- Record AlbertXXuu as the public project attribution and Ailumetra trademark
+  claimant, with ALONICA documented only as a developer ID; add NOTICE,
+  TRADEMARKS, and citation metadata without claiming registration.
+- Add a privacy-aware first-run feedback template so external adoption can
+  become reproducible product evidence instead of an unstructured comment.
 - Restyle Ailumetra Studio with an explicit light theme, white surfaces,
   accessible dark text, and restrained blue-to-violet gradients limited to
   hero emphasis and primary actions across desktop and mobile layouts.

@@ -166,8 +166,11 @@ model-quality result.
 ## Ailumetra Studio
 
 Ailumetra Studio adds an optional, polished local interface without changing
-the reproducible CLI workflow. It provides a one-input model Playground and a
-read-only report explorer while keeping formal benchmark evidence separate.
+the reproducible CLI workflow. It opens directly into a one-input Workspace
+with model controls, media, response, and live runtime evidence; Reports and
+the project About view follow behind it. Formal benchmark evidence remains
+separate.
+
 Run it inside an existing Python 3.11/3.12 model environment; the Studio extra
 installs the interface, not the selected model backend or a CUDA-enabled
 PyTorch build.
@@ -179,7 +182,7 @@ PyTorch build.
 ```
 
 The Studio listens on `127.0.0.1`, disables public sharing and analytics, and
-serializes model calls for an 8 GB GPU. Playground responses are explicitly
+serializes model calls for an 8 GB GPU. Workspace responses are explicitly
 unscored; use `oml run` for durable, comparable evidence. See the
 [Studio guide and security boundary](docs/ailumetra-studio.md).
 
@@ -340,11 +343,28 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) for the full checklist.
 Sensitive vulnerabilities follow [SECURITY.md](SECURITY.md), not a public bug
 report.
 
+Trying the project for the first time is also a contribution. Share a
+[structured first-run report](https://github.com/AlbertXXuu/OpenMultimodalLab/issues/new?template=first_run_feedback.yml)
+with your environment, the path you tried, what worked, and the single most
+valuable improvement. Remove secrets, private media, usernames, and absolute
+local paths before posting.
+
 ## License
 
 Project code and project-generated synthetic media use Apache-2.0. Model
 weights and optional runtime dependencies retain their own licenses and are
 not distributed in this repository. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+Apache-2.0 does not grant project-name or trademark rights beyond the limits
+in its Section 6. The current brand posture and owner decisions that must
+precede stronger public claims are recorded in
+[IP and brand readiness](docs/ip-and-brand-readiness.md).
+
+Copyright and project attribution: **AlbertXXuu**. `Ailumetra` and the
+Ailumetra wordmark are unregistered project trademarks claimed by
+AlbertXXuu; `ALONICA` is the developer ID used in selected project surfaces,
+not a separate company or legal owner. See [TRADEMARKS.md](TRADEMARKS.md) and
+[NOTICE](NOTICE).
 
 This project does not promise a Star count or present planned users as real
 adoption. Reproducible evidence, usable documentation, and external feedback
