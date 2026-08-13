@@ -34,12 +34,15 @@ from openmultimodal_lab.studio import (
     select_media,
 )
 from openmultimodal_lab.studio_assets import (
+    AILUMETRA_WORDMARK_SHA256,
     BRAND_HEADER_HTML,
+    CLEARED_STATUS_HTML,
     EASTER_EGG_JS,
+    EMPTY_METRICS_HTML,
+    EMPTY_STATUS_HTML,
     IMAGE_UPLOAD_GUIDANCE_HTML,
     INSTRUMENT_SANS_REVISION,
     INSTRUMENT_SANS_SHA256,
-    PLAYGROUND_INTRO_HTML,
     STUDIO_CSS,
     VIDEO_UPLOAD_GUIDANCE_HTML,
     WORKSPACE_INPUT_HEADER_HTML,
@@ -49,6 +52,7 @@ from openmultimodal_lab.studio_assets import (
     render_video_upload_info,
 )
 from openmultimodal_lab.studio_ui import (
+    _clear_workspace,
     _inspect_video_upload,
     _open_report,
     _run_playground,
@@ -270,6 +274,15 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertEqual(text, "")
         self.assertEqual(rows, [])
 
+    def test_clear_workspace_removes_hidden_media_prompt_and_output(self) -> None:
+        cleared = _clear_workspace()
+
+        self.assertEqual(cleared[:4], (None, None, "", ""))
+        self.assertEqual(cleared[4], EMPTY_METRICS_HTML)
+        self.assertEqual(cleared[5], CLEARED_STATUS_HTML)
+        self.assertEqual(cleared[6], VIDEO_UPLOAD_GUIDANCE_HTML)
+        self.assertIn("remains warm", cleared[5])
+
     def test_ui_playground_wrapper_completes_with_mock_backend(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             media = self._media(Path(temp_dir))
@@ -293,6 +306,10 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn(STUDIO_NAME, combined)
         self.assertIn(STUDIO_TAGLINE, combined)
         self.assertIn(DEVELOPER_ID, combined)
+        self.assertIn("data:image/svg+xml;base64,", BRAND_HEADER_HTML)
+        self.assertIn('class="brand-wordmark-image"', BRAND_HEADER_HTML)
+        self.assertIn("width: clamp(150px,13.5vw,178px)", STUDIO_CSS)
+        self.assertNotIn("transform: translateY(-12px)", STUDIO_CSS)
         self.assertNotIn("<svg", BRAND_HEADER_HTML.casefold())
         self.assertIn("event.altKey", EASTER_EGG_JS)
         self.assertIn('event.key.toLowerCase() === "a"', EASTER_EGG_JS)
@@ -311,13 +328,11 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn('font-family: "Instrument Sans"', STUDIO_CSS)
         self.assertIn('--ail-font-sans: "Instrument Sans"', STUDIO_CSS)
         self.assertIn('font-feature-settings: "ss01" 1, "ss02" 1', STUDIO_CSS)
-        self.assertIn('class="brand-ai">Ai</span>', BRAND_HEADER_HTML)
+        self.assertNotIn('class="brand-ai"', BRAND_HEADER_HTML)
         self.assertIn("text-transform: uppercase", STUDIO_CSS)
         self.assertIn("font-variant-numeric: tabular-nums", STUDIO_CSS)
-        self.assertEqual(STUDIO_CSS.count("linear-gradient"), 3)
+        self.assertEqual(STUDIO_CSS.count("linear-gradient"), 2)
         self.assertIn("var(--ail-blue) 0%", STUDIO_CSS)
-        self.assertIn("#60a5fa 0%", STUDIO_CSS)
-        self.assertIn("margin-right: -.045em", STUDIO_CSS)
         self.assertNotIn("#0f766e", STUDIO_CSS)
         self.assertNotIn("--ail-teal", STUDIO_CSS)
         self.assertNotIn(
@@ -348,10 +363,23 @@ class StudioRuntimeTests(unittest.TestCase):
 
     def test_public_wordmark_uses_portable_font_outlines(self) -> None:
         project_root = Path(__file__).resolve().parents[1]
-        wordmark = (project_root / "docs/assets/ailumetra-wordmark.svg").read_text(
-            encoding="utf-8"
+        source = project_root / "docs/assets/ailumetra-wordmark.svg"
+        packaged = (
+            project_root
+            / "src/openmultimodal_lab/assets/brand/ailumetra-wordmark.svg.b64"
         )
+        source_bytes = source.read_bytes()
+        packaged_bytes = base64.b64decode(
+            "".join(packaged.read_text(encoding="ascii").split()),
+            validate=True,
+        )
+        wordmark = source_bytes.decode("utf-8")
 
+        self.assertEqual(packaged_bytes, source_bytes)
+        self.assertEqual(
+            hashlib.sha256(source_bytes).hexdigest(),
+            AILUMETRA_WORDMARK_SHA256,
+        )
         self.assertIn("Instrument Sans outlines", wordmark)
         self.assertGreaterEqual(wordmark.count('class="ai"'), 2)
         self.assertIn('id="ai-gradient"', wordmark)
@@ -373,21 +401,51 @@ class StudioRuntimeTests(unittest.TestCase):
 
     def test_workspace_is_function_first_and_visually_grouped(self) -> None:
         workspace = (
-            PLAYGROUND_INTRO_HTML
-            + WORKSPACE_INPUT_HEADER_HTML
+            WORKSPACE_INPUT_HEADER_HTML
             + WORKSPACE_OUTPUT_HEADER_HTML
             + STUDIO_CSS
         )
 
-        self.assertIn("LOCAL WORKSPACE", workspace)
-        self.assertIn("Media in. Evidence out.", workspace)
         self.assertIn("INPUT", workspace)
         self.assertIn("OUTPUT", workspace)
+        self.assertIn("Cold once · warm reuse", workspace)
         self.assertIn(".studio-workspace", STUDIO_CSS)
         self.assertIn(".workspace-panel", STUDIO_CSS)
-        self.assertIn("border-radius: 22px", STUDIO_CSS)
+        self.assertIn("::-webkit-scrollbar-button", STUDIO_CSS)
+        self.assertIn("display: none !important; width: 0 !important; height: 0 !important", STUDIO_CSS)
+        self.assertIn("border-radius: 20px", STUDIO_CSS)
+        self.assertIn("height: clamp(420px, calc(100vh - 165px), 860px)", STUDIO_CSS)
+        self.assertIn("#studio-tabs { margin-top: -34px !important; }", STUDIO_CSS)
+        self.assertIn("margin: 0 4px 7px !important", STUDIO_CSS)
+        self.assertIn("flex-wrap: nowrap !important", STUDIO_CSS)
+        self.assertIn(".workspace-panel > * { flex-shrink: 0", STUDIO_CSS)
+        self.assertIn("height: auto; overflow-y: visible", STUDIO_CSS)
+        self.assertNotIn(".startup-hint", STUDIO_CSS)
+        self.assertNotIn("workspace-steps", workspace)
+        self.assertIn("border-radius: 999px", STUDIO_CSS)
+        self.assertIn("#media-tabs", STUDIO_CSS)
+        self.assertIn('button[role="tab"]::after { display: none', STUDIO_CSS)
+        self.assertIn('.tab-container[role="tablist"]::after', STUDIO_CSS)
+        self.assertIn("box-shadow: none !important", STUDIO_CSS)
+        self.assertIn("#ailumetra-header", STUDIO_CSS)
+        self.assertIn("background: transparent; backdrop-filter: none", STUDIO_CSS)
+        self.assertIn(".workspace-panel .form", STUDIO_CSS)
         self.assertIn("width: 100% !important", STUDIO_CSS)
         self.assertNotIn(".local-badge { font-size: 0; }", STUDIO_CSS)
+
+    def test_run_status_explains_cold_and_warm_model_reuse(self) -> None:
+        self.assertIn("Cold start", EMPTY_STATUS_HTML)
+        self.assertIn("later runs reuse it", EMPTY_STATUS_HTML)
+        result = PlaygroundResult(
+            response_text="done",
+            latency_ms=100.0,
+            model_revision="revision-1",
+            backend="qwen3-vl",
+            media_kind="image",
+            usage={"output_tokens": 12, "max_new_tokens": 64},
+        )
+
+        self.assertIn("model is warm for the next run", render_success_status(result))
 
     def test_hevc_notice_explains_browser_model_compatibility_split(self) -> None:
         info = VideoUploadInfo(
@@ -509,6 +567,25 @@ class StudioGradioTests(unittest.TestCase):
                 tab_labels[:3],
                 ["Workspace", "Reports", "About"],
             )
+            clear_button = next(
+                item
+                for item in app.config["components"]
+                if item.get("type") == "button"
+                and item["props"].get("value") == "Clear"
+            )
+            prompt_component = next(
+                item
+                for item in app.config["components"]
+                if item.get("type") == "textbox"
+                and item["props"].get("label") == "Prompt"
+            )
+            clear_event = next(
+                item
+                for item in dependencies
+                if (clear_button["id"], "click") in item["targets"]
+            )
+            self.assertEqual(len(clear_event["outputs"]), 7)
+            self.assertIn(prompt_component["id"], clear_event["outputs"])
             image_components = [
                 item
                 for item in app.config["components"]

@@ -25,13 +25,13 @@ from .studio import (
 )
 from .studio_assets import (
     BRAND_HEADER_HTML,
+    CLEARED_STATUS_HTML,
     EASTER_EGG_JS,
     EMPTY_METRICS_HTML,
     EMPTY_REPORT_HTML,
     EMPTY_STATUS_HTML,
     IMAGE_UPLOAD_GUIDANCE_HTML,
     OVERVIEW_HTML,
-    PLAYGROUND_INTRO_HTML,
     REPORT_INTRO_HTML,
     STUDIO_CSS,
     VIDEO_UPLOAD_GUIDANCE_HTML,
@@ -131,6 +131,28 @@ def _inspect_video_upload(path_value: str | None) -> str:
     return render_video_upload_info(info)
 
 
+def _clear_workspace() -> tuple[
+    None,
+    None,
+    str,
+    str,
+    str,
+    str,
+    str,
+]:
+    """Clear all conversation inputs and outputs without unloading the model."""
+
+    return (
+        None,
+        None,
+        "",
+        "",
+        EMPTY_METRICS_HTML,
+        CLEARED_STATUS_HTML,
+        VIDEO_UPLOAD_GUIDANCE_HTML,
+    )
+
+
 def build_app(runtime: StudioRuntime | None = None) -> Any:
     """Build the local Studio without starting a network listener."""
 
@@ -146,7 +168,6 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
 
         with gr.Tabs(selected="workspace", elem_id="studio-tabs"):
             with gr.Tab("Workspace", id="workspace"):
-                gr.HTML(PLAYGROUND_INTRO_HTML)
                 with gr.Row(elem_classes="studio-workspace"):
                     with gr.Column(
                         scale=6,
@@ -161,11 +182,10 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                             ],
                             value="qwen3-vl",
                             label="Local backend",
-                            info="Switching backends releases the previous model.",
                             filterable=False,
                             elem_classes="studio-control",
                         )
-                        with gr.Tabs(selected="image-input"):
+                        with gr.Tabs(selected="image-input", elem_id="media-tabs"):
                             with gr.Tab("Image / document", id="image-input"):
                                 gr.HTML(IMAGE_UPLOAD_GUIDANCE_HTML)
                                 image_input = gr.Image(
@@ -174,7 +194,7 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                                     sources=["upload", "clipboard"],
                                     label="Image or document screenshot",
                                     buttons=["fullscreen"],
-                                    height=None,
+                                    height=210,
                                     elem_id="studio-image-input",
                                     elem_classes="studio-media-input",
                                 )
@@ -186,7 +206,7 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                                     sources=["upload"],
                                     label="Short video",
                                     buttons=["fullscreen"],
-                                    height=None,
+                                    height=210,
                                     include_audio=True,
                                     elem_id="studio-video-input",
                                     elem_classes="studio-media-input",
@@ -194,7 +214,7 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                         prompt = gr.Textbox(
                             value=DEFAULT_PROMPT,
                             label="Prompt",
-                            lines=4,
+                            lines=3,
                             max_lines=8,
                             max_length=PLAYGROUND_PROMPT_MAX_CHARS,
                             placeholder="Ask about visual content, text, layout, or motion...",
@@ -248,7 +268,7 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                         gr.HTML(WORKSPACE_OUTPUT_HEADER_HTML)
                         response = gr.Textbox(
                             label="Model response",
-                            lines=17,
+                            lines=10,
                             max_lines=30,
                             interactive=False,
                             buttons=["copy"],
@@ -282,17 +302,11 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                     queue=False,
                 )
                 clear_button.click(
-                    fn=lambda: (
-                        None,
-                        None,
-                        "",
-                        EMPTY_METRICS_HTML,
-                        EMPTY_STATUS_HTML,
-                        VIDEO_UPLOAD_GUIDANCE_HTML,
-                    ),
+                    fn=_clear_workspace,
                     outputs=[
                         image_input,
                         video_input,
+                        prompt,
                         response,
                         metrics,
                         status,

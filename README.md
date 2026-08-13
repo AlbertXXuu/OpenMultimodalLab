@@ -183,8 +183,10 @@ PyTorch build.
 
 The Studio listens on `127.0.0.1`, disables public sharing and analytics, and
 serializes model calls for an 8 GB GPU. Workspace responses are explicitly
-unscored; use `oml run` for durable, comparable evidence. See the
-[Studio guide and security boundary](docs/ailumetra-studio.md).
+unscored; the interface distinguishes the first cold model load from later
+warm reuse, and Clear resets both media tabs, the prompt, response, and metrics
+without unloading the model. Use `oml run` for durable, comparable evidence.
+See the [Studio guide and security boundary](docs/ailumetra-studio.md).
 
 ## Run a real local model
 
@@ -365,7 +367,3 @@ Ailumetra wordmark are unregistered project trademarks claimed by
 AlbertXXuu; `ALONICA` is the developer ID used in selected project surfaces,
 not a separate company or legal owner. See [TRADEMARKS.md](TRADEMARKS.md) and
 [NOTICE](NOTICE).
-
-This project does not promise a Star count or present planned users as real
-adoption. Reproducible evidence, usable documentation, and external feedback
-are the measures that matter.

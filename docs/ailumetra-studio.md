@@ -43,6 +43,21 @@ Only one queued model call runs at a time. When the backend changes, the old
 adapter is released before the next model loads, which keeps the interface
 practical on the verified 8 GB GPU profile.
 
+The Workspace opens directly into its Input and Output cards instead of
+repeating a marketing title and four-step guide. A compact note inside the
+Input card and the run status distinguish a **cold start** from **warm reuse**.
+The first request loads the selected model and can take substantially
+longer; after a successful request, Studio confirms that the model remains
+warm for the next run. Clearing media, prompt, and output does not unload that
+model. The unboxed brand row removes decorative framing above the Workspace;
+the primary navigation has no redundant divider, while its selected state,
+media selector, cards, and controls use a nested radius system. Media and response
+surfaces use compact, bounded default heights with aspect-safe previews,
+scrolling text, and full-screen media controls so the two working panels enter
+the initial laptop viewport without discarding content. On desktop, both cards
+stay equal-height and fully bounded in the viewport while their longer contents
+scroll independently; narrower layouts return to normal document scrolling.
+
 ### Workspace generation controls
 
 - **Max new tokens** is a hard output-length allowance, not a quality setting.
@@ -54,6 +69,9 @@ practical on the verified 8 GB GPU profile.
   Studio defaults to 300 seconds. Reducing it does not ask the model for a
   shorter answer; it makes a timeout failure more likely, especially on a cold
   first run.
+- **Clear** removes both media inputs (including a file retained in the hidden
+  image/video tab), the current prompt, response, metrics, and status. It does
+  not unload the active model, so the next run can still use the warm model.
 
 ## Local security boundary
 
@@ -114,10 +132,13 @@ while only literal code and local paths retain an explicit monospace face. The
 wordmark visually capitalizes the existing `Ai` characters as a compact `AI`
 accent without changing the accessible or public name `Ailumetra`. Its
 light-blue-to-blue gradient and optically tightened join to `lumetra` are
-shared by the Studio header and portable README artwork. Chinese text follows
-the embedded Latin face with professional platform CJK fallbacks.
-The README wordmark stores the same selected glyphs as SVG outlines, so its
-appearance remains identical on GitHub without requiring a local font install.
+shared by the Studio header and portable README artwork. The Studio embeds the
+same outlined SVG bytes used by the README, verifies them against SHA-256
+`9807f882dc58a9ac7c03ccba8ec8884503e8d1d6aa42525b969200cb14c6368e`,
+and does not reconstruct `AI` and `lumetra` with browser letter spacing.
+Chinese text follows the embedded Latin face with professional platform CJK
+fallbacks. Because the wordmark stores glyphs as SVG outlines, it remains
+identical on GitHub and in Studio without requiring a local font install.
 
 This font family, upstream revision, feature set, and wordmark construction are
 now a stable design contract. They should change only for a demonstrated
@@ -137,6 +158,15 @@ Ailumetra Studio 是 OpenMultimodalLab 的可选本地界面，不替代可复�
 `oml run` / `oml report` 流程。默认 Workspace 把模型、媒体、Prompt、回答和
 实时指标放在同一功能区；Reports 只读打开已有 JSONL 结果；About 后置展示
 已经保存的 v1.0.0 证据。单次 Workspace 结果不能当作正式模型排名。
+
+Workspace 在主导航后直接显示 Input/Output 卡片，不再重复宣传标题和四步提示。
+Input 卡片内的简短说明与运行状态会明确区分冷启动与热复用：第一次请求需要加载模型，成功后模型会
+留在显存中供下一次请求复用；Clear 只清空媒体、Prompt、回答和指标，不卸载
+模型。顶部品牌行取消装饰性大外框，主导航取消多余分隔线；选中状态、媒体分段
+控件和工作卡片采用统一的嵌套圆角层级，并压缩默认媒体与回答区域高度，使常见
+笔记本首屏能直接看到 Input/Output 工作区；
+桌面端两张卡片等高且外框完整留在视口内，较长内容在卡片内部滚动；窄屏恢复
+自然页面滚动。媒体仍按原始比例完整显示，长回答则在框内滚动。
 
 界面只能监听本机回环地址，关闭公开分享、监控和分析，并将 GPU 推理并发限制
 为 1。切换模型时会释放上一个模型，以适配已验证的 8 GB 消费级 GPU。公开

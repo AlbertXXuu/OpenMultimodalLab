@@ -14,8 +14,8 @@ the committed PNG is 1280×640 and remains below GitHub's 1 MB limit.
 
 Move from author-only validation to five independent, documented first runs.
 The primary signal is a completed install/run/report workflow plus one concrete
-piece of feedback. Stars, views, and impressions are secondary discovery
-signals, not proof that the software works for another person.
+piece of feedback. Repository traffic is useful for understanding discovery,
+but a documented first run is the adoption signal used to improve onboarding.
 
 Use the repository's
 [first-run feedback form](https://github.com/AlbertXXuu/OpenMultimodalLab/issues/new?template=first_run_feedback.yml)
@@ -45,7 +45,7 @@ Record only observable results once per week:
   report;
 - install failures and time to first successful report;
 - questions that recur across at least two independent users;
-- stars and forks as discovery context only.
+- repository traffic and referrals as discovery context.
 
 Do not identify a visitor as a user, treat a clone as a successful install, or
 write planned feedback as though it already happened.

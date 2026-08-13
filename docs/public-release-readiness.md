@@ -57,7 +57,7 @@ the owner authorized the formal `v1.0.0` GitHub Release on 2026-08-10. Full
 | Project/package/import/CLI/dataset/public version names | `docs/release-approvals.json` records the owner's 2026-08-09 approval | Proven |
 | Repository visibility | Owner approved publication on 2026-08-10; GitHub and anonymous HTTP checks report the repository as public | Proven |
 | Formal GitHub Release | Owner authorized `v1.0.0`; the tag and Release target the final green main commit | Proven |
-| Star/user claims | README explicitly refuses fabricated adoption claims | Proven truthful |
+| Adoption claims | README links only verified artifacts and a structured first-run feedback path | Proven truthful |
 
 ## Required final sequence
 

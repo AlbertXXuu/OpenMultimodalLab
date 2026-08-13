@@ -20,6 +20,9 @@ INSTRUMENT_SANS_REVISION = "7fa22308a3d0c94ee2b3cd537a1196b65db34a3e"
 INSTRUMENT_SANS_SHA256 = (
     "aa72922aafcc0dc18f36ec1d805b0212057dabe8b9d5b8b57f67035aea1b826d"
 )
+AILUMETRA_WORDMARK_SHA256 = (
+    "9807f882dc58a9ac7c03ccba8ec8884503e8d1d6aa42525b969200cb14c6368e"
+)
 
 
 def _instrument_sans_base64() -> str:
@@ -41,6 +44,25 @@ def _instrument_sans_base64() -> str:
     return encoded
 
 
+def _ailumetra_wordmark_base64() -> str:
+    payload = (
+        files("openmultimodal_lab")
+        .joinpath("assets/brand/ailumetra-wordmark.svg.b64")
+        .read_text(encoding="ascii")
+    )
+    encoded = "".join(payload.split())
+    try:
+        decoded = base64.b64decode(encoded, validate=True)
+    except (ValueError, TypeError) as exc:
+        raise RuntimeError("The bundled Ailumetra wordmark is corrupt.") from exc
+    if (
+        not decoded.lstrip().startswith(b"<svg")
+        or hashlib.sha256(decoded).hexdigest() != AILUMETRA_WORDMARK_SHA256
+    ):
+        raise RuntimeError("The bundled Ailumetra wordmark failed integrity check.")
+    return encoded
+
+
 _INSTRUMENT_SANS_FONT_FACE = f"""
 @font-face {{
   font-family: "Instrument Sans";
@@ -53,13 +75,13 @@ _INSTRUMENT_SANS_FONT_FACE = f"""
 """
 
 
-BRAND_HEADER_HTML = """
+BRAND_HEADER_HTML = f"""
 <header id="ailumetra-header" class="studio-shell">
   <button id="ailumetra-wordmark-button" class="brand-wordmark" type="button"
           aria-label="Ailumetra wordmark" title="Ailumetra">
-    <span class="brand-name" aria-hidden="true"><span class="brand-ai">Ai</span><span
-      class="brand-rest">lumetra</span></span>
-    <span class="brand-product">STUDIO</span>
+    <img class="brand-wordmark-image"
+         src="data:image/svg+xml;base64,{_ailumetra_wordmark_base64()}"
+         alt="" aria-hidden="true">
   </button>
   <div class="header-tagline">Measure multimodal AI. See clearly.</div>
   <div class="local-badge"><span aria-hidden="true"></span> Local only</div>
@@ -139,22 +161,11 @@ OVERVIEW_HTML = """
 """.strip()
 
 
-PLAYGROUND_INTRO_HTML = """
-<section class="tab-intro workspace-intro">
-  <div><span class="eyebrow">LOCAL WORKSPACE</span><h2>Media in. Evidence out.</h2></div>
-  <div class="workspace-steps" aria-label="Workspace sequence">
-    <span><b>1</b> Choose model</span><span><b>2</b> Add media</span>
-    <span><b>3</b> Ask</span><span><b>4</b> Inspect</span>
-  </div>
-</section>
-""".strip()
-
-
 WORKSPACE_INPUT_HEADER_HTML = """
 <header class="workspace-panel-header">
   <div><span class="panel-index">01</span><span class="eyebrow">INPUT</span>
     <h3>Configure a local run</h3></div>
-  <span class="panel-note">One media input</span>
+  <span class="panel-note">Cold once · warm reuse</span>
 </header>
 """.strip()
 
@@ -171,8 +182,7 @@ WORKSPACE_OUTPUT_HEADER_HTML = """
 IMAGE_UPLOAD_GUIDANCE_HTML = """
 <div class="media-guidance" role="note">
   <strong>Image boundary</strong>
-  <span>Up to 25 MiB. The preview preserves the original aspect ratio and never crops
-        the uploaded evidence.</span>
+  <span>Up to 25 MiB · aspect-safe preview · never crops the evidence.</span>
 </div>
 """.strip()
 
@@ -180,9 +190,8 @@ IMAGE_UPLOAD_GUIDANCE_HTML = """
 VIDEO_UPLOAD_GUIDANCE_HTML = """
 <div class="media-guidance" role="note">
   <strong>Short-video boundary</strong>
-  <span>Up to 50 MiB, 60 seconds, 3,600 frames, and 4K frame area. H.264 MP4 is best
-        for browser preview. If H.265/HEVC playback has sound but a still frame, the
-        model can still analyse it; use H.264 when moving browser preview matters.</span>
+  <span>Up to 50 MiB · 60 seconds · 3,600 frames · 4K. Prefer H.264 MP4 for moving
+        preview; H.265/HEVC may show a still frame but remains model-readable.</span>
 </div>
 """.strip()
 
@@ -252,7 +261,14 @@ EMPTY_METRICS_HTML = """
 
 
 EMPTY_STATUS_HTML = """
-<div class="run-status idle"><span></span>Ready · no model is loaded yet</div>
+<div class="run-status idle"><span></span><strong>Cold start</strong> · the first run
+loads the selected model; later runs reuse it</div>
+""".strip()
+
+
+CLEARED_STATUS_HTML = """
+<div class="run-status idle"><span></span>Cleared · inputs reset; any loaded model
+remains warm</div>
 """.strip()
 
 
@@ -344,12 +360,13 @@ def render_success_status(result: PlaygroundResult) -> str:
         return (
             '<div class="run-status warning"><span></span>'
             f"Completed, but reached the {token_limit}-token output limit; "
-            f"the final sentence may be truncated. {next_step}"
+            f"the final sentence may be truncated. The model remains warm. {next_step}"
             "</div>"
         )
     return (
         '<div class="run-status success"><span></span>'
-        f"Completed locally · {escape(result.media_kind)} · no quality score assigned"
+        f"Completed locally · <strong>model is warm for the next run</strong> · "
+        f"{escape(result.media_kind)} · no quality score assigned"
         "</div>"
     )
 
@@ -414,6 +431,10 @@ STUDIO_CSS = (_INSTRUMENT_SANS_FONT_FACE + """
   --ail-violet: #7c3aed;
   --ail-red: #dc2626;
   --ail-amber: #b45309;
+  --ail-radius-shell: 18px;
+  --ail-radius-card: 16px;
+  --ail-radius-control: 11px;
+  --ail-radius-inset: 9px;
 }
 html, body {
   color-scheme: light !important;
@@ -460,7 +481,7 @@ body, .gradio-container {
   --shadow-drop: 0 1px 2px rgba(15,23,42,.06);
   --shadow-drop-lg: 0 14px 38px rgba(15,23,42,.09);
 }
-.gradio-container .prose, .brand-name, .hero-panel h1,
+.gradio-container .prose, .hero-panel h1,
 .section-heading h2, .tab-intro h2, .comparison-panel strong,
 .workflow-grid h3, .metric-panel h3 { color: var(--ail-text) !important; }
 .gradio-container button[role="tab"] {
@@ -470,36 +491,48 @@ body, .gradio-container {
   color: var(--ail-blue) !important;
 }
 #studio-tabs > .tab-nav, #studio-tabs > div:first-child {
-  border: 1px solid var(--ail-border); border-radius: 14px;
-  background: rgba(255,255,255,.94); padding: 4px;
-  box-shadow: 0 10px 30px rgba(15,23,42,.055);
+  border: 0 !important; border-radius: 0;
+  background: transparent; padding: 0;
+  margin: 0 4px 7px !important; min-height: 34px;
+  box-shadow: none !important;
 }
-#studio-tabs button[role="tab"] { border-radius: 10px !important; min-height: 40px; }
+#studio-tabs { margin-top: -34px !important; }
+#studio-tabs button[role="tab"] {
+  border-radius: 999px !important; min-height: 34px; padding: 6px 16px !important;
+}
+#studio-tabs button[role="tab"]::after { display: none !important; }
+#studio-tabs > .tab-wrapper::after,
+#studio-tabs > .tab-wrapper::before { display: none !important; }
+#studio-tabs > .tab-wrapper > .tab-container[role="tablist"]::after {
+  display: none !important;
+}
 #studio-tabs button[role="tab"][aria-selected="true"] {
   background: var(--ail-blue-soft) !important;
 }
+#media-tabs > .tab-nav, #media-tabs > div:first-child {
+  width: 100%; margin: 0 0 8px !important; padding: 3px;
+  border: 1px solid var(--ail-border); border-radius: 12px;
+  background: #f8fafc; box-shadow: none;
+}
+#media-tabs button[role="tab"] {
+  min-height: 32px; padding: 5px 12px !important;
+  border-radius: var(--ail-radius-inset) !important;
+}
 .studio-shell { margin-left: auto; margin-right: auto; }
+#studio-brand-header { margin: 0 !important; padding: 0 !important; }
 #ailumetra-header {
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-  margin: 18px 4px 10px; padding: 12px 16px;
-  border: 1px solid var(--ail-border); border-radius: 16px;
-  background: rgba(255,255,255,.9); backdrop-filter: blur(16px);
-  box-shadow: 0 14px 42px rgba(15,23,42,.08);
+  margin: 2px 4px 4px; padding: 4px 8px;
+  border: 0; border-radius: 0;
+  background: transparent; backdrop-filter: none;
+  box-shadow: none;
 }
-.brand-wordmark { display: inline-flex; flex-direction: column; align-items: flex-start;
-  width: max-content; padding: 6px 8px; border: 0; border-radius: 10px;
+.brand-wordmark { display: inline-flex; align-items: center;
+  width: max-content; padding: 2px 4px; border: 0; border-radius: var(--ail-radius-control);
   background: transparent; color: inherit; cursor: pointer;
   font-family: var(--ail-font-sans); }
 .brand-wordmark:focus-visible { outline: 2px solid var(--ail-blue); outline-offset: 3px; }
-.brand-name { display: inline-flex; align-items: baseline; font-size: clamp(40px,3.8vw,54px);
-  line-height: .82; font-weight: 620; font-stretch: 92%; letter-spacing: -.065em; }
-.brand-ai { display: inline-block; text-transform: uppercase; font-weight: 700;
-  font-stretch: 86%; letter-spacing: -.105em; margin-right: -.045em;
-  color: transparent; background: linear-gradient(120deg, #60a5fa 0%, #3b82f6 52%, #2563eb 100%);
-  background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.brand-rest { font-weight: 620; }
-.brand-product { color: var(--ail-muted); font-size: 10px; font-weight: 650;
-  letter-spacing: .3em; margin-top: 11px; padding-left: 2px; }
+.brand-wordmark-image { display: block; width: clamp(150px,13.5vw,178px); height: auto; }
 .header-tagline { color: #475569; font-size: 13px; letter-spacing: .02em; }
 .local-badge { justify-self: end; display: inline-flex; align-items: center; gap: 7px;
   color: var(--ail-blue-strong); font-size: 12px; font-weight: 650; padding: 7px 10px;
@@ -583,22 +616,22 @@ body, .gradio-container {
   font-variant-numeric: tabular-nums; font-size: 11px; font-weight: 650; }
 .workflow-grid h3 { margin: 16px 0 8px; font-size: 16px; }
 .workflow-grid p { margin: 0; color: var(--ail-muted); font-size: 12px; line-height: 1.6; }
-.tab-intro { display: flex; align-items: end; justify-content: space-between; gap: 20px;
-  padding: 18px 6px 12px; }
+.tab-intro { display: flex; align-items: end; justify-content: space-between; gap: 16px;
+  padding: 6px 6px 7px; }
 .tab-intro p { color: var(--ail-muted); font-size: 12px; }
-.workspace-intro { align-items: center; }
-.workspace-steps { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; }
-.workspace-steps span { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px;
-  border: 1px solid var(--ail-border); border-radius: 999px; background: #fff;
-  color: #64748b; font-size: 10px; white-space: nowrap; }
-.workspace-steps b { display: inline-grid; place-items: center; width: 17px; height: 17px;
-  border-radius: 50%; background: var(--ail-blue-soft); color: var(--ail-blue-strong);
-  font-size: 9px; font-weight: 700; }
 .studio-workspace { align-items: stretch !important; gap: 14px !important; }
-.workspace-panel { min-width: 0; padding: 18px !important; border: 1px solid var(--ail-border);
-  border-radius: 22px; background: #fff; box-shadow: 0 18px 46px rgba(15,23,42,.07); }
+.gradio-container::-webkit-scrollbar-button,
+.gradio-container *::-webkit-scrollbar-button {
+  -webkit-appearance: none; display: none !important; width: 0 !important; height: 0 !important;
+}
+.workspace-panel { min-width: 0; padding: 16px !important; border: 1px solid var(--ail-border);
+  height: clamp(420px, calc(100vh - 165px), 860px); overflow-y: auto;
+  flex-wrap: nowrap !important;
+  scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent;
+  border-radius: 20px; background: #fff; box-shadow: 0 14px 38px rgba(15,23,42,.065); }
+.workspace-panel > * { flex-shrink: 0 !important; }
 .workspace-panel-header { display: flex; justify-content: space-between; align-items: flex-start;
-  gap: 14px; min-height: 58px; margin: 0 0 14px; padding-bottom: 14px;
+  gap: 14px; min-height: 52px; margin: 0 0 12px; padding-bottom: 12px;
   border-bottom: 1px solid var(--ail-border); }
 .workspace-panel-header > div { display: grid; grid-template-columns: auto 1fr; align-items: center;
   gap: 0 9px; }
@@ -613,7 +646,8 @@ body, .gradio-container {
 .generation-controls { border: 1px solid var(--ail-border) !important; border-radius: 12px !important;
   background: #f8fafc !important; }
 .workspace-actions { align-items: center !important; }
-.workspace-output #studio-response textarea { min-height: 350px !important; line-height: 1.62; }
+.workspace-actions button { border-radius: var(--ail-radius-control) !important; }
+.workspace-output #studio-response textarea { min-height: 300px !important; line-height: 1.62; }
 .workspace-output .metric-panel { margin-top: 4px; }
 .media-guidance { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 9px;
   margin: 2px 0 9px; padding: 9px 11px; border: 1px solid rgba(37,99,235,.14);
@@ -626,14 +660,15 @@ body, .gradio-container {
 .media-guidance.warning strong { color: #92400e; }
 .media-guidance.compatible { border-color: rgba(37,99,235,.2); background: var(--ail-blue-soft); }
 .media-guidance.compatible strong { color: var(--ail-blue-strong); }
-.studio-media-input { min-height: 230px; overflow: hidden; background: #f8fafc !important;
+.studio-media-input { height: 210px !important; min-height: 210px; overflow: hidden;
+  background: #f8fafc !important;
   border-radius: 14px !important; }
 .studio-media-input img, .studio-media-input video {
   display: block; width: 100% !important; height: auto !important;
   min-height: 0 !important; max-height: 360px !important;
   margin: auto; object-fit: contain !important; background: #f8fafc;
 }
-.metric-panel { padding: 22px; border-radius: 16px; min-height: 215px; }
+.metric-panel { padding: 18px; border-radius: var(--ail-radius-card); min-height: 190px; }
 .metric-panel h3 { margin: 8px 0 0; font-size: 17px; letter-spacing: -.018em; }
 .empty-state { display: flex; flex-direction: column; justify-content: center; }
 .empty-state p { color: var(--ail-muted); max-width: 450px; line-height: 1.6; font-size: 12px; }
@@ -654,12 +689,16 @@ body, .gradio-container {
 .runtime-foot strong, .runtime-foot code { color: #334155; }
 .run-status { display: flex; align-items: center; gap: 8px; padding: 10px 13px;
   border: 1px solid var(--ail-border); border-radius: 11px; color: var(--ail-muted); font-size: 11px; }
+.run-status strong { color: #334155; font-weight: 650; }
 .run-status.idle > span { background: #64748b; box-shadow: none; }
 .run-status.error { color: #b91c1c; border-color: rgba(220,38,38,.2); background: #fef2f2; }
 .run-status.error > span { background: var(--ail-red); box-shadow: 0 0 10px rgba(220,38,38,.32); }
 .run-status.warning { color: #92400e; border-color: rgba(180,83,9,.24); background: #fffbeb; }
 .run-status.warning > span { background: var(--ail-amber); box-shadow: 0 0 10px rgba(180,83,9,.25); }
 .gradio-container .form, .gradio-container .block { border-color: var(--ail-border) !important; }
+.workspace-panel .form, .workspace-panel .block {
+  border-radius: var(--ail-radius-control) !important;
+}
 .gradio-container button.primary { background: linear-gradient(105deg,var(--ail-blue) 0%,
   var(--ail-indigo) 100%) !important;
   color: #ffffff !important; border: 0 !important;
@@ -676,21 +715,30 @@ body, .gradio-container {
   .status-cell { justify-self: start; }
   .workflow-grid { grid-template-columns: 1fr; }
   .studio-workspace { flex-direction: column !important; }
-  .workspace-panel { width: 100% !important; }
+  .workspace-panel { width: 100% !important; height: auto; overflow-y: visible; }
   .workspace-output #studio-response textarea { min-height: 300px !important; }
+}
+@media (min-width: 941px) and (max-height: 850px) {
+  #ailumetra-header { margin-top: 0; padding-block: 2px; }
+  .brand-wordmark-image { width: 150px; }
+  .tab-intro { padding-top: 6px; padding-bottom: 6px; }
+  .workspace-panel { padding: 14px !important; }
+  .workspace-panel-header { min-height: 46px; margin-bottom: 10px; padding-bottom: 10px; }
+  .studio-media-input { height: 180px !important; min-height: 180px; }
+  .workspace-output #studio-response textarea { min-height: 220px !important; }
+  .metric-panel { min-height: 165px; padding: 16px; }
 }
 @media (max-width: 620px) {
   .gradio-container { padding-inline: 10px !important; }
-  #ailumetra-header { margin-top: 8px; }
-  .brand-name { font-size: 36px; }
+  #studio-tabs { margin-top: -6px !important; }
+  #ailumetra-header { margin-top: 2px; padding-inline: 2px; }
+  .brand-wordmark-image { width: 150px; }
   .local-badge { gap: 5px; padding: 6px 8px; font-size: 10px; }
   .hero-panel { min-height: 300px; padding: 38px 25px; }
   .hero-panel h1 { font-size: 40px; }
   .proof-grid, .live-grid { grid-template-columns: 1fr; }
   .model-lane { grid-template-columns: 1fr; gap: 10px; }
   .tab-intro, .section-heading { align-items: flex-start; flex-direction: column; }
-  .workspace-steps { justify-content: flex-start; }
-  .workspace-steps span { padding: 6px 8px; }
   .workspace-panel { padding: 13px !important; border-radius: 17px; }
   .workspace-panel-header { min-height: 0; }
   .panel-note { display: none; }

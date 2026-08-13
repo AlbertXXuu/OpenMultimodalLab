@@ -18,6 +18,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Make Studio Clear reset hidden image/video state, the previous prompt,
+  response, metrics, and status without unloading the warm local model.
 - Preserve Studio video uploads instead of invoking an undeclared system
   FFmpeg executable to remove audio; document upload boundaries and keep image
   and video previews aspect-safe within bounded heights. Detect HEVC preview
@@ -32,6 +34,17 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Compact the Studio's first viewport, align outer shells, segmented tabs,
+  cards, and controls to one nested-radius system, and surface cold-start versus
+  warm-model reuse before and after inference. Remove the decorative brand
+  container, redundant navigation divider, repeated Workspace title, and
+  four-step guide so the working surface starts higher in the initial viewport.
+- Refresh English and Chinese public-facing documentation after the Studio
+  changes, replacing internal popularity-goal disclaimers with user-oriented setup,
+  adoption, and feedback language.
+- Use the public outlined Ailumetra SVG as the byte-locked Studio wordmark,
+  preserving its exact `AI`/`lumetra` spacing, gradient, and color data instead
+  of reconstructing the mark with browser text and CSS letter spacing.
 - Make the Studio Workspace the default surface, move preserved project context
   to a trailing About tab, and rebalance the rounded input/output panels,
   media preview, response area, advanced controls, and responsive layout.

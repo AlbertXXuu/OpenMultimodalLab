@@ -61,4 +61,8 @@ oml = "openmultimodal_lab.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-openmultimodal_lab = ["assets/fonts/*.b64", "assets/fonts/*.txt"]
+openmultimodal_lab = [
+  "assets/brand/*.b64",
+  "assets/fonts/*.b64",
+  "assets/fonts/*.txt",
+]

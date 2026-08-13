@@ -18,8 +18,7 @@ commit counts.
   without downloading a hidden benchmark.
 
 These are design properties, not claims of popularity or universal model
-quality. Stars, users, and feedback are reported only when they actually
-exist.
+quality. User adoption and feedback are reported only when directly observed.
 
 ## Entry criteria for new work
 
