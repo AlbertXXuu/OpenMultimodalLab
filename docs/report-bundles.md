@@ -106,5 +106,4 @@ repository publication, and formal GitHub Release are complete. Future
 releases must generate new evidence rather than edit this bundle in place.
 
 The generated report describes only the pinned task/model/hardware evidence.
-It never infers a universal ranking, user preference, adoption, or GitHub Star
-count.
+It never infers a universal ranking, user preference, or adoption.
