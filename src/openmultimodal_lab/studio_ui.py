@@ -35,6 +35,8 @@ from .studio_assets import (
     REPORT_INTRO_HTML,
     STUDIO_CSS,
     VIDEO_UPLOAD_GUIDANCE_HTML,
+    WORKSPACE_INPUT_HEADER_HTML,
+    WORKSPACE_OUTPUT_HEADER_HTML,
     render_error_status,
     render_playground_metrics,
     render_report_summary,
@@ -142,14 +144,16 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
     ) as app:
         gr.HTML(BRAND_HEADER_HTML, elem_id="studio-brand-header")
 
-        with gr.Tabs(selected="overview", elem_id="studio-tabs"):
-            with gr.Tab("Overview", id="overview"):
-                gr.HTML(OVERVIEW_HTML)
-
-            with gr.Tab("Playground", id="playground"):
+        with gr.Tabs(selected="workspace", elem_id="studio-tabs"):
+            with gr.Tab("Workspace", id="workspace"):
                 gr.HTML(PLAYGROUND_INTRO_HTML)
                 with gr.Row(elem_classes="studio-workspace"):
-                    with gr.Column(scale=5, min_width=330):
+                    with gr.Column(
+                        scale=6,
+                        min_width=360,
+                        elem_classes=["workspace-panel", "workspace-input"],
+                    ):
+                        gr.HTML(WORKSPACE_INPUT_HEADER_HTML)
                         backend = gr.Dropdown(
                             choices=[
                                 (label, name)
@@ -196,32 +200,38 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                             placeholder="Ask about visual content, text, layout, or motion...",
                             elem_classes="studio-control",
                         )
-                        with gr.Row():
-                            max_tokens = gr.Slider(
-                                minimum=PLAYGROUND_UI_MIN_NEW_TOKENS,
-                                maximum=PLAYGROUND_MAX_NEW_TOKENS,
-                                value=PLAYGROUND_UI_DEFAULT_NEW_TOKENS,
-                                step=16,
-                                precision=0,
-                                label="Max new tokens",
-                                info=(
-                                    "Output length limit. Lower values can finish "
-                                    "faster but may truncate; 512 is recommended."
-                                ),
-                            )
-                            timeout = gr.Slider(
-                                minimum=PLAYGROUND_UI_MIN_TIMEOUT_SECONDS,
-                                maximum=PLAYGROUND_MAX_TIMEOUT_SECONDS,
-                                value=PLAYGROUND_UI_DEFAULT_TIMEOUT_SECONDS,
-                                step=30,
-                                precision=0,
-                                label="Timeout (seconds)",
-                                info=(
-                                    "Includes first model load. Increase this "
-                                    "if a cold run times out."
-                                ),
-                            )
-                        with gr.Row():
+                        with gr.Accordion(
+                            "Generation controls",
+                            open=False,
+                            elem_classes="generation-controls",
+                        ):
+                            with gr.Row():
+                                max_tokens = gr.Slider(
+                                    minimum=PLAYGROUND_UI_MIN_NEW_TOKENS,
+                                    maximum=PLAYGROUND_MAX_NEW_TOKENS,
+                                    value=PLAYGROUND_UI_DEFAULT_NEW_TOKENS,
+                                    step=16,
+                                    precision=0,
+                                    label="Max new tokens",
+                                    info=(
+                                        "Output length limit. Lower values can "
+                                        "finish faster but may truncate; 512 is "
+                                        "recommended."
+                                    ),
+                                )
+                                timeout = gr.Slider(
+                                    minimum=PLAYGROUND_UI_MIN_TIMEOUT_SECONDS,
+                                    maximum=PLAYGROUND_MAX_TIMEOUT_SECONDS,
+                                    value=PLAYGROUND_UI_DEFAULT_TIMEOUT_SECONDS,
+                                    step=30,
+                                    precision=0,
+                                    label="Timeout (seconds)",
+                                    info=(
+                                        "Includes first model load. Increase this "
+                                        "if a cold run times out."
+                                    ),
+                                )
+                        with gr.Row(elem_classes="workspace-actions"):
                             run_button = gr.Button(
                                 "Run locally",
                                 variant="primary",
@@ -230,11 +240,16 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                             clear_button = gr.Button("Clear", variant="secondary")
                         status = gr.HTML(EMPTY_STATUS_HTML)
 
-                    with gr.Column(scale=7, min_width=380):
+                    with gr.Column(
+                        scale=7,
+                        min_width=400,
+                        elem_classes=["workspace-panel", "workspace-output"],
+                    ):
+                        gr.HTML(WORKSPACE_OUTPUT_HEADER_HTML)
                         response = gr.Textbox(
                             label="Model response",
-                            lines=13,
-                            max_lines=20,
+                            lines=17,
+                            max_lines=30,
                             interactive=False,
                             buttons=["copy"],
                             placeholder="The local model response will appear here.",
@@ -340,6 +355,9 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                     concurrency_limit=1,
                     show_progress="minimal",
                 )
+
+            with gr.Tab("About", id="about"):
+                gr.HTML(OVERVIEW_HTML)
 
     app.queue(api_open=False, max_size=8, default_concurrency_limit=1)
     return app

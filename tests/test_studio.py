@@ -39,8 +39,11 @@ from openmultimodal_lab.studio_assets import (
     IMAGE_UPLOAD_GUIDANCE_HTML,
     INSTRUMENT_SANS_REVISION,
     INSTRUMENT_SANS_SHA256,
+    PLAYGROUND_INTRO_HTML,
     STUDIO_CSS,
     VIDEO_UPLOAD_GUIDANCE_HTML,
+    WORKSPACE_INPUT_HEADER_HTML,
+    WORKSPACE_OUTPUT_HEADER_HTML,
     render_playground_metrics,
     render_success_status,
     render_video_upload_info,
@@ -366,7 +369,25 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn("60 seconds", VIDEO_UPLOAD_GUIDANCE_HTML)
         self.assertIn("H.265/HEVC", VIDEO_UPLOAD_GUIDANCE_HTML)
         self.assertIn("object-fit: contain", STUDIO_CSS)
-        self.assertIn("max-height: 420px", STUDIO_CSS)
+        self.assertIn("max-height: 360px", STUDIO_CSS)
+
+    def test_workspace_is_function_first_and_visually_grouped(self) -> None:
+        workspace = (
+            PLAYGROUND_INTRO_HTML
+            + WORKSPACE_INPUT_HEADER_HTML
+            + WORKSPACE_OUTPUT_HEADER_HTML
+            + STUDIO_CSS
+        )
+
+        self.assertIn("LOCAL WORKSPACE", workspace)
+        self.assertIn("Media in. Evidence out.", workspace)
+        self.assertIn("INPUT", workspace)
+        self.assertIn("OUTPUT", workspace)
+        self.assertIn(".studio-workspace", STUDIO_CSS)
+        self.assertIn(".workspace-panel", STUDIO_CSS)
+        self.assertIn("border-radius: 22px", STUDIO_CSS)
+        self.assertIn("width: 100% !important", STUDIO_CSS)
+        self.assertNotIn(".local-badge { font-size: 0; }", STUDIO_CSS)
 
     def test_hevc_notice_explains_browser_model_compatibility_split(self) -> None:
         info = VideoUploadInfo(
@@ -477,6 +498,17 @@ class StudioGradioTests(unittest.TestCase):
                 )
             )
             self.assertFalse(app.config["analytics_enabled"])
+            tab_labels = [
+                item["props"].get("label")
+                for item in app.config["components"]
+                if item.get("type") == "tabitem"
+                and item["props"].get("id")
+                in {"workspace", "reports", "about"}
+            ]
+            self.assertEqual(
+                tab_labels[:3],
+                ["Workspace", "Reports", "About"],
+            )
             image_components = [
                 item
                 for item in app.config["components"]

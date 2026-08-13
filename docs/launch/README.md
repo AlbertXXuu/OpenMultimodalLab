@@ -17,6 +17,11 @@ The primary signal is a completed install/run/report workflow plus one concrete
 piece of feedback. Stars, views, and impressions are secondary discovery
 signals, not proof that the software works for another person.
 
+Use the repository's
+[first-run feedback form](https://github.com/AlbertXXuu/OpenMultimodalLab/issues/new?template=first_run_feedback.yml)
+for a privacy-aware, reproducible report when a public Discussion is not the
+right format.
+
 ## Recommended sequence
 
 1. Finish GitHub discovery surfaces: social preview, profile pin, Discussions,

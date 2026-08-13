@@ -17,29 +17,20 @@ engineering checklist, not legal advice.
   provide useful provenance, but provenance alone does not create a registered
   trademark or patent. The tag itself is not cryptographically signed, so the
   project must not describe it as a signed release artifact.
-- `Ailumetra` is currently a public project brand. This repository does not
-  claim that it is a registered trademark and must not display the registered
-  symbol (`®`) unless registration actually exists in the relevant territory.
+- `Ailumetra` is the public project brand and an unregistered trademark claimed
+  by AlbertXXuu. This repository does not claim that it is registered and must
+  not display the registered symbol (`®`) unless registration actually exists
+  in the relevant territory. `ALONICA` is a developer ID used by AlbertXXuu,
+  not a separate company or legal owner.
 
 ## Decisions that require the owner
 
-Before adding a project-level copyright attribution or trademark ownership
-statement, confirm the exact public identity and the scope of the claim. A
-GitHub username, developer identity, natural-person name, and company name are
-not interchangeable legal choices. Package author metadata is descriptive; it
-does not determine legal ownership, and future contributors retain rights in
-their contributions unless a separate agreement changes that result.
-
-After that decision, the smallest coherent repository change is:
-
-1. add a top-level `NOTICE` with the chosen copyright attribution;
-2. add a short `TRADEMARKS.md` describing permitted descriptive references and
-   prohibiting claims of endorsement or official status;
-3. add the same ownership statement to both README license sections;
-4. update package author/maintainer metadata only if it should identify the
-   same public person or entity;
-5. add `CITATION.cff` with the citation name the owner wants researchers to
-   use.
+The owner confirmed `AlbertXXuu` as the public copyright attribution and
+trademark claimant on 2026-08-14. `NOTICE`, `TRADEMARKS.md`, both README license
+sections, package author metadata, and `CITATION.cff` use that identity.
+Package author metadata remains descriptive rather than determinative of legal
+ownership, and future contributors retain rights in their contributions unless
+a separate agreement changes that result.
 
 Adding a copyright banner to every source file is not the first priority. It
 creates a large blame-only diff and does not replace the repository-level
@@ -82,12 +73,10 @@ dates and target countries. Do not publish a new technical method merely to
 
 ## Pending owner confirmation
 
-- public copyright/trademark owner identity;
-- whether to use the unregistered `™` indicator;
 - filing territory and budget;
 - exact Nice goods/services wording;
-- whether author metadata should expose a legal name, a company, or a stable
-  public developer identity.
+- whether to display the optional unregistered `™` indicator in visual brand
+  surfaces; the text policy does not require that symbol.
 
 ## Authoritative references
 

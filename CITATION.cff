@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "OpenMultimodalLab: the open-source benchmark engine behind Ailumetra"
+type: software
+authors:
+  - name: AlbertXXuu
+repository-code: "https://github.com/AlbertXXuu/OpenMultimodalLab"
+url: "https://github.com/AlbertXXuu/OpenMultimodalLab/releases/tag/v1.0.0"
+version: 1.0.0
+date-released: 2026-08-10
+license: Apache-2.0
+keywords:
+  - multimodal evaluation
+  - vision-language models
+  - reproducible benchmarks
+  - local AI

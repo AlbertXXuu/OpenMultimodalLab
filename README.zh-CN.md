@@ -137,8 +137,10 @@ Linux 使用同一组 CLI 参数，只需改为 `.venv/bin/python` 和
 
 ## Ailumetra Studio
 
-Ailumetra Studio 是不改变可复现 CLI 流程的可选本地界面。它提供单输入模型
-Playground 和只读报告浏览器，同时严格区分试玩结果与正式评测证据。
+Ailumetra Studio 是不改变可复现 CLI 流程的可选本地界面。它默认直接打开
+单输入 Workspace，把模型、媒体、Prompt、回答和实时指标集中在一个功能区；
+Reports 和项目介绍后置，同时严格区分试玩结果与正式评测证据。
+
 请在已经配置好真实模型的 Python 3.11/3.12 环境中运行；`studio` extra 只安装
 界面，不会替你安装所选模型后端或支持 CUDA 的 PyTorch。
 
@@ -149,7 +151,7 @@ Playground 和只读报告浏览器，同时严格区分试玩结果与正式评
 ```
 
 Studio 只监听 `127.0.0.1`，关闭公开分享和分析，并把模型调用串行化以适配
-8 GB 显卡。Playground 回答明确不评分；需要可保存、可比较的证据时仍使用
+8 GB 显卡。Workspace 回答明确不评分；需要可保存、可比较的证据时仍使用
 `oml run`。完整使用方法和安全边界见 [Studio 说明](docs/ailumetra-studio.md)。
 
 ## 运行真实本地模型
@@ -303,6 +305,11 @@ revision、许可证、安装路径、已验证硬件、Adapter 契约测试和�
 安全漏洞按 [SECURITY.md](SECURITY.md) 建立私密渠道，不在公开 Bug 中粘贴
 敏感细节。
 
+第一次使用本项目本身也是一种贡献。你可以提交一份
+[结构化首次运行反馈](https://github.com/AlbertXXuu/OpenMultimodalLab/issues/new?template=first_run_feedback.yml)，
+说明运行环境、尝试的操作、成功部分和最希望改进的一点。发布前请移除密钥、
+私人媒体、用户名和本地绝对路径。
+
 ## 许可证
 
 项目代码和项目生成合成媒体采用 Apache-2.0。模型权重和可选运行依赖保留
@@ -312,6 +319,11 @@ revision、许可证、安装路径、已验证硬件、Adapter 契约测试和�
 Apache-2.0 不会授予超出其第 6 条范围的项目名称或商标使用权。当前品牌保护
 状态，以及提出更强公开权利声明前必须由所有者确认的事项，记录在
 [知识产权与品牌准备清单](docs/ip-and-brand-readiness.md)中。
+
+版权及项目公开署名为 **AlbertXXuu**。`Ailumetra` 及其字标是 AlbertXXuu
+主张的未注册项目商标；`ALONICA` 仅是在部分项目界面使用的开发者 ID，
+不代表独立公司或另一法律权利人。详见 [TRADEMARKS.md](TRADEMARKS.md) 和
+[NOTICE](NOTICE)。
 
 项目不承诺 Star 数，也不会把计划中的用户写成真实采用。可复现证据、可用
 文档和外部反馈才是有效指标。

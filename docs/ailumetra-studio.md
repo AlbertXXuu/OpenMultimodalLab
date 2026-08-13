@@ -30,19 +30,20 @@ without opening a tab, or `--port 8765` to choose another local port.
 
 ## What each tab means
 
-- **Overview** presents the already preserved v1.0.0 evidence. It does not
-  rerun a model or silently replace the published result.
-- **Playground** accepts exactly one image, document screenshot, or short
-  video. The response and runtime metrics are useful for exploration, but the
-  inference is explicitly unscored and is not a formal benchmark.
+- **Workspace** is the default view. It keeps model selection, one image,
+  document screenshot, or short video, the prompt, optional generation
+  controls, model response, and runtime metrics in one input-to-output surface.
+  Its inference is explicitly unscored and is not a formal benchmark.
 - **Reports** opens a bounded JSONL record produced by `oml run`, derives the
   summary with the existing reporter, and never rewrites the source file.
+- **About** presents the already preserved v1.0.0 evidence after the functional
+  surfaces. It does not rerun a model or replace the published result.
 
 Only one queued model call runs at a time. When the backend changes, the old
 adapter is released before the next model loads, which keeps the interface
 practical on the verified 8 GB GPU profile.
 
-### Playground generation controls
+### Workspace generation controls
 
 - **Max new tokens** is a hard output-length allowance, not a quality setting.
   Studio defaults to 512, permits up to 1,024, and shows an amber warning when
@@ -133,9 +134,9 @@ palette.
 ## 中文说明
 
 Ailumetra Studio 是 OpenMultimodalLab 的可选本地界面，不替代可复现的
-`oml run` / `oml report` 流程。Overview 展示已经保存的 v1.0.0 证据；
-Playground 用于单张图片、文档截图或短视频的无评分体验；Reports 只读打开
-已有 JSONL 结果。单次 Playground 结果不能当作正式模型排名。
+`oml run` / `oml report` 流程。默认 Workspace 把模型、媒体、Prompt、回答和
+实时指标放在同一功能区；Reports 只读打开已有 JSONL 结果；About 后置展示
+已经保存的 v1.0.0 证据。单次 Workspace 结果不能当作正式模型排名。
 
 界面只能监听本机回环地址，关闭公开分享、监控和分析，并将 GPU 推理并发限制
 为 1。切换模型时会释放上一个模型，以适配已验证的 8 GB 消费级 GPU。公开
