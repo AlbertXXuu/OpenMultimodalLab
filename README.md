@@ -185,7 +185,9 @@ The Studio listens on `127.0.0.1`, disables public sharing and analytics, and
 serializes model calls for an 8 GB GPU. Workspace responses are explicitly
 unscored; the interface distinguishes the first cold model load from later
 warm reuse, and Clear resets both media tabs, the prompt, response, and metrics
-without unloading the model. Use `oml run` for durable, comparable evidence.
+without unloading the model. Running with that cleared prompt restores the
+default visual-description prompt automatically. Use `oml run` for durable,
+comparable evidence.
 See the [Studio guide and security boundary](docs/ailumetra-studio.md).
 
 ## Run a real local model

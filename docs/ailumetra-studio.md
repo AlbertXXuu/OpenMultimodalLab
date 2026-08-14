@@ -39,6 +39,10 @@ without opening a tab, or `--port 8765` to choose another local port.
 - **About** presents the already preserved v1.0.0 evidence after the functional
   surfaces. It does not rerun a model or replace the published result.
 
+The backend selector sits below the primary Run/Clear actions so media and
+prompt work remain the first visual focus. The selected backend still applies
+to the next run; Qwen3-VL remains the default.
+
 Only one queued model call runs at a time. When the backend changes, the old
 adapter is released before the next model loads, which keeps the interface
 practical on the verified 8 GB GPU profile.
@@ -72,6 +76,8 @@ scroll independently; narrower layouts return to normal document scrolling.
 - **Clear** removes both media inputs (including a file retained in the hidden
   image/video tab), the current prompt, response, metrics, and status. It does
   not unload the active model, so the next run can still use the warm model.
+  If Run is pressed while the cleared prompt is blank, Studio restores and uses
+  `Describe the important visual content and any motion.` automatically.
 
 ## Local security boundary
 
@@ -87,8 +93,8 @@ scroll independently; narrower layouts return to normal document scrolling.
   H.265/HEVC preview support depends on the browser and operating system. After
   upload, Studio reports the codec and explains that an audio-only or frozen
   HEVC preview does not mean local model decoding failed.
-- Media previews preserve the source aspect ratio, use letterboxing rather
-  than cropping, and stop growing at a bounded desktop or mobile height.
+- Media previews adapt to the source aspect ratio, use letterboxing rather than
+  cropping, and stop growing at a bounded desktop or mobile height.
 - User-facing exceptions redact common absolute local paths.
 - The Studio has no delete, overwrite, publication, or GitHub action.
 
@@ -162,7 +168,9 @@ Ailumetra Studio 是 OpenMultimodalLab 的可选本地界面，不替代可复�
 Workspace 在主导航后直接显示 Input/Output 卡片，不再重复宣传标题和四步提示。
 Input 卡片内的简短说明与运行状态会明确区分冷启动与热复用：第一次请求需要加载模型，成功后模型会
 留在显存中供下一次请求复用；Clear 只清空媒体、Prompt、回答和指标，不卸载
-模型。顶部品牌行取消装饰性大外框，主导航取消多余分隔线；选中状态、媒体分段
+模型；清空后在 Prompt 为空时点击 Run，会自动恢复默认视觉描述 Prompt。模型
+选择放在 Run/Clear 下方，所选后端仍用于下一次运行。顶部品牌行取消装饰性大
+外框，主导航取消多余分隔线；选中状态、媒体分段
 控件和工作卡片采用统一的嵌套圆角层级，并压缩默认媒体与回答区域高度，使常见
 笔记本首屏能直接看到 Input/Output 工作区；
 桌面端两张卡片等高且外框完整留在视口内，较长内容在卡片内部滚动；窄屏恢复
