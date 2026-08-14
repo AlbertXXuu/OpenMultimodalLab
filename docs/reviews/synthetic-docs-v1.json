@@ -1,0 +1,530 @@
+{
+  "schema_version": "1.2",
+  "review_profile": "task-image-v1",
+  "dataset_version": "synthetic-docs-v1",
+  "dataset_sha256": "79b9f2c25f2985b6ccbd6fba2e44d234685338534d3d810f4f2931eacdb9d610",
+  "review_media_order": [
+    "examples/assets/synthetic-docs-v1/receipt-cafe.png",
+    "examples/assets/synthetic-docs-v1/invoice-studio.png",
+    "examples/assets/synthetic-docs-v1/schedule-lab.png",
+    "examples/assets/synthetic-docs-v1/inventory-table.png",
+    "examples/assets/synthetic-docs-v1/sales-bar-chart.png",
+    "examples/assets/synthetic-docs-v1/traffic-line-chart.png",
+    "examples/assets/synthetic-docs-v1/project-status.png",
+    "examples/assets/synthetic-docs-v1/energy-table.png"
+  ],
+  "entries": [
+    {
+      "task_id": "receipt-cafe-id",
+      "media": [
+        "examples/assets/synthetic-docs-v1/receipt-cafe.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "receipt-cafe-total",
+      "media": [
+        "examples/assets/synthetic-docs-v1/receipt-cafe.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "receipt-cafe-date",
+      "media": [
+        "examples/assets/synthetic-docs-v1/receipt-cafe.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "receipt-cafe-bagel-price",
+      "media": [
+        "examples/assets/synthetic-docs-v1/receipt-cafe.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "invoice-studio-number",
+      "media": [
+        "examples/assets/synthetic-docs-v1/invoice-studio.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "invoice-studio-client",
+      "media": [
+        "examples/assets/synthetic-docs-v1/invoice-studio.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "invoice-studio-amount-due",
+      "media": [
+        "examples/assets/synthetic-docs-v1/invoice-studio.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "invoice-studio-due-date",
+      "media": [
+        "examples/assets/synthetic-docs-v1/invoice-studio.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "schedule-lab-1030-event",
+      "media": [
+        "examples/assets/synthetic-docs-v1/schedule-lab.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "schedule-lab-robotics-time",
+      "media": [
+        "examples/assets/synthetic-docs-v1/schedule-lab.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "schedule-lab-event-count",
+      "media": [
+        "examples/assets/synthetic-docs-v1/schedule-lab.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "schedule-lab-last-event",
+      "media": [
+        "examples/assets/synthetic-docs-v1/schedule-lab.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "inventory-q2-maximum",
+      "media": [
+        "examples/assets/synthetic-docs-v1/inventory-table.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "inventory-beta-total",
+      "media": [
+        "examples/assets/synthetic-docs-v1/inventory-table.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "inventory-gamma-change",
+      "media": [
+        "examples/assets/synthetic-docs-v1/inventory-table.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "inventory-lowest-stock",
+      "media": [
+        "examples/assets/synthetic-docs-v1/inventory-table.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "sales-region-maximum",
+      "media": [
+        "examples/assets/synthetic-docs-v1/sales-bar-chart.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "sales-west-value",
+      "media": [
+        "examples/assets/synthetic-docs-v1/sales-bar-chart.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "sales-south-west-gap",
+      "media": [
+        "examples/assets/synthetic-docs-v1/sales-bar-chart.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "sales-total",
+      "media": [
+        "examples/assets/synthetic-docs-v1/sales-bar-chart.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "traffic-peak-day",
+      "media": [
+        "examples/assets/synthetic-docs-v1/traffic-line-chart.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "traffic-wed-value",
+      "media": [
+        "examples/assets/synthetic-docs-v1/traffic-line-chart.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "traffic-mon-thu-rise",
+      "media": [
+        "examples/assets/synthetic-docs-v1/traffic-line-chart.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "traffic-weekday-average",
+      "media": [
+        "examples/assets/synthetic-docs-v1/traffic-line-chart.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "project-status-owner",
+      "media": [
+        "examples/assets/synthetic-docs-v1/project-status.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "project-status-value",
+      "media": [
+        "examples/assets/synthetic-docs-v1/project-status.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "project-status-remaining-budget",
+      "media": [
+        "examples/assets/synthetic-docs-v1/project-status.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "project-status-deadline",
+      "media": [
+        "examples/assets/synthetic-docs-v1/project-status.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "energy-highest-wind-site",
+      "media": [
+        "examples/assets/synthetic-docs-v1/energy-table.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "energy-sites-bc-total",
+      "media": [
+        "examples/assets/synthetic-docs-v1/energy-table.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "energy-site-d-total",
+      "media": [
+        "examples/assets/synthetic-docs-v1/energy-table.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "energy-highest-solar-site",
+      "media": [
+        "examples/assets/synthetic-docs-v1/energy-table.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    }
+  ]
+}

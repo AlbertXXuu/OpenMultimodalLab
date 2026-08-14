@@ -42,7 +42,7 @@ the owner authorized the formal `v1.0.0` GitHub Release on 2026-08-10. Full
 | Licensed versioned short-video tasks | 24 `synthetic-video-v1` tasks over eight project-generated AVI clips | Generated, SHA-bound, and owner-reviewed |
 | Short-video corpus tooling | Byte-stable eight-clip/24-task generator plus SHA-bound human-review validator | Released and owner-reviewed |
 | Visual-robustness corpus tooling | Byte-stable 12-image/36-task generator across four controlled factors plus SHA-bound review | Released and owner-reviewed |
-| At least 100 unique, human-checked tasks | 102 unique licensed tasks: 42 covered by existing reports and 60 covered by validated owner-signed records | Proven for the current corpus |
+| At least 100 unique, human-checked tasks | All 102 unique licensed tasks have task-by-task, date- and SHA-bound owner review records under `docs/reviews/` | Proven for the current corpus |
 | Formal video metrics for both models | One warm-up plus three complete repetitions for both pinned models | Proven |
 | Quality, TTFT, throughput, memory, and failures | Preserved for all 612 measured attempts; zero runtime failures | Proven for all 102 tasks |
 | Rebuildable reports and visuals | Final raw JSONL/manifests plus deterministic Markdown/CSV/failure/SVG bundle and self-hashed manifest | Proven for the released 102-task corpus |
@@ -62,8 +62,8 @@ the owner authorized the formal `v1.0.0` GitHub Release on 2026-08-10. Full
 ## Required final sequence
 
 1. **Complete:** record explicit naming approval without changing repository visibility.
-2. **Complete:** 102 licensed tasks are generated and the 24 video plus 36
-   robustness tasks have validated owner review records.
+2. **Complete:** all 102 licensed tasks are generated and have validated,
+   task-by-task, SHA-bound owner review records.
 3. **Complete:** both pinned models ran the complete canonical corpus with one
    warm-up and three measurements, preserving every result and failure field.
 4. **Complete:** the final deterministic report bundle was built from raw

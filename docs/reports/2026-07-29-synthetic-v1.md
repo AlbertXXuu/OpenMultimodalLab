@@ -48,6 +48,11 @@ OK
 
 画面内容与 JSONL 中的任务描述、答案和类别一致。
 
+2026-08-14 更新：所有 10 张原图及 10 条 `synthetic-v1.1` 任务均由
+`AlbertXXuu` 逐项复核。正式记录见
+[`docs/reviews/synthetic-v1.1.json`](../reviews/synthetic-v1.1.json)，并绑定
+数据集 SHA-256 `682e4089fc2f9793209b40beb0026279bd0f58d3ec4fcf75d3f65abba88e4692`。
+
 ## 端到端结果
 
 使用 `mock` 后端运行完整数据集：

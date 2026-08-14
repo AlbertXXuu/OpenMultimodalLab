@@ -30,6 +30,15 @@ IMAGE_REQUIRED_CHECKS = frozenset(
         "license_and_provenance_confirmed",
     }
 )
+TASK_IMAGE_REQUIRED_CHECKS = frozenset(
+    {
+        "media_opens_and_renders",
+        "relevant_visual_evidence_is_visible",
+        "prompt_answer_matches_media",
+        "answer_is_unambiguous",
+        "license_and_provenance_confirmed",
+    }
+)
 EXPECTED_SAMPLED_FRAME_INDICES = [0, 2, 4, 6, 8, 10, 12, 14]
 EXPECTED_CONTACT_SHEET_ORDER = [0, 5, 10, 15]
 MAX_REVIEW_BYTES = 8 * 1024 * 1024
@@ -74,6 +83,7 @@ def audit_human_review(
     schema_version = review.get("schema_version")
     review_profile = review.get("review_profile")
     required_checks: frozenset[str]
+    requires_media_order = False
     if schema_version == "1.0" and review_profile in (None, "short-video-v1"):
         required_checks = VIDEO_REQUIRED_CHECKS
         if review.get("sampled_frame_indices") != EXPECTED_SAMPLED_FRAME_INDICES:
@@ -84,6 +94,10 @@ def audit_human_review(
             findings.append("review contact_sheet_order is invalid")
     elif schema_version == "1.1" and review_profile == "static-image-v1":
         required_checks = IMAGE_REQUIRED_CHECKS
+        requires_media_order = True
+    elif schema_version == "1.2" and review_profile == "task-image-v1":
+        required_checks = TASK_IMAGE_REQUIRED_CHECKS
+        requires_media_order = True
     else:
         required_checks = frozenset()
         findings.append("review schema_version/profile combination is unsupported")
@@ -119,7 +133,7 @@ def audit_human_review(
         entries_by_id[task_id] = entry
 
     tasks_by_id = {task.id: task for task in tasks}
-    if required_checks == IMAGE_REQUIRED_CHECKS:
+    if requires_media_order:
         expected_media_order = list(
             dict.fromkeys(
                 media_item

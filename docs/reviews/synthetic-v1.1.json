@@ -1,0 +1,180 @@
+{
+  "schema_version": "1.2",
+  "review_profile": "task-image-v1",
+  "dataset_version": "synthetic-v1.1",
+  "dataset_sha256": "682e4089fc2f9793209b40beb0026279bd0f58d3ec4fcf75d3f65abba88e4692",
+  "review_media_order": [
+    "examples/assets/synthetic-v1/shapes-basic-001.png",
+    "examples/assets/synthetic-v1/spatial-above-001.png",
+    "examples/assets/synthetic-v1/counting-circles-001.png",
+    "examples/assets/synthetic-v1/counting-squares-001.png",
+    "examples/assets/synthetic-v1/spatial-left-001.png",
+    "examples/assets/synthetic-v1/spatial-below-001.png",
+    "examples/assets/synthetic-v1/shapes-multi-001.png",
+    "examples/assets/synthetic-v1/counting-rectangles-001.png",
+    "examples/assets/synthetic-v1/spatial-between-001.png",
+    "examples/assets/synthetic-v1/comparison-size-001.png"
+  ],
+  "entries": [
+    {
+      "task_id": "shapes-basic-001",
+      "media": [
+        "examples/assets/synthetic-v1/shapes-basic-001.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "spatial-above-001",
+      "media": [
+        "examples/assets/synthetic-v1/spatial-above-001.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "counting-circles-001",
+      "media": [
+        "examples/assets/synthetic-v1/counting-circles-001.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "counting-squares-001",
+      "media": [
+        "examples/assets/synthetic-v1/counting-squares-001.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "spatial-left-001",
+      "media": [
+        "examples/assets/synthetic-v1/spatial-left-001.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "spatial-below-001",
+      "media": [
+        "examples/assets/synthetic-v1/spatial-below-001.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "shapes-multi-001",
+      "media": [
+        "examples/assets/synthetic-v1/shapes-multi-001.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "counting-rectangles-001",
+      "media": [
+        "examples/assets/synthetic-v1/counting-rectangles-001.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "spatial-between-001",
+      "media": [
+        "examples/assets/synthetic-v1/spatial-between-001.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    },
+    {
+      "task_id": "comparison-size-001",
+      "media": [
+        "examples/assets/synthetic-v1/comparison-size-001.png"
+      ],
+      "checks": {
+        "media_opens_and_renders": true,
+        "relevant_visual_evidence_is_visible": true,
+        "prompt_answer_matches_media": true,
+        "answer_is_unambiguous": true,
+        "license_and_provenance_confirmed": true
+      },
+      "reviewer": "AlbertXXuu",
+      "reviewed_at": "2026-08-14",
+      "notes": ""
+    }
+  ]
+}

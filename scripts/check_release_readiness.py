@@ -28,11 +28,15 @@ CANONICAL_DATASETS = (
     "examples/tasks/synthetic-video-v1.jsonl",
     "examples/tasks/synthetic-robustness-v1.jsonl",
 )
-REVIEW_REPORTS_BY_DATASET = {
-    "synthetic-v1.1": "docs/reports/2026-07-29-synthetic-v1.md",
-    "synthetic-docs-v1": "docs/reports/2026-08-01-synthetic-docs-v1.md",
-}
 REVIEW_RECORDS_BY_DATASET = {
+    "synthetic-v1.1": (
+        "examples/tasks/synthetic-v1.1.jsonl",
+        "docs/reviews/synthetic-v1.1.json",
+    ),
+    "synthetic-docs-v1": (
+        "examples/tasks/synthetic-docs-v1.jsonl",
+        "docs/reviews/synthetic-docs-v1.json",
+    ),
     "synthetic-video-v1": (
         "examples/tasks/synthetic-video-v1.jsonl",
         "docs/reviews/synthetic-video-v1.json",
@@ -558,9 +562,7 @@ def audit_release_readiness(root: Path) -> list[ReadinessCheck]:
                 review_issues.append(
                     f"{version}: {len(findings)} open review findings"
                 )
-        elif version not in REVIEW_REPORTS_BY_DATASET or not (
-            root / REVIEW_REPORTS_BY_DATASET[version]
-        ).is_file():
+        else:
             review_issues.append(f"{version}: review evidence is missing")
     checks.append(
         ReadinessCheck(

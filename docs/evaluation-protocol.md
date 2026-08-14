@@ -95,6 +95,13 @@ asset bytes do not depend on host fonts or rendering-library versions. The
 task set is released, and a same-commit formal two-model result is preserved
 in the [document comparison report](reports/2026-08-02-document-model-comparison.md).
 
+All four canonical v1.0 datasets have task-by-task owner review records under
+[`docs/reviews/`](reviews/README.md). Each record includes the reviewer, ISO
+date, required checks, exact task/media order, and dataset SHA-256. Any byte
+change to a reviewed JSONL invalidates that record and requires another human
+review; the release-readiness check validates all four records rather than
+accepting a narrative report as a substitute.
+
 ## 4. Model identity
 
 Each published run must record:

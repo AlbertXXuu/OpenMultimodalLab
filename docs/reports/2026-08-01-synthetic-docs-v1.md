@@ -88,6 +88,13 @@ chart labels, plotted values, and agreement between all 32 references and the
 visible source values. That review found one layout defect—accent bars covering
 the first character of key-value labels—which was fixed before this report.
 
+Update on 2026-08-14: `AlbertXXuu` re-reviewed all eight original images and
+all 32 tasks using the same task-by-task checklist as the other final datasets.
+The approved record is
+[`docs/reviews/synthetic-docs-v1.json`](../reviews/synthetic-docs-v1.json) and
+is bound to dataset SHA-256
+`79b9f2c25f2985b6ccbd6fba2e44d234685338534d3d810f4f2931eacdb9d610`.
+
 Automated checks additionally verify:
 
 - exactly 32 unique tasks and eight unique media files;
