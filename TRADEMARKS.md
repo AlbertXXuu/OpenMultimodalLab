@@ -1,9 +1,11 @@
 # Trademark policy
 
-`Ailumetra` and the Ailumetra wordmark are unregistered project trademarks
-claimed by **AlbertXXuu**. This statement does not claim registration in any
-country or territory. `ALONICA` is a developer ID used by AlbertXXuu in
-selected project surfaces; it is not a separate company or legal owner.
+`Ailumetra` and the Ailumetra wordmark are an unregistered series identity and
+project trademarks claimed by **AlbertXXuu**. Functional repository names
+remain the primary identity of each project. This statement does not claim
+registration in any country or territory. `ALONICA` is a developer ID used by
+AlbertXXuu in selected project surfaces; it is not a separate company or legal
+owner.
 
 The Apache-2.0 license applies to the project code and project-generated
 synthetic media. It does not grant general permission to use the Ailumetra

@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/assets/ailumetra-wordmark.svg" width="320" alt="Ailumetra 无衬线字标">
+  <img src="docs/assets/ailumetra-wordmark.svg" width="320" alt="Ailumetra — Multimodal Evidence">
 </p>
 
-# Ailumetra
+# OpenMultimodalLab
 
 **OpenMultimodalLab 是 Ailumetra 背后的开源评测引擎。**
 
@@ -26,6 +26,11 @@ JSONL，按任务选择确定性评分规则，并记录模型、环境、输入
 > Linux CI 证据均已保存。仓库和正式
 > [v1.0.0 GitHub Release](https://github.com/AlbertXXuu/OpenMultimodalLab/releases/tag/v1.0.0)
 > 已于 2026-08-10 经所有者明确授权发布。
+
+项目边界：OpenMultimodalLab 在固定任务与推理条件下评估**模型能力**。Agent Harness、
+工具调用循环、记忆和系统级 Agent 可靠性不属于本仓库。统一的
+[Ailumetra 项目标准](docs/ailumetra-open-source-standard.md)与本项目的
+[符合性记录](docs/ailumetra-conformance.md)明确记录了这个边界。
 
 ## v1.0.0 正式基准对比
 

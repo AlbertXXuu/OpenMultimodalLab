@@ -17,8 +17,10 @@ engineering checklist, not legal advice.
   provide useful provenance, but provenance alone does not create a registered
   trademark or patent. The tag itself is not cryptographically signed, so the
   project must not describe it as a signed release artifact.
-- `Ailumetra` is the public project brand and an unregistered trademark claimed
-  by AlbertXXuu. This repository does not claim that it is registered and must
+- `Ailumetra` is the public series identity used across distinct functional
+  projects and an unregistered trademark claimed by AlbertXXuu. Functional
+  project names remain primary. This repository does not claim that Ailumetra
+  is registered and must
   not display the registered symbol (`®`) unless registration actually exists
   in the relevant territory. `ALONICA` is a developer ID used by AlbertXXuu,
   not a separate company or legal owner.
