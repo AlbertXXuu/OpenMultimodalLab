@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/assets/ailumetra-wordmark.svg" width="320" alt="Ailumetra wordmark">
+  <img src="docs/assets/ailumetra-wordmark.svg" width="320" alt="Ailumetra — Multimodal Evidence">
 </p>
 
-# Ailumetra
+# OpenMultimodalLab
 
 **OpenMultimodalLab is the open-source benchmark engine behind Ailumetra.**
 
@@ -28,6 +28,13 @@ to rebuild a report without rerunning the model.
 > and GitHub Linux CI evidence are preserved. The repository and formal
 > [v1.0.0 GitHub Release](https://github.com/AlbertXXuu/OpenMultimodalLab/releases/tag/v1.0.0)
 > were published with explicit owner approval on 2026-08-10.
+
+Project boundary: OpenMultimodalLab evaluates **model capability** under fixed
+tasks and inference conditions. Agent harnesses, tool-use loops, memory, and
+system-level agent reliability belong outside this repository. The shared
+[Ailumetra project standard](docs/ailumetra-open-source-standard.md) and this
+project's [conformance record](docs/ailumetra-conformance.md) make that boundary
+explicit.
 
 ## v1.0.0 benchmark comparison
 

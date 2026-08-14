@@ -182,7 +182,7 @@ Input 卡片内的简短说明与运行状态会明确区分冷启动与热复�
 
 ## Compatibility promise
 
-`Ailumetra` is the public-facing brand and `Ailumetra Studio` is the interface
-name. The repository remains `OpenMultimodalLab`, the Python distribution
-remains `openmultimodal-lab`, and the CLI remains `oml`; existing commands and
+`Ailumetra` is the shared series identity and `Ailumetra Studio` is this
+project's interface name. The repository remains `OpenMultimodalLab`, the
+Python distribution remains `openmultimodal-lab`, and the CLI remains `oml`; existing commands and
 v1.0.0 evidence paths are intentionally unchanged.
