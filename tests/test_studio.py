@@ -52,7 +52,9 @@ from openmultimodal_lab.studio_assets import (
     render_video_upload_info,
 )
 from openmultimodal_lab.studio_ui import (
+    DEFAULT_PROMPT,
     _clear_workspace,
+    _default_prompt_if_empty,
     _inspect_video_upload,
     _open_report,
     _run_playground,
@@ -283,6 +285,14 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertEqual(cleared[6], VIDEO_UPLOAD_GUIDANCE_HTML)
         self.assertIn("remains warm", cleared[5])
 
+    def test_empty_ui_prompt_falls_back_to_the_visible_default(self) -> None:
+        self.assertEqual(_default_prompt_if_empty(""), DEFAULT_PROMPT)
+        self.assertEqual(_default_prompt_if_empty("   "), DEFAULT_PROMPT)
+        self.assertEqual(
+            _default_prompt_if_empty("What color is the car?"),
+            "What color is the car?",
+        )
+
     def test_ui_playground_wrapper_completes_with_mock_backend(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             media = self._media(Path(temp_dir))
@@ -291,7 +301,7 @@ class StudioRuntimeTests(unittest.TestCase):
                 "mock",
                 str(media),
                 None,
-                "Describe.",
+                "   ",
                 32,
                 60,
             )
@@ -398,6 +408,16 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn("H.265/HEVC", VIDEO_UPLOAD_GUIDANCE_HTML)
         self.assertIn("object-fit: contain", STUDIO_CSS)
         self.assertIn("max-height: 360px", STUDIO_CSS)
+        self.assertIn("height: auto !important", STUDIO_CSS)
+        self.assertIn("max-width: 100% !important", STUDIO_CSS)
+        self.assertNotIn(
+            ".studio-media-input { height: 210px !important",
+            STUDIO_CSS,
+        )
+        self.assertNotIn(
+            ".studio-media-input { height: 180px !important",
+            STUDIO_CSS,
+        )
 
     def test_workspace_is_function_first_and_visually_grouped(self) -> None:
         workspace = (
@@ -548,7 +568,7 @@ class StudioGradioTests(unittest.TestCase):
         app = build_app()
         try:
             dependencies = app.config["dependencies"]
-            self.assertEqual(len(dependencies), 4)
+            self.assertEqual(len(dependencies), 5)
             self.assertTrue(
                 all(
                     item["api_visibility"] == "private"
@@ -586,6 +606,39 @@ class StudioGradioTests(unittest.TestCase):
             )
             self.assertEqual(len(clear_event["outputs"]), 7)
             self.assertIn(prompt_component["id"], clear_event["outputs"])
+            run_button = next(
+                item
+                for item in app.config["components"]
+                if item.get("type") == "button"
+                and item["props"].get("value") == "Run locally"
+            )
+            backend_component = next(
+                item
+                for item in app.config["components"]
+                if item.get("type") == "dropdown"
+                and item["props"].get("label") == "Local backend"
+            )
+            component_order = {
+                item["id"]: index
+                for index, item in enumerate(app.config["components"])
+            }
+            self.assertLess(
+                component_order[run_button["id"]],
+                component_order[backend_component["id"]],
+            )
+            self.assertLess(
+                component_order[clear_button["id"]],
+                component_order[backend_component["id"]],
+            )
+            prompt_prepare_event = next(
+                item
+                for item in dependencies
+                if (run_button["id"], "click") in item["targets"]
+            )
+            self.assertEqual(
+                prompt_prepare_event["outputs"],
+                [prompt_component["id"]],
+            )
             image_components = [
                 item
                 for item in app.config["components"]
@@ -594,6 +647,7 @@ class StudioGradioTests(unittest.TestCase):
             ]
             self.assertEqual(len(image_components), 1)
             self.assertIsNone(image_components[0]["props"].get("format"))
+            self.assertIsNone(image_components[0]["props"].get("height"))
             video_components = [
                 item
                 for item in app.config["components"]
@@ -602,6 +656,7 @@ class StudioGradioTests(unittest.TestCase):
             ]
             self.assertEqual(len(video_components), 1)
             self.assertTrue(video_components[0]["props"].get("include_audio"))
+            self.assertIsNone(video_components[0]["props"].get("height"))
             sliders = {
                 item["props"].get("label"): item["props"]
                 for item in app.config["components"]

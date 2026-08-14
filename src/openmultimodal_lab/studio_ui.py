@@ -75,6 +75,14 @@ def _import_gradio() -> Any:
     return gr
 
 
+def _default_prompt_if_empty(prompt: str | None) -> str:
+    """Keep a custom prompt or restore the visible Studio default."""
+
+    if not isinstance(prompt, str) or not prompt.strip():
+        return DEFAULT_PROMPT
+    return prompt
+
+
 def _run_playground(
     runtime: StudioRuntime,
     backend: str,
@@ -84,6 +92,7 @@ def _run_playground(
     max_new_tokens: float,
     timeout_seconds: float,
 ) -> tuple[str, str, str]:
+    prompt = _default_prompt_if_empty(prompt)
     try:
         result = runtime.run_playground(
             backend=backend,
@@ -175,16 +184,6 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                         elem_classes=["workspace-panel", "workspace-input"],
                     ):
                         gr.HTML(WORKSPACE_INPUT_HEADER_HTML)
-                        backend = gr.Dropdown(
-                            choices=[
-                                (label, name)
-                                for name, label in BACKEND_LABELS.items()
-                            ],
-                            value="qwen3-vl",
-                            label="Local backend",
-                            filterable=False,
-                            elem_classes="studio-control",
-                        )
                         with gr.Tabs(selected="image-input", elem_id="media-tabs"):
                             with gr.Tab("Image / document", id="image-input"):
                                 gr.HTML(IMAGE_UPLOAD_GUIDANCE_HTML)
@@ -194,7 +193,6 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                                     sources=["upload", "clipboard"],
                                     label="Image or document screenshot",
                                     buttons=["fullscreen"],
-                                    height=210,
                                     elem_id="studio-image-input",
                                     elem_classes="studio-media-input",
                                 )
@@ -206,7 +204,6 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                                     sources=["upload"],
                                     label="Short video",
                                     buttons=["fullscreen"],
-                                    height=210,
                                     include_audio=True,
                                     elem_id="studio-video-input",
                                     elem_classes="studio-media-input",
@@ -258,6 +255,16 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                                 elem_id="studio-run-button",
                             )
                             clear_button = gr.Button("Clear", variant="secondary")
+                        backend = gr.Dropdown(
+                            choices=[
+                                (label, name)
+                                for name, label in BACKEND_LABELS.items()
+                            ],
+                            value="qwen3-vl",
+                            label="Local backend",
+                            filterable=False,
+                            elem_classes="studio-control",
+                        )
                         status = gr.HTML(EMPTY_STATUS_HTML)
 
                     with gr.Column(
@@ -277,7 +284,15 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                         )
                         metrics = gr.HTML(EMPTY_METRICS_HTML)
 
-                run_button.click(
+                prepared_prompt = run_button.click(
+                    fn=_default_prompt_if_empty,
+                    inputs=prompt,
+                    outputs=prompt,
+                    api_visibility="private",
+                    queue=False,
+                    show_progress="hidden",
+                )
+                prepared_prompt.then(
                     fn=lambda *values: _run_playground(active_runtime, *values),
                     inputs=[
                         backend,
