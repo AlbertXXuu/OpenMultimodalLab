@@ -55,6 +55,12 @@ inspect the preserved
 and their SHA-bound manifests. Historical ten-task and document-only reports
 remain available in the evidence index below.
 
+Post-release evidence note (2026-08-14): the owner re-reviewed the 10 base
+image and 32 document tasks against their original media. All 102 canonical
+tasks now have task-by-task reviewer/date/checklist/SHA records in
+[`docs/reviews/`](docs/reviews/README.md). The recorded dataset hashes match the
+inputs used by the formal runs; the published `v1.0.0` tag remains immutable.
+
 ## Short-video demo
 
 ![A red square moving right, with the two preserved model answers](docs/assets/video-benchmark-demo.gif)
@@ -73,7 +79,9 @@ to the exact task, commands, raw records, and deterministic rebuild script.
 - Versioned UTF-8 JSONL tasks with validation and licensed generated media.
 - Exact-match, numeric-tolerance, keyword-coverage, and ordered/unordered
   attribute-group scoring through backward-compatible task schemas 1.0–1.2.
-- `synthetic-docs-v1`: 32 licensed tasks over eight reproducible OCR,
+- `synthetic-v1.1`: 10 owner-reviewed image-description, counting, spatial,
+  and visual-comparison tasks over ten reproducible PNGs.
+- `synthetic-docs-v1`: 32 owner-reviewed tasks over eight reproducible OCR,
   key-value, table, bar-chart, and line-chart images.
 - `synthetic-video-v1`: 24 owner-reviewed tasks over eight deterministic,
   project-generated short videos.
@@ -279,6 +287,7 @@ equivalent because tokenizers differ.
 | Scope and requirements | [Scope](docs/02-scope-and-requirements.md) |
 | System design | [Architecture](docs/03-architecture.md) |
 | Experiment rules | [Evaluation protocol](docs/evaluation-protocol.md) |
+| Human-review evidence | [All 102 task-level, date- and SHA-bound records](docs/reviews/README.md) |
 | Run records, manifests, and resume | [Artifact contract](docs/run-records-and-manifests.md) |
 | Two-model formal result | [Qwen3-VL vs SmolVLM2](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md) |
 | 32-task document comparison | [Qwen3-VL vs SmolVLM2 on documents](docs/reports/2026-08-02-document-model-comparison.md) |

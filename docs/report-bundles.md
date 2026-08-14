@@ -100,10 +100,11 @@ editing the generator after the build makes verification fail.
 
 ## v1.0 release use
 
-The corpus review, two-model formal grid, source preservation, byte comparison,
-Windows/Linux verification, dependency/license snapshot, video tutorial,
-repository publication, and formal GitHub Release are complete. Future
-releases must generate new evidence rather than edit this bundle in place.
+The [task-level corpus review](reviews/README.md), two-model formal grid, source
+preservation, byte comparison, Windows/Linux verification, dependency/license
+snapshot, video tutorial, repository publication, and formal GitHub Release
+are complete. Future releases must generate new evidence rather than edit this
+bundle in place.
 
 The generated report describes only the pinned task/model/hardware evidence.
 It never infers a universal ranking, user preference, or adoption.

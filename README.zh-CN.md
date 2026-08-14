@@ -50,6 +50,11 @@ OCR、事件顺序等部分分类领先。这是基于固定硬件和任务的�
 及其 SHA 绑定 manifest 均已保存。早期 10 条任务和文档专项报告仍保留在下方
 证据索引中供审计。
 
+发布后证据补充（2026-08-14）：所有者对 10 条基础图片任务和 32 条文档任务的
+原图、问题与标准答案进行了逐项复核。当前 102 条正式任务均已有逐任务、审查人、
+日期、检查项和 SHA 绑定记录，见[`docs/reviews/`](docs/reviews/README.md)。记录中的
+数据集哈希与正式运行输入一致；已经发布的 `v1.0.0` 标签保持不变。
+
 ## 短视频演示
 
 ![红色方块向右移动，以及两个模型保存下来的回答](docs/assets/video-benchmark-demo.gif)
@@ -66,8 +71,10 @@ SmolVLM2 则三次都失败。[可复制的视频教程](docs/tutorials/video-be
 - 严格校验的版本化 UTF-8 JSONL 任务和许可证清晰的生成媒体。
 - 通过向后兼容的任务 Schema 1.0–1.2 支持精确匹配、数值容差、关键词覆盖
   和可排序属性组评分。
-- `synthetic-docs-v1`：32 条许可证清晰的任务，覆盖 8 张可复现生成的 OCR、
-  键值、表格、柱状图和折线图图片。
+- `synthetic-v1.1`：10 条经所有者逐项复核的图片描述、计数、空间关系和视觉
+  对比任务，覆盖 10 张可复现生成的 PNG。
+- `synthetic-docs-v1`：32 条经所有者逐项复核的任务，覆盖 8 张可复现生成的
+  OCR、键值、表格、柱状图和折线图图片。
 - `synthetic-video-v1`：24 条经所有者复核的任务，覆盖 8 个确定性生成短视频。
 - `synthetic-robustness-v1`：36 条经所有者复核的小目标、低对比度、视觉干扰
   和局部遮挡任务。
@@ -244,6 +251,7 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 | 范围和需求 | [范围](docs/02-scope-and-requirements.md) |
 | 系统设计 | [架构](docs/03-architecture.md) |
 | 实验规则 | [评测协议](docs/evaluation-protocol.md) |
+| 人工审查证据 | [全部 102 条逐任务、日期与 SHA 绑定记录](docs/reviews/README.md) |
 | 运行记录、manifest 和恢复 | [产物契约](docs/run-records-and-manifests.md) |
 | 双模型正式结果 | [Qwen3-VL vs SmolVLM2](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md) |
 | 32 条文档任务对比 | [Qwen3-VL 与 SmolVLM2 文档评测](docs/reports/2026-08-02-document-model-comparison.md) |

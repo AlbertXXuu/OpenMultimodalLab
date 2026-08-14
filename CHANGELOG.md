@@ -34,6 +34,10 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Replace narrative-only review coverage for the 32 document and 10 base image
+  tasks with task-by-task, reviewer/date/checklist/SHA-bound owner records, so
+  all 102 v1.0.0 benchmark task bytes now have machine-validated review
+  evidence on `main` without moving or replacing the published release tag.
 - Compact the Studio's first viewport, align outer shells, segmented tabs,
   cards, and controls to one nested-radius system, and surface cold-start versus
   warm-model reuse before and after inference. Remove the decorative brand

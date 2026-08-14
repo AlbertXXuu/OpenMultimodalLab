@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import subprocess
 import sys
 import tempfile
@@ -9,6 +11,10 @@ from pathlib import Path
 from openmultimodal_lab.adapters import MockAdapter
 from openmultimodal_lab.datasets import available_categories, load_tasks
 from openmultimodal_lab.runner import run_benchmark
+from scripts.validate_human_review import (
+    TASK_IMAGE_REQUIRED_CHECKS,
+    audit_human_review,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -27,9 +33,84 @@ SYNTHETIC_DOCS_MEDIA = (
 SYNTHETIC_DOCS_GENERATOR = (
     PROJECT_ROOT / "scripts" / "generate_synthetic_documents.py"
 )
+SYNTHETIC_V1_1_REVIEW = (
+    PROJECT_ROOT / "docs" / "reviews" / "synthetic-v1.1.json"
+)
+SYNTHETIC_DOCS_REVIEW = (
+    PROJECT_ROOT / "docs" / "reviews" / "synthetic-docs-v1.json"
+)
 
 
 class SyntheticDatasetTests(unittest.TestCase):
+    def test_image_task_reviews_are_complete_and_hash_bound(self) -> None:
+        review_pairs = (
+            (SYNTHETIC_DATASET_V1_1, SYNTHETIC_V1_1_REVIEW, 10),
+            (SYNTHETIC_DOCS_DATASET, SYNTHETIC_DOCS_REVIEW, 32),
+        )
+
+        for dataset, review_path, expected_tasks in review_pairs:
+            with self.subTest(dataset=dataset.name):
+                review = json.loads(review_path.read_text(encoding="utf-8"))
+
+                self.assertEqual(audit_human_review(dataset, review_path), [])
+                self.assertEqual(len(review["entries"]), expected_tasks)
+                self.assertEqual(
+                    review["dataset_sha256"],
+                    hashlib.sha256(dataset.read_bytes()).hexdigest(),
+                )
+                self.assertTrue(
+                    all(
+                        set(entry["checks"]) == TASK_IMAGE_REQUIRED_CHECKS
+                        and all(entry["checks"].values())
+                        and entry["reviewer"] == "AlbertXXuu"
+                        and entry["reviewed_at"] == "2026-08-14"
+                        for entry in review["entries"]
+                    )
+                )
+
+    def test_task_image_review_rejects_unapproved_or_reordered_evidence(
+        self,
+    ) -> None:
+        review = json.loads(
+            SYNTHETIC_V1_1_REVIEW.read_text(encoding="utf-8")
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            review_path = Path(temp_dir) / "review.json"
+            review["entries"][0]["checks"][
+                "prompt_answer_matches_media"
+            ] = False
+            review_path.write_text(
+                json.dumps(review, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            incomplete = audit_human_review(
+                SYNTHETIC_DATASET_V1_1,
+                review_path,
+            )
+
+            review["entries"][0]["checks"][
+                "prompt_answer_matches_media"
+            ] = True
+            review["review_media_order"] = list(
+                reversed(review["review_media_order"])
+            )
+            review_path.write_text(
+                json.dumps(review, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            reordered = audit_human_review(
+                SYNTHETIC_DATASET_V1_1,
+                review_path,
+            )
+
+        self.assertTrue(
+            any("checks not approved" in finding for finding in incomplete)
+        )
+        self.assertIn(
+            "review review_media_order does not match the dataset",
+            reordered,
+        )
+
     def test_synthetic_v1_has_ten_licensed_tasks(self) -> None:
         tasks = load_tasks(SYNTHETIC_DATASET, media_root=PROJECT_ROOT)
 

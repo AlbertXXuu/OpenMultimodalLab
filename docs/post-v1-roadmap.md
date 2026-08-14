@@ -6,6 +6,10 @@ fixed measurement protocol, and byte-verifiable evidence. Post-v1 work should
 make that baseline easier to trust, reproduce, and extend—not inflate model or
 commit counts.
 
+The [human-review index](reviews/README.md) binds all 102 task-level approvals
+to the exact four dataset hashes. These post-release records clarify the
+review trail without moving or replacing the published `v1.0.0` tag.
+
 ## Why this remains useful
 
 - It evaluates model choice on an accessible 8 GB GPU instead of assuming a
