@@ -23,18 +23,11 @@ class SocialPreviewTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
 
         self.assertIn("InstrumentSans-wdth-wght.woff2.b64", builder)
-        self.assertIn("#4f8cff", builder)
-        self.assertIn("#2563eb", builder)
-        self.assertIn("#1e3a8a", builder)
-        self.assertIn('class="brand-l"', builder)
-        self.assertIn("margin-right: .014em", builder)
-        self.assertIn('class="brand-x"', builder)
-        self.assertIn("margin-left: -.079em", builder)
-        self.assertIn("font-stretch: 98%", builder)
-        self.assertIn("letter-spacing: -.036em", builder)
-        self.assertIn("justify-items: center", builder)
-        self.assertIn("transform: translateX(2.5px)", builder)
-        self.assertIn(">MULTIMODAL EVIDENCE</div>", builder)
+        self.assertIn("WORDMARK_PATH", builder)
+        self.assertIn("base64.b64encode(WORDMARK_PATH.read_bytes())", builder)
+        self.assertIn("data:image/svg+xml;base64,{wordmark_base64}", builder)
+        self.assertNotIn('class="brand-l"', builder)
+        self.assertNotIn('class="brand-x"', builder)
         self.assertNotIn("#22c55e", builder.casefold())
 
 

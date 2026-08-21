@@ -135,12 +135,12 @@ The interface enables Instrument Sans stylistic set 02 so lowercase `a` uses
 one consistent single-storey construction. Headings, body copy, controls, and
 evidence figures share the same family; evidence figures use tabular numerals,
 while only literal code and local paths retain an explicit monospace face. The
-wordmark visually capitalizes the existing `Ai` characters as a compact `AI`
-accent without changing the accessible or public name `AlvenX`. Its
-light-blue-to-blue gradient and optically tightened join to `venX` are
-shared by the Studio header and portable README artwork. The Studio embeds the
+wordmark keeps the accessible and public name `AlvenX` while using the
+owner-approved connected `Al`, `l–v`, `e–n`, and `n–X` outline relationships;
+`v–e` remains physically separate. Its continuous blue-to-indigo-to-violet
+`Al` gradient is shared by the Studio header and portable README artwork. The Studio embeds the
 same outlined SVG bytes used by the README, verifies them against SHA-256
-`9807f882dc58a9ac7c03ccba8ec8884503e8d1d6aa42525b969200cb14c6368e`,
+`a17e802a71b30b04a26e5b0da6c1adda93b0705463d237d142f50dac4ed40192`,
 and does not reconstruct `Al` and `venX` with browser letter spacing.
 Chinese text follows the embedded Latin face with professional platform CJK
 fallbacks. Because the wordmark stores glyphs as SVG outlines, it remains
@@ -153,8 +153,8 @@ decision plus desktop and mobile visual regression review.
 
 The interface palette uses white surfaces, dark ink, and a cobalt-led accent.
 The hero emphasis and primary action both begin in blue and move through
-indigo toward violet. The `Al` wordmark accent uses a separate
-light-blue-to-blue gradient; cards, status indicators, evidence figures, and
+indigo toward violet. The `Al` wordmark uses the same exact
+`#2563EB → #4F46E5 → #7C3AED` sequence; cards, status indicators, evidence figures, and
 the page background remain solid. Green is not part of the Studio brand
 palette.
 

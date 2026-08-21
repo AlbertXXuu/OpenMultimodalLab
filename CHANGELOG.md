@@ -47,7 +47,7 @@ All notable changes to this project will be documented in this file.
   changes, replacing internal popularity-goal disclaimers with user-oriented setup,
   adoption, and feedback language.
 - Use the public outlined AlvenX SVG as the byte-locked Studio wordmark,
-  preserving its exact `Al`/`venX` spacing, gradient, and color data instead
+  preserving its exact connected-letter geometry, gradient, and color data instead
   of reconstructing the mark with browser text and CSS letter spacing.
 - Make the Studio Workspace the default surface, move preserved project context
   to a trailing About tab, and rebalance the rounded input/output panels,
@@ -64,8 +64,10 @@ All notable changes to this project will be documented in this file.
   Instrument Sans variable font with its OFL notice, coordinated weights and
   spacing, a single-storey lowercase `a`, tabular evidence figures, and a
   balanced `Al` wordmark treatment across desktop and mobile layouts.
-- Refine the `Al` wordmark accent with a lighter blue-only gradient and a
-  tighter optical join to `venX` in both Studio and the README artwork.
+- Lock the owner-approved AlvenX master with connected `Al` and `l–v`, a
+  separated `v–e` pair, middle-connected `e–n`, the retained `n–X` signature,
+  and one blue-to-indigo-to-violet gradient across `Al`; apply the exact same
+  outlined geometry to Studio, README artwork, and the social preview.
 - Apply standards-compliant JSON parsing to datasets, run records, resume
   state, run manifests, and the repository audit (`NaN`/`Infinity` are
   rejected).
