@@ -7,7 +7,7 @@ TTFT, memory, and rebuildable reports
 
 I wanted a more reliable answer to “which local VLM fits this task and this
 GPU?” than a few successful screenshots, so I built OpenMultimodalLab, the
-open-source benchmark engine behind Ailumetra.
+open-source benchmark engine behind AlvenX.
 
 It runs versioned image, document, short-video, and robustness tasks through
 local model adapters and keeps the task-level JSONL, failures, environment

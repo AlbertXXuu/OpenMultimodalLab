@@ -1,13 +1,13 @@
-# Ailumetra conformance — OpenMultimodalLab
+# AlvenX conformance — OpenMultimodalLab
 
-**Standard:** [AOS-0.1](ailumetra-open-source-standard.md)<br>
+**Standard:** [AOS-0.1](alvenx-open-source-standard.md)<br>
 **Reviewed:** 2026-08-15<br>
 **Project state:** v1.0.0 maintenance and external-user validation
 
 | Area | Status | Evidence or open condition |
 |---|---|---|
 | Functional identity is primary | Pass | README H1 and package/CLI use OpenMultimodalLab / `oml` |
-| Shared Ailumetra identity | Pass | Outlined wordmark and `MULTIMODAL EVIDENCE` signal |
+| Shared AlvenX identity | Pass | Outlined wordmark and `MULTIMODAL EVIDENCE` signal |
 | Research boundary | Pass | Model capability only; agent/harness evaluation is explicitly excluded |
 | Public README contract | Pass | English/Chinese READMEs, status, result table, raw evidence, limitations |
 | Evidence contract | Pass | Task-level JSONL, SHA-bound manifests, deterministic reports, retained failures |

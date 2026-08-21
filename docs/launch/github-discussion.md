@@ -1,4 +1,4 @@
-# Ailumetra v1.0: reproducible local VLM evidence on an 8 GB GPU
+# AlvenX v1.0: reproducible local VLM evidence on an 8 GB GPU
 
 I built OpenMultimodalLab because model selection on consumer hardware is too
 often reduced to isolated screenshots. The project runs versioned image,

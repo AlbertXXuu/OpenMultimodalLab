@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for trying Ailumetra. A successful run and a blocked run are both useful evidence. Do not paste API keys, private media, usernames, or absolute local paths.
+        Thank you for trying AlvenX. A successful run and a blocked run are both useful evidence. Do not paste API keys, private media, usernames, or absolute local paths.
   - type: dropdown
     id: outcome
     attributes:
@@ -32,7 +32,7 @@ body:
     attributes:
       label: Interface used
       options:
-        - Ailumetra Studio
+        - AlvenX Studio
         - oml CLI
         - Both
     validations:

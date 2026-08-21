@@ -6,13 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Add a reproducible 1280×640 Ailumetra social preview, truthful bilingual
+- Add a reproducible 1280×640 AlvenX social preview, truthful bilingual
   launch drafts, an external-feedback measurement plan, and an IP/brand
   readiness checklist that avoids unverified ownership or registration claims.
-- Add the optional, local-only Ailumetra Studio with an unscored single-media
+- Add the optional, local-only AlvenX Studio with an unscored single-media
   playground, read-only JSONL report explorer, bounded uploads, serialized GPU
   access, and the developer signal `ALONICA`.
-- Introduce the owner-approved Ailumetra public brand while preserving the
+- Introduce the owner-approved AlvenX public brand while preserving the
   `OpenMultimodalLab` repository, `openmultimodal-lab` package, `oml` CLI, and
   immutable v1.0.0 evidence identities.
 
@@ -46,26 +46,26 @@ All notable changes to this project will be documented in this file.
 - Refresh English and Chinese public-facing documentation after the Studio
   changes, replacing internal popularity-goal disclaimers with user-oriented setup,
   adoption, and feedback language.
-- Use the public outlined Ailumetra SVG as the byte-locked Studio wordmark,
-  preserving its exact `AI`/`lumetra` spacing, gradient, and color data instead
+- Use the public outlined AlvenX SVG as the byte-locked Studio wordmark,
+  preserving its exact `Al`/`venX` spacing, gradient, and color data instead
   of reconstructing the mark with browser text and CSS letter spacing.
 - Make the Studio Workspace the default surface, move preserved project context
   to a trailing About tab, and rebalance the rounded input/output panels,
   media preview, response area, advanced controls, and responsive layout.
-- Record AlbertXXuu as the public project attribution and Ailumetra trademark
+- Record AlbertXXuu as the public project attribution and AlvenX trademark
   claimant, with ALONICA documented only as a developer ID; add NOTICE,
   TRADEMARKS, and citation metadata without claiming registration.
 - Add a privacy-aware first-run feedback template so external adoption can
   become reproducible product evidence instead of an unstructured comment.
-- Restyle Ailumetra Studio with an explicit light theme, white surfaces,
+- Restyle AlvenX Studio with an explicit light theme, white surfaces,
   accessible dark text, and restrained blue-to-violet gradients limited to
   hero emphasis and primary actions across desktop and mobile layouts.
 - Lock the complete Studio type system to a self-hosted, integrity-bound
   Instrument Sans variable font with its OFL notice, coordinated weights and
   spacing, a single-storey lowercase `a`, tabular evidence figures, and a
-  balanced `AI` wordmark treatment across desktop and mobile layouts.
-- Refine the `AI` wordmark accent with a lighter blue-only gradient and a
-  tighter optical join to `lumetra` in both Studio and the README artwork.
+  balanced `Al` wordmark treatment across desktop and mobile layouts.
+- Refine the `Al` wordmark accent with a lighter blue-only gradient and a
+  tighter optical join to `venX` in both Studio and the README artwork.
 - Apply standards-compliant JSON parsing to datasets, run records, resume
   state, run manifests, and the repository audit (`NaN`/`Infinity` are
   rejected).

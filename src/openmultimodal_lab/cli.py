@@ -191,7 +191,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
     studio_parser = commands.add_parser(
         "studio",
-        help="Launch the optional Ailumetra Studio on this computer.",
+        help="Launch the optional AlvenX Studio on this computer.",
     )
     studio_parser.add_argument(
         "--host",
@@ -579,7 +579,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"Studio error: {type(exc).__name__}: {exc}", file=sys.stderr)
             return 2
         except KeyboardInterrupt:
-            print("Ailumetra Studio stopped.")
+            print("AlvenX Studio stopped.")
             return 130
         return 0
 

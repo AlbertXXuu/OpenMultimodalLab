@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "openmultimodal-lab"
 version = "1.0.0"
-description = "The local-first, reproducible multimodal benchmark engine behind Ailumetra."
+description = "The local-first, reproducible multimodal benchmark engine behind AlvenX."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "Apache-2.0" }

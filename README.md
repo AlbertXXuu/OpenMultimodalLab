@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="docs/assets/ailumetra-wordmark.svg" width="320" alt="Ailumetra — Multimodal Evidence">
+  <img src="docs/assets/alvenx-wordmark.svg" width="320" alt="AlvenX — Multimodal Evidence">
 </p>
 
 # OpenMultimodalLab
 
-**OpenMultimodalLab is the open-source benchmark engine behind Ailumetra.**
+**OpenMultimodalLab is the open-source benchmark engine behind AlvenX.**
 
 [![CI](https://github.com/AlbertXXuu/OpenMultimodalLab/actions/workflows/ci.yml/badge.svg)](https://github.com/AlbertXXuu/OpenMultimodalLab/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB)
@@ -32,8 +32,8 @@ to rebuild a report without rerunning the model.
 Project boundary: OpenMultimodalLab evaluates **model capability** under fixed
 tasks and inference conditions. Agent harnesses, tool-use loops, memory, and
 system-level agent reliability belong outside this repository. The shared
-[Ailumetra project standard](docs/ailumetra-open-source-standard.md) and this
-project's [conformance record](docs/ailumetra-conformance.md) make that boundary
+[AlvenX project standard](docs/alvenx-open-source-standard.md) and this
+project's [conformance record](docs/alvenx-conformance.md) make that boundary
 explicit.
 
 ## v1.0.0 benchmark comparison
@@ -178,9 +178,9 @@ python3.11 -m venv .venv
 The `mock` backend verifies infrastructure only. Do not use its score as a
 model-quality result.
 
-## Ailumetra Studio
+## AlvenX Studio
 
-Ailumetra Studio adds an optional, polished local interface without changing
+AlvenX Studio adds an optional, polished local interface without changing
 the reproducible CLI workflow. It opens directly into a one-input Workspace
 with model controls, media, response, and live runtime evidence; Reports and
 the project About view follow behind it. Formal benchmark evidence remains
@@ -203,7 +203,7 @@ warm reuse, and Clear resets both media tabs, the prompt, response, and metrics
 without unloading the model. Running with that cleared prompt restores the
 default visual-description prompt automatically. Use `oml run` for durable,
 comparable evidence.
-See the [Studio guide and security boundary](docs/ailumetra-studio.md).
+See the [Studio guide and security boundary](docs/alvenx-studio.md).
 
 ## Run a real local model
 
@@ -380,8 +380,8 @@ in its Section 6. The current brand posture and owner decisions that must
 precede stronger public claims are recorded in
 [IP and brand readiness](docs/ip-and-brand-readiness.md).
 
-Copyright and project attribution: **AlbertXXuu**. `Ailumetra` and the
-Ailumetra wordmark are unregistered project trademarks claimed by
+Copyright and project attribution: **AlbertXXuu**. `AlvenX` and the
+AlvenX wordmark are unregistered project trademarks claimed by
 AlbertXXuu; `ALONICA` is the developer ID used in selected project surfaces,
 not a separate company or legal owner. See [TRADEMARKS.md](TRADEMARKS.md) and
 [NOTICE](NOTICE).

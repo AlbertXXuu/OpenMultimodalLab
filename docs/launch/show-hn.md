@@ -1,6 +1,6 @@
 # Submission title
 
-Show HN: Ailumetra – Reproducible local benchmarks for multimodal models
+Show HN: AlvenX – Reproducible local benchmarks for multimodal models
 
 # Submission URL
 

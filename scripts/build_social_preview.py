@@ -1,4 +1,4 @@
-"""Build the deterministic 1280x640 Ailumetra social preview image."""
+"""Build the deterministic 1280x640 AlvenX social preview image."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ FONT_PATH = (
     / "fonts"
     / "InstrumentSans-wdth-wght.woff2.b64"
 )
-DEFAULT_OUTPUT = PROJECT_ROOT / "docs" / "assets" / "ailumetra-social-preview.png"
+DEFAULT_OUTPUT = PROJECT_ROOT / "docs" / "assets" / "alvenx-social-preview.png"
 CANVAS_SIZE = (1280, 640)
 
 
@@ -91,21 +91,26 @@ body {{
   position: absolute; inset: 34px; overflow: hidden;
   border: 2px solid #dbeafe; border-radius: 34px; background: #fff;
 }}
-.brand {{ position: absolute; top: 38px; left: 48px; }}
+.brand {{
+  position: absolute; top: 38px; left: 48px;
+  display: grid; justify-items: center;
+}}
 .brand-name {{
   display: flex; align-items: baseline; font-size: 76px; line-height: .82;
-  font-weight: 620; font-stretch: 92%; letter-spacing: -.065em;
+  font-weight: 650; font-stretch: 98%; letter-spacing: -.036em;
 }}
-.brand-ai {{
-  text-transform: uppercase; font-weight: 700; font-stretch: 86%;
-  letter-spacing: -.105em; margin-right: -.045em; color: transparent;
-  background: linear-gradient(120deg,#60a5fa 0%,#3b82f6 52%,#2563eb 100%);
+.brand-accent {{
+  display: flex; color: transparent;
+  background: linear-gradient(115deg,#4f8cff 0%,#2563eb 52%,#1e3a8a 100%);
   background-clip: text; -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }}
+.brand-l {{ font-weight: 700; margin-right: .014em; }}
+.brand-x {{ display: inline-block; margin-left: -.079em; }}
 .brand-signal {{
-  margin: 14px 0 0 3px; color: #64748b; font-size: 14px;
-  font-weight: 650; letter-spacing: .29em;
+  margin: 14px 0 0; color: #64748b; font-size: 14px;
+  font-weight: 650; letter-spacing: .20em; text-align: center;
+  transform: translateX(2.5px);
 }}
 .eyebrow {{
   position: absolute; left: 50px; top: 171px; color: #2563eb;
@@ -156,10 +161,10 @@ h1 span {{
 </style>
 </head>
 <body>
-  <main class="canvas" aria-label="Ailumetra social preview">
+  <main class="canvas" aria-label="AlvenX social preview">
     <div class="brand">
-      <div class="brand-name"><span class="brand-ai">Ai</span><span>lumetra</span></div>
-      <div class="brand-signal">OPEN MULTIMODAL EVIDENCE</div>
+      <div class="brand-name"><span class="brand-accent"><span>A</span><span class="brand-l">l</span></span><span>ven<span class="brand-x">X</span></span></div>
+      <div class="brand-signal">MULTIMODAL EVIDENCE</div>
     </div>
     <div class="eyebrow">LOCAL-FIRST · REPRODUCIBLE · OPEN SOURCE</div>
     <h1>Local multimodal evidence,<br><span>on hardware you own.</span></h1>
@@ -186,7 +191,7 @@ h1 span {{
 def build_preview(output: Path, *, browser: Path | None = None) -> None:
     executable = _find_browser(browser)
     output.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="ailumetra-social-preview-") as temp_dir:
+    with tempfile.TemporaryDirectory(prefix="alvenx-social-preview-") as temp_dir:
         source = Path(temp_dir) / "preview.html"
         source.write_text(_preview_html(), encoding="utf-8")
         command = [

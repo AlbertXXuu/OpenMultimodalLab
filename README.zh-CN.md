@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="docs/assets/ailumetra-wordmark.svg" width="320" alt="Ailumetra — Multimodal Evidence">
+  <img src="docs/assets/alvenx-wordmark.svg" width="320" alt="AlvenX — Multimodal Evidence">
 </p>
 
 # OpenMultimodalLab
 
-**OpenMultimodalLab 是 Ailumetra 背后的开源评测引擎。**
+**OpenMultimodalLab 是 AlvenX 背后的开源评测引擎。**
 
 [![CI](https://github.com/AlbertXXuu/OpenMultimodalLab/actions/workflows/ci.yml/badge.svg)](https://github.com/AlbertXXuu/OpenMultimodalLab/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB)
@@ -29,8 +29,8 @@ JSONL，按任务选择确定性评分规则，并记录模型、环境、输入
 
 项目边界：OpenMultimodalLab 在固定任务与推理条件下评估**模型能力**。Agent Harness、
 工具调用循环、记忆和系统级 Agent 可靠性不属于本仓库。统一的
-[Ailumetra 项目标准](docs/ailumetra-open-source-standard.md)与本项目的
-[符合性记录](docs/ailumetra-conformance.md)明确记录了这个边界。
+[AlvenX 项目标准](docs/alvenx-open-source-standard.md)与本项目的
+[符合性记录](docs/alvenx-conformance.md)明确记录了这个边界。
 
 ## v1.0.0 正式基准对比
 
@@ -147,9 +147,9 @@ Linux 使用同一组 CLI 参数，只需改为 `.venv/bin/python` 和
 
 `mock` 只验证基础设施，不能用它的得分描述真实模型能力。
 
-## Ailumetra Studio
+## AlvenX Studio
 
-Ailumetra Studio 是不改变可复现 CLI 流程的可选本地界面。它默认直接打开
+AlvenX Studio 是不改变可复现 CLI 流程的可选本地界面。它默认直接打开
 单输入 Workspace，把模型、媒体、Prompt、回答和实时指标集中在一个功能区；
 Reports 和项目介绍后置，同时严格区分试玩结果与正式评测证据。
 
@@ -167,7 +167,7 @@ Studio 只监听 `127.0.0.1`，关闭公开分享和分析，并把模型调用�
 标签、Prompt、回答与指标，但不卸载模型；清空后直接运行会自动恢复默认视觉
 描述 Prompt。Workspace 回答明确不评分；需要可保存、可比较的证据时仍使用
 `oml run`。完整使用方法和安全边界见
-[Studio 说明](docs/ailumetra-studio.md)。
+[Studio 说明](docs/alvenx-studio.md)。
 
 ## 运行真实本地模型
 
@@ -336,7 +336,7 @@ Apache-2.0 不会授予超出其第 6 条范围的项目名称或商标使用权
 状态，以及提出更强公开权利声明前必须由所有者确认的事项，记录在
 [知识产权与品牌准备清单](docs/ip-and-brand-readiness.md)中。
 
-版权及项目公开署名为 **AlbertXXuu**。`Ailumetra` 及其字标是 AlbertXXuu
+版权及项目公开署名为 **AlbertXXuu**。`AlvenX` 及其字标是 AlbertXXuu
 主张的未注册项目商标；`ALONICA` 仅是在部分项目界面使用的开发者 ID，
 不代表独立公司或另一法律权利人。详见 [TRADEMARKS.md](TRADEMARKS.md) 和
 [NOTICE](NOTICE)。
