@@ -151,12 +151,22 @@ now a stable design contract. They should change only for a demonstrated
 accessibility, licensing, or rendering defect and after an explicit brand
 decision plus desktop and mobile visual regression review.
 
-The interface palette uses white surfaces, dark ink, and a cobalt-led accent.
-The hero emphasis and primary action both begin in blue and move through
-indigo toward violet. The `Al` wordmark uses the same exact
-`#2563EB → #4F46E5 → #7C3AED` sequence; cards, status indicators, evidence figures, and
-the page background remain solid. Green is not part of the Studio brand
-palette.
+The interface implements the owner-approved AlvenX interface standard
+`2026-08-22.8`. Its static product canvas uses the same airy light-blue family
+as alvenx.com (`#FBFDFF → #F1F7FF → #E7F1FF`) with fixed, low-contrast radial
+depth. Studio deliberately does not inherit the website's animated ambient
+fields: a long-running evidence tool should not add continuous background
+motion or GPU work.
+
+Instrument Sans, dark `#0B1731` primary ink, `#334155` reading ink, and the
+canonical `#2563EB → #4F46E5 → #7C3AED` accent remain shared. Primary run and
+report actions use the same restrained liquid-glass construction as the
+website: translucent background-reactive fill, one optical outer edge, a
+softer inset top highlight, `24px` backdrop blur, continuous pill curvature,
+small hover lift, active compression, and an independent focus ring. The two
+edge tones represent the physical boundary and inner refraction rather than
+two equally strong borders. Dense evidence tables and reading surfaces remain
+quiet and mostly opaque. Green is not part of the Studio brand palette.
 
 ## 中文说明
 

@@ -327,9 +327,11 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertNotIn("https://", combined)
 
     def test_studio_uses_an_explicit_light_surface_palette(self) -> None:
-        self.assertIn("--alx-bg: #ffffff", STUDIO_CSS)
-        self.assertIn("--alx-panel: #ffffff", STUDIO_CSS)
-        self.assertIn("--alx-text: #0f172a", STUDIO_CSS)
+        self.assertIn("--alx-bg: #eef6ff", STUDIO_CSS)
+        self.assertIn("--alx-panel: rgb(255 255 255 / 78%)", STUDIO_CSS)
+        self.assertIn("--alx-text: #0b1731", STUDIO_CSS)
+        self.assertIn("--alx-reading: #334155", STUDIO_CSS)
+        self.assertIn("--alx-muted: #52647a", STUDIO_CSS)
         self.assertIn("color-scheme: light", STUDIO_CSS)
         self.assertNotIn("--alx-bg: #070b12", STUDIO_CSS)
         self.assertNotIn("--alx-panel: #0d1420", STUDIO_CSS)
@@ -341,7 +343,10 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertNotIn('class="brand-ai"', BRAND_HEADER_HTML)
         self.assertIn("text-transform: uppercase", STUDIO_CSS)
         self.assertIn("font-variant-numeric: tabular-nums", STUDIO_CSS)
-        self.assertEqual(STUDIO_CSS.count("linear-gradient"), 2)
+        self.assertIn(
+            "linear-gradient(145deg, #fbfdff 0%, #f1f7ff 49%, #e7f1ff 100%)",
+            STUDIO_CSS,
+        )
         self.assertIn("var(--alx-blue) 0%", STUDIO_CSS)
         self.assertNotIn("#0f766e", STUDIO_CSS)
         self.assertNotIn("--alx-teal", STUDIO_CSS)
@@ -349,6 +354,25 @@ class StudioRuntimeTests(unittest.TestCase):
             "font-family: Arial, Helvetica, ui-sans-serif, sans-serif",
             STUDIO_CSS,
         )
+
+    def test_studio_uses_the_locked_static_interface_standard(self) -> None:
+        self.assertIn("--alx-glass-fill: rgb(255 255 255 / 28%)", STUDIO_CSS)
+        self.assertIn("--alx-glass-fill-hover: rgb(255 255 255 / 35%)", STUDIO_CSS)
+        self.assertIn("--alx-glass-edge: rgb(255 255 255 / 68%)", STUDIO_CSS)
+        self.assertIn("--alx-glass-highlight: rgb(255 255 255 / 72%)", STUDIO_CSS)
+        self.assertIn("--alx-glass-blur: 24px", STUDIO_CSS)
+        self.assertIn("background-attachment: fixed", STUDIO_CSS)
+        self.assertNotIn("@keyframes", STUDIO_CSS)
+        self.assertIn('button[role="tab"]:focus-visible', STUDIO_CSS)
+        self.assertIn("outline: 3px solid rgb(37 99 235 / 42%)", STUDIO_CSS)
+        self.assertIn(".gradio-container button.primary", STUDIO_CSS)
+        self.assertIn("background-color: var(--alx-glass-fill)", STUDIO_CSS)
+        self.assertIn("background-color: var(--alx-glass-fill-hover)", STUDIO_CSS)
+        self.assertIn("border-color: rgb(255 255 255 / 84%)", STUDIO_CSS)
+        self.assertIn("inset 0 1px 0 rgb(255 255 255 / 80%)", STUDIO_CSS)
+        self.assertIn("0 0 32px rgb(255 255 255 / 16%)", STUDIO_CSS)
+        self.assertIn("@media (prefers-reduced-motion: reduce)", STUDIO_CSS)
+        self.assertNotIn("button.primary:hover { filter: brightness", STUDIO_CSS)
 
     def test_vendored_brand_font_is_integrity_and_license_bound(self) -> None:
         project_root = Path(__file__).resolve().parents[1]
@@ -458,7 +482,8 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn("height: auto; overflow-y: visible", STUDIO_CSS)
         self.assertNotIn(".startup-hint", STUDIO_CSS)
         self.assertNotIn("workspace-steps", workspace)
-        self.assertIn("border-radius: 999px", STUDIO_CSS)
+        self.assertIn("--alx-radius-pill: 999px", STUDIO_CSS)
+        self.assertIn("border-radius: var(--alx-radius-pill)", STUDIO_CSS)
         self.assertIn("#media-tabs", STUDIO_CSS)
         self.assertIn('button[role="tab"]::after { display: none', STUDIO_CSS)
         self.assertIn('.tab-container[role="tablist"]::after', STUDIO_CSS)

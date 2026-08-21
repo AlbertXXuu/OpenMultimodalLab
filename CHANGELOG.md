@@ -34,6 +34,11 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Adopt AlvenX interface standard `2026-08-22.8` across Studio: Instrument Sans,
+  the canonical airy light-blue canvas and ink palette, quieter translucent
+  evidence surfaces, and the same restrained liquid-glass primary controls as
+  alvenx.com. Studio intentionally keeps its background static for sustained
+  local work and does not inherit the website's ambient animation.
 - Replace narrative-only review coverage for the 32 document and 10 base image
   tasks with task-by-task, reviewer/date/checklist/SHA-bound owner records, so
   all 102 v1.0.0 benchmark task bytes now have machine-validated review
@@ -57,9 +62,9 @@ All notable changes to this project will be documented in this file.
   TRADEMARKS, and citation metadata without claiming registration.
 - Add a privacy-aware first-run feedback template so external adoption can
   become reproducible product evidence instead of an unstructured comment.
-- Restyle AlvenX Studio with an explicit light theme, white surfaces,
-  accessible dark text, and restrained blue-to-violet gradients limited to
-  hero emphasis and primary actions across desktop and mobile layouts.
+- Restyle AlvenX Studio with an explicit light theme, accessible dark text,
+  and restrained blue-to-violet gradients limited to the wordmark and hero
+  emphasis across desktop and mobile layouts.
 - Lock the complete Studio type system to a self-hosted, integrity-bound
   Instrument Sans variable font with its OFL notice, coordinated weights and
   spacing, a single-storey lowercase `a`, tabular evidence figures, and a
