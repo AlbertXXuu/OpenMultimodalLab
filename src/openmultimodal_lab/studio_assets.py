@@ -448,6 +448,7 @@ STUDIO_CSS = (_INSTRUMENT_SANS_FONT_FACE + """
 }
 html, body {
   color-scheme: light !important;
+  scrollbar-gutter: stable;
   font-family: var(--alx-font-sans) !important;
   font-feature-settings: "ss01" 1, "ss02" 1;
   font-synthesis: none;

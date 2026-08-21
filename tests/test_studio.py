@@ -362,6 +362,7 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn("--alx-glass-highlight: rgb(255 255 255 / 72%)", STUDIO_CSS)
         self.assertIn("--alx-glass-blur: 24px", STUDIO_CSS)
         self.assertIn("background-attachment: fixed", STUDIO_CSS)
+        self.assertIn("scrollbar-gutter: stable", STUDIO_CSS)
         self.assertNotIn("@keyframes", STUDIO_CSS)
         self.assertIn('button[role="tab"]:focus-visible', STUDIO_CSS)
         self.assertIn("outline: 3px solid rgb(37 99 235 / 42%)", STUDIO_CSS)
