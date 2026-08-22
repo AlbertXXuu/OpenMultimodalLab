@@ -408,11 +408,15 @@ class StudioRuntimeTests(unittest.TestCase):
             "".join(packaged.read_text(encoding="ascii").split()),
             validate=True,
         )
-        wordmark = source_bytes.decode("utf-8")
+        canonical_source_bytes = source_bytes.replace(b"\r\n", b"\n").replace(
+            b"\r", b"\n"
+        )
+        wordmark = canonical_source_bytes.decode("utf-8")
 
-        self.assertEqual(packaged_bytes, source_bytes)
+        self.assertNotIn(b"\r", packaged_bytes)
+        self.assertEqual(packaged_bytes, canonical_source_bytes)
         self.assertEqual(
-            hashlib.sha256(source_bytes).hexdigest(),
+            hashlib.sha256(canonical_source_bytes).hexdigest(),
             ALVENX_WORDMARK_SHA256,
         )
         self.assertIn("Instrument Sans outlines", wordmark)
