@@ -8,7 +8,7 @@ from pathlib import Path
 class SocialPreviewTests(unittest.TestCase):
     def test_committed_social_preview_matches_github_dimensions(self) -> None:
         project_root = Path(__file__).resolve().parents[1]
-        preview = project_root / "docs/assets/ailumetra-social-preview.png"
+        preview = project_root / "docs/assets/alvenx-social-preview.png"
         payload = preview.read_bytes()
 
         self.assertEqual(payload[:8], b"\x89PNG\r\n\x1a\n")
@@ -23,8 +23,11 @@ class SocialPreviewTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
 
         self.assertIn("InstrumentSans-wdth-wght.woff2.b64", builder)
-        self.assertIn("#60a5fa", builder)
-        self.assertIn("#2563eb", builder)
+        self.assertIn("WORDMARK_PATH", builder)
+        self.assertIn("base64.b64encode(WORDMARK_PATH.read_bytes())", builder)
+        self.assertIn("data:image/svg+xml;base64,{wordmark_base64}", builder)
+        self.assertNotIn('class="brand-l"', builder)
+        self.assertNotIn('class="brand-x"', builder)
         self.assertNotIn("#22c55e", builder.casefold())
 
 

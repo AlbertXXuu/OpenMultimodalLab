@@ -6,13 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Add a reproducible 1280×640 Ailumetra social preview, truthful bilingual
+- Add a reproducible 1280×640 AlvenX social preview, truthful bilingual
   launch drafts, an external-feedback measurement plan, and an IP/brand
   readiness checklist that avoids unverified ownership or registration claims.
-- Add the optional, local-only Ailumetra Studio with an unscored single-media
+- Add the optional, local-only AlvenX Studio with an unscored single-media
   playground, read-only JSONL report explorer, bounded uploads, serialized GPU
   access, and the developer signal `ALONICA`.
-- Introduce the owner-approved Ailumetra public brand while preserving the
+- Introduce the owner-approved AlvenX public brand while preserving the
   `OpenMultimodalLab` repository, `openmultimodal-lab` package, `oml` CLI, and
   immutable v1.0.0 evidence identities.
 
@@ -34,6 +34,11 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Adopt AlvenX interface standard `2026-08-22.8` across Studio: Instrument Sans,
+  the canonical airy light-blue canvas and ink palette, quieter translucent
+  evidence surfaces, and the same restrained liquid-glass primary controls as
+  alvenx.com. Studio intentionally keeps its background static for sustained
+  local work and does not inherit the website's ambient animation.
 - Replace narrative-only review coverage for the 32 document and 10 base image
   tasks with task-by-task, reviewer/date/checklist/SHA-bound owner records, so
   all 102 v1.0.0 benchmark task bytes now have machine-validated review
@@ -46,26 +51,28 @@ All notable changes to this project will be documented in this file.
 - Refresh English and Chinese public-facing documentation after the Studio
   changes, replacing internal popularity-goal disclaimers with user-oriented setup,
   adoption, and feedback language.
-- Use the public outlined Ailumetra SVG as the byte-locked Studio wordmark,
-  preserving its exact `AI`/`lumetra` spacing, gradient, and color data instead
+- Use the public outlined AlvenX SVG as the byte-locked Studio wordmark,
+  preserving its exact connected-letter geometry, gradient, and color data instead
   of reconstructing the mark with browser text and CSS letter spacing.
 - Make the Studio Workspace the default surface, move preserved project context
   to a trailing About tab, and rebalance the rounded input/output panels,
   media preview, response area, advanced controls, and responsive layout.
-- Record AlbertXXuu as the public project attribution and Ailumetra trademark
+- Record AlbertXXuu as the public project attribution and AlvenX trademark
   claimant, with ALONICA documented only as a developer ID; add NOTICE,
   TRADEMARKS, and citation metadata without claiming registration.
 - Add a privacy-aware first-run feedback template so external adoption can
   become reproducible product evidence instead of an unstructured comment.
-- Restyle Ailumetra Studio with an explicit light theme, white surfaces,
-  accessible dark text, and restrained blue-to-violet gradients limited to
-  hero emphasis and primary actions across desktop and mobile layouts.
+- Restyle AlvenX Studio with an explicit light theme, accessible dark text,
+  and restrained blue-to-violet gradients limited to the wordmark and hero
+  emphasis across desktop and mobile layouts.
 - Lock the complete Studio type system to a self-hosted, integrity-bound
   Instrument Sans variable font with its OFL notice, coordinated weights and
   spacing, a single-storey lowercase `a`, tabular evidence figures, and a
-  balanced `AI` wordmark treatment across desktop and mobile layouts.
-- Refine the `AI` wordmark accent with a lighter blue-only gradient and a
-  tighter optical join to `lumetra` in both Studio and the README artwork.
+  balanced `Al` wordmark treatment across desktop and mobile layouts.
+- Lock the owner-approved AlvenX master with connected `Al` and `l–v`, a
+  separated `v–e` pair, middle-connected `e–n`, the retained `n–X` signature,
+  and one blue-to-indigo-to-violet gradient across `Al`; apply the exact same
+  outlined geometry to Studio, README artwork, and the social preview.
 - Apply standards-compliant JSON parsing to datasets, run records, resume
   state, run manifests, and the repository audit (`NaN`/`Infinity` are
   rejected).

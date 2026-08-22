@@ -34,7 +34,7 @@ from openmultimodal_lab.studio import (
     select_media,
 )
 from openmultimodal_lab.studio_assets import (
-    AILUMETRA_WORDMARK_SHA256,
+    ALVENX_WORDMARK_SHA256,
     BRAND_HEADER_HTML,
     CLEARED_STATUS_HTML,
     EASTER_EGG_JS,
@@ -327,28 +327,53 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertNotIn("https://", combined)
 
     def test_studio_uses_an_explicit_light_surface_palette(self) -> None:
-        self.assertIn("--ail-bg: #ffffff", STUDIO_CSS)
-        self.assertIn("--ail-panel: #ffffff", STUDIO_CSS)
-        self.assertIn("--ail-text: #0f172a", STUDIO_CSS)
+        self.assertIn("--alx-bg: #eef6ff", STUDIO_CSS)
+        self.assertIn("--alx-panel: rgb(255 255 255 / 78%)", STUDIO_CSS)
+        self.assertIn("--alx-text: #0b1731", STUDIO_CSS)
+        self.assertIn("--alx-reading: #334155", STUDIO_CSS)
+        self.assertIn("--alx-muted: #52647a", STUDIO_CSS)
         self.assertIn("color-scheme: light", STUDIO_CSS)
-        self.assertNotIn("--ail-bg: #070b12", STUDIO_CSS)
-        self.assertNotIn("--ail-panel: #0d1420", STUDIO_CSS)
+        self.assertNotIn("--alx-bg: #070b12", STUDIO_CSS)
+        self.assertNotIn("--alx-panel: #0d1420", STUDIO_CSS)
 
     def test_studio_uses_one_locked_brand_type_system(self) -> None:
         self.assertIn('font-family: "Instrument Sans"', STUDIO_CSS)
-        self.assertIn('--ail-font-sans: "Instrument Sans"', STUDIO_CSS)
+        self.assertIn('--alx-font-sans: "Instrument Sans"', STUDIO_CSS)
         self.assertIn('font-feature-settings: "ss01" 1, "ss02" 1', STUDIO_CSS)
         self.assertNotIn('class="brand-ai"', BRAND_HEADER_HTML)
         self.assertIn("text-transform: uppercase", STUDIO_CSS)
         self.assertIn("font-variant-numeric: tabular-nums", STUDIO_CSS)
-        self.assertEqual(STUDIO_CSS.count("linear-gradient"), 2)
-        self.assertIn("var(--ail-blue) 0%", STUDIO_CSS)
+        self.assertIn(
+            "linear-gradient(145deg, #fbfdff 0%, #f1f7ff 49%, #e7f1ff 100%)",
+            STUDIO_CSS,
+        )
+        self.assertIn("var(--alx-blue) 0%", STUDIO_CSS)
         self.assertNotIn("#0f766e", STUDIO_CSS)
-        self.assertNotIn("--ail-teal", STUDIO_CSS)
+        self.assertNotIn("--alx-teal", STUDIO_CSS)
         self.assertNotIn(
             "font-family: Arial, Helvetica, ui-sans-serif, sans-serif",
             STUDIO_CSS,
         )
+
+    def test_studio_uses_the_locked_static_interface_standard(self) -> None:
+        self.assertIn("--alx-glass-fill: rgb(255 255 255 / 28%)", STUDIO_CSS)
+        self.assertIn("--alx-glass-fill-hover: rgb(255 255 255 / 35%)", STUDIO_CSS)
+        self.assertIn("--alx-glass-edge: rgb(255 255 255 / 68%)", STUDIO_CSS)
+        self.assertIn("--alx-glass-highlight: rgb(255 255 255 / 72%)", STUDIO_CSS)
+        self.assertIn("--alx-glass-blur: 24px", STUDIO_CSS)
+        self.assertIn("background-attachment: fixed", STUDIO_CSS)
+        self.assertIn("scrollbar-gutter: stable", STUDIO_CSS)
+        self.assertNotIn("@keyframes", STUDIO_CSS)
+        self.assertIn('button[role="tab"]:focus-visible', STUDIO_CSS)
+        self.assertIn("outline: 3px solid rgb(37 99 235 / 42%)", STUDIO_CSS)
+        self.assertIn(".gradio-container button.primary", STUDIO_CSS)
+        self.assertIn("background-color: var(--alx-glass-fill)", STUDIO_CSS)
+        self.assertIn("background-color: var(--alx-glass-fill-hover)", STUDIO_CSS)
+        self.assertIn("border-color: rgb(255 255 255 / 84%)", STUDIO_CSS)
+        self.assertIn("inset 0 1px 0 rgb(255 255 255 / 80%)", STUDIO_CSS)
+        self.assertIn("0 0 32px rgb(255 255 255 / 16%)", STUDIO_CSS)
+        self.assertIn("@media (prefers-reduced-motion: reduce)", STUDIO_CSS)
+        self.assertNotIn("button.primary:hover { filter: brightness", STUDIO_CSS)
 
     def test_vendored_brand_font_is_integrity_and_license_bound(self) -> None:
         project_root = Path(__file__).resolve().parents[1]
@@ -373,28 +398,48 @@ class StudioRuntimeTests(unittest.TestCase):
 
     def test_public_wordmark_uses_portable_font_outlines(self) -> None:
         project_root = Path(__file__).resolve().parents[1]
-        source = project_root / "docs/assets/ailumetra-wordmark.svg"
+        source = project_root / "docs/assets/alvenx-wordmark.svg"
         packaged = (
             project_root
-            / "src/openmultimodal_lab/assets/brand/ailumetra-wordmark.svg.b64"
+            / "src/openmultimodal_lab/assets/brand/alvenx-wordmark.svg.b64"
         )
         source_bytes = source.read_bytes()
         packaged_bytes = base64.b64decode(
             "".join(packaged.read_text(encoding="ascii").split()),
             validate=True,
         )
-        wordmark = source_bytes.decode("utf-8")
+        canonical_source_bytes = source_bytes.replace(b"\r\n", b"\n").replace(
+            b"\r", b"\n"
+        )
+        wordmark = canonical_source_bytes.decode("utf-8")
 
-        self.assertEqual(packaged_bytes, source_bytes)
+        self.assertNotIn(b"\r", packaged_bytes)
+        self.assertEqual(packaged_bytes, canonical_source_bytes)
         self.assertEqual(
-            hashlib.sha256(source_bytes).hexdigest(),
-            AILUMETRA_WORDMARK_SHA256,
+            hashlib.sha256(canonical_source_bytes).hexdigest(),
+            ALVENX_WORDMARK_SHA256,
         )
         self.assertIn("Instrument Sans outlines", wordmark)
-        self.assertGreaterEqual(wordmark.count('class="ai"'), 2)
-        self.assertIn('id="ai-gradient"', wordmark)
-        self.assertIn('stop-color="#60a5fa"', wordmark)
-        self.assertIn('transform="translate(690 0)"', wordmark)
+        self.assertGreaterEqual(wordmark.count('class="accent"'), 1)
+        self.assertIn('id="brand-gradient"', wordmark)
+        self.assertIn('gradientUnits="userSpaceOnUse"', wordmark)
+        self.assertIn('x1="0" y1="720" x2="1050" y2="0"', wordmark)
+        self.assertIn('stop-color="#2563eb"', wordmark)
+        self.assertIn('offset="50%" stop-color="#2563eb"', wordmark)
+        self.assertIn('offset="64%" stop-color="#4f46e5"', wordmark)
+        self.assertIn('stop-color="#4f46e5"', wordmark)
+        self.assertIn('stop-color="#7c3aed"', wordmark)
+        self.assertIn('id="brand-l"', wordmark)
+        self.assertIn('id="brand-Al"', wordmark)
+        self.assertIn('href="#brand-Al"', wordmark)
+        self.assertIn('href="#brand-v" x="817.227"', wordmark)
+        self.assertIn('transform="translate(8.937 92)', wordmark)
+        self.assertIn('transform="translate(4.869 126)', wordmark)
+        self.assertIn('id="brand-nX-ligature"', wordmark)
+        self.assertIn(
+            'href="#brand-X" transform="translate(2207.949 0) scale(.877778)"',
+            wordmark,
+        )
         self.assertNotIn("teal", wordmark.casefold())
         self.assertGreater(wordmark.count("<path"), 10)
         self.assertNotIn("<text", wordmark)
@@ -442,12 +487,13 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn("height: auto; overflow-y: visible", STUDIO_CSS)
         self.assertNotIn(".startup-hint", STUDIO_CSS)
         self.assertNotIn("workspace-steps", workspace)
-        self.assertIn("border-radius: 999px", STUDIO_CSS)
+        self.assertIn("--alx-radius-pill: 999px", STUDIO_CSS)
+        self.assertIn("border-radius: var(--alx-radius-pill)", STUDIO_CSS)
         self.assertIn("#media-tabs", STUDIO_CSS)
         self.assertIn('button[role="tab"]::after { display: none', STUDIO_CSS)
         self.assertIn('.tab-container[role="tablist"]::after', STUDIO_CSS)
         self.assertIn("box-shadow: none !important", STUDIO_CSS)
-        self.assertIn("#ailumetra-header", STUDIO_CSS)
+        self.assertIn("#alvenx-header", STUDIO_CSS)
         self.assertIn("background: transparent; backdrop-filter: none", STUDIO_CSS)
         self.assertIn(".workspace-panel .form", STUDIO_CSS)
         self.assertIn("width: 100% !important", STUDIO_CSS)

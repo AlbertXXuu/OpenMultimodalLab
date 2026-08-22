@@ -1,4 +1,4 @@
-"""Dependency-free application services for the optional Ailumetra Studio."""
+"""Dependency-free application services for the optional AlvenX Studio."""
 
 from __future__ import annotations
 
@@ -23,8 +23,8 @@ from .privacy import redact_local_paths
 from .reporting import format_summary, load_records, summarize
 
 
-STUDIO_BRAND = "Ailumetra"
-STUDIO_NAME = "Ailumetra Studio"
+STUDIO_BRAND = "AlvenX"
+STUDIO_NAME = "AlvenX Studio"
 STUDIO_TAGLINE = "Measure multimodal AI. See clearly."
 DEVELOPER_ID = "ALONICA"
 
@@ -316,12 +316,12 @@ class StudioRuntime:
         )
         media_path, media_kind = select_media(image_path, video_path)
         task = EvaluationTask(
-            id="ailumetra-playground",
+            id="alvenx-playground",
             prompt=prompt,
             media=(media_path.name,),
             scoring=ScoringConfig(type="keyword_coverage"),
             metadata={
-                "dataset_version": "ailumetra-studio-session",
+                "dataset_version": "alvenx-studio-session",
                 "category": "unscored-playground",
             },
         )

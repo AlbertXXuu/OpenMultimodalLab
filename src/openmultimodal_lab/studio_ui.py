@@ -1,4 +1,4 @@
-"""Optional Gradio interface for Ailumetra Studio.
+"""Optional Gradio interface for AlvenX Studio.
 
 Gradio is imported lazily so the benchmark core keeps its zero-dependency install.
 """
@@ -69,7 +69,7 @@ def _import_gradio() -> Any:
         import gradio as gr
     except (ImportError, OSError) as exc:
         raise StudioDependencyError(
-            'Ailumetra Studio requires the optional UI dependencies. Install '
+            'AlvenX Studio requires the optional UI dependencies. Install '
             'them with: python -m pip install -e ".[studio]"'
         ) from exc
     return gr
@@ -169,7 +169,7 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
     active_runtime = runtime or StudioRuntime()
 
     with gr.Blocks(
-        title="Ailumetra Studio",
+        title="AlvenX Studio",
         fill_width=True,
         analytics_enabled=False,
     ) as app:
@@ -305,7 +305,7 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                     outputs=[response, metrics, status],
                     api_visibility="private",
                     concurrency_limit=1,
-                    concurrency_id="ailumetra-gpu",
+                    concurrency_id="alvenx-gpu",
                     show_progress="minimal",
                 )
                 video_input.change(
@@ -398,10 +398,10 @@ def launch_studio(
     port: int = 7860,
     inbrowser: bool = True,
 ) -> Any:
-    """Launch Ailumetra Studio on a loopback address only."""
+    """Launch AlvenX Studio on a loopback address only."""
 
     if host not in LOOPBACK_HOSTS:
-        raise ValueError("Ailumetra Studio only accepts a loopback host")
+        raise ValueError("AlvenX Studio only accepts a loopback host")
     if not isinstance(port, int) or isinstance(port, bool) or not 1 <= port <= 65535:
         raise ValueError("port must be an integer from 1 to 65535")
 

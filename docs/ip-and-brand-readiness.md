@@ -17,9 +17,9 @@ engineering checklist, not legal advice.
   provide useful provenance, but provenance alone does not create a registered
   trademark or patent. The tag itself is not cryptographically signed, so the
   project must not describe it as a signed release artifact.
-- `Ailumetra` is the public series identity used across distinct functional
+- `AlvenX` is the public series identity used across distinct functional
   projects and an unregistered trademark claimed by AlbertXXuu. Functional
-  project names remain primary. This repository does not claim that Ailumetra
+  project names remain primary. This repository does not claim that AlvenX
   is registered and must
   not display the registered symbol (`®`) unless registration actually exists
   in the relevant territory. `ALONICA` is a developer ID used by AlbertXXuu,
@@ -70,7 +70,7 @@ dates and target countries. Do not publish a new technical method merely to
 - original design/source files for the wordmark and social preview;
 - dated benchmark records, build manifests, and human-review records;
 - model and dependency license evidence;
-- public posts and screenshots showing first use of the Ailumetra name;
+- public posts and screenshots showing first use of the AlvenX name;
 - contributor authorship through normal Git commits and pull requests.
 
 ## Pending owner confirmation

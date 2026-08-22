@@ -1,6 +1,6 @@
 # Trademark policy
 
-`Ailumetra` and the Ailumetra wordmark are an unregistered series identity and
+`AlvenX` and the AlvenX wordmark are an unregistered series identity and
 project trademarks claimed by **AlbertXXuu**. Functional repository names
 remain the primary identity of each project. This statement does not claim
 registration in any country or territory. `ALONICA` is a developer ID used by
@@ -8,7 +8,7 @@ AlbertXXuu in selected project surfaces; it is not a separate company or legal
 owner.
 
 The Apache-2.0 license applies to the project code and project-generated
-synthetic media. It does not grant general permission to use the Ailumetra
+synthetic media. It does not grant general permission to use the AlvenX
 name or wordmark to identify a modified distribution, product, service, or
 organization.
 
@@ -22,12 +22,12 @@ organization.
 
 ## Uses that require permission
 
-- using Ailumetra or a confusingly similar name as the primary identity of a
+- using AlvenX or a confusingly similar name as the primary identity of a
   modified distribution, hosted service, company, or commercial product;
 - using the wordmark in a way that suggests sponsorship, certification,
   endorsement, or official status;
 - registering a domain, package, social account, or organization name that
-  is likely to be mistaken for an official Ailumetra property.
+  is likely to be mistaken for an official AlvenX property.
 
 Forks and modified distributions should choose a clearly different name and
 state their relationship to the upstream project. Questions may be opened as

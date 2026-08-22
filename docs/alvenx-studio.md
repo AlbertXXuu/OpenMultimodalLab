@@ -1,6 +1,6 @@
-# Ailumetra Studio
+# AlvenX Studio
 
-Ailumetra Studio is the optional local interface for OpenMultimodalLab. It is
+AlvenX Studio is the optional local interface for OpenMultimodalLab. It is
 designed for a clear three-step workflow: open one media input, run one real
 vision-language model, and inspect the response and runtime signals. The
 existing `oml run` and `oml report` commands remain the reproducible benchmark
@@ -118,13 +118,13 @@ project's code or assets:
 - [Gradio Blocks](https://www.gradio.app/docs/gradio/blocks) supplies the local
   application shell, queueing, accessible components, and bounded file flow.
 
-The Ailumetra logo is an original, text-only sans-serif wordmark. All brand
+The AlvenX logo is an original, text-only sans-serif wordmark. All brand
 layout CSS, copy, and interactions in this repository are original project
 work. No third-party frontend template or artwork is copied.
 
 ### Locked typography system
 
-Instrument Sans is the fixed Ailumetra brand and interface family. The
+Instrument Sans is the fixed AlvenX brand and interface family. The
 repository self-hosts the upstream variable WOFF2 file at commit
 `7fa22308a3d0c94ee2b3cd537a1196b65db34a3e`, verifies its SHA-256 as
 `aa72922aafcc0dc18f36ec1d805b0212057dabe8b9d5b8b57f67035aea1b826d`, and
@@ -135,13 +135,13 @@ The interface enables Instrument Sans stylistic set 02 so lowercase `a` uses
 one consistent single-storey construction. Headings, body copy, controls, and
 evidence figures share the same family; evidence figures use tabular numerals,
 while only literal code and local paths retain an explicit monospace face. The
-wordmark visually capitalizes the existing `Ai` characters as a compact `AI`
-accent without changing the accessible or public name `Ailumetra`. Its
-light-blue-to-blue gradient and optically tightened join to `lumetra` are
-shared by the Studio header and portable README artwork. The Studio embeds the
+wordmark keeps the accessible and public name `AlvenX` while using the
+owner-approved connected `Al`, `l–v`, `e–n`, and `n–X` outline relationships;
+`v–e` remains physically separate. Its continuous blue-to-indigo-to-violet
+`Al` gradient is shared by the Studio header and portable README artwork. The Studio embeds the
 same outlined SVG bytes used by the README, verifies them against SHA-256
-`9807f882dc58a9ac7c03ccba8ec8884503e8d1d6aa42525b969200cb14c6368e`,
-and does not reconstruct `AI` and `lumetra` with browser letter spacing.
+`a17e802a71b30b04a26e5b0da6c1adda93b0705463d237d142f50dac4ed40192`,
+and does not reconstruct `Al` and `venX` with browser letter spacing.
 Chinese text follows the embedded Latin face with professional platform CJK
 fallbacks. Because the wordmark stores glyphs as SVG outlines, it remains
 identical on GitHub and in Studio without requiring a local font install.
@@ -151,16 +151,26 @@ now a stable design contract. They should change only for a demonstrated
 accessibility, licensing, or rendering defect and after an explicit brand
 decision plus desktop and mobile visual regression review.
 
-The interface palette uses white surfaces, dark ink, and a cobalt-led accent.
-The hero emphasis and primary action both begin in blue and move through
-indigo toward violet. The `AI` wordmark accent uses a separate
-light-blue-to-blue gradient; cards, status indicators, evidence figures, and
-the page background remain solid. Green is not part of the Studio brand
-palette.
+The interface implements the owner-approved AlvenX interface standard
+`2026-08-22.8`. Its static product canvas uses the same airy light-blue family
+as alvenx.com (`#FBFDFF → #F1F7FF → #E7F1FF`) with fixed, low-contrast radial
+depth. Studio deliberately does not inherit the website's animated ambient
+fields: a long-running evidence tool should not add continuous background
+motion or GPU work.
+
+Instrument Sans, dark `#0B1731` primary ink, `#334155` reading ink, and the
+canonical `#2563EB → #4F46E5 → #7C3AED` accent remain shared. Primary run and
+report actions use the same restrained liquid-glass construction as the
+website: translucent background-reactive fill, one optical outer edge, a
+softer inset top highlight, `24px` backdrop blur, continuous pill curvature,
+small hover lift, active compression, and an independent focus ring. The two
+edge tones represent the physical boundary and inner refraction rather than
+two equally strong borders. Dense evidence tables and reading surfaces remain
+quiet and mostly opaque. Green is not part of the Studio brand palette.
 
 ## 中文说明
 
-Ailumetra Studio 是 OpenMultimodalLab 的可选本地界面，不替代可复现的
+AlvenX Studio 是 OpenMultimodalLab 的可选本地界面，不替代可复现的
 `oml run` / `oml report` 流程。默认 Workspace 把模型、媒体、Prompt、回答和
 实时指标放在同一功能区；Reports 只读打开已有 JSONL 结果；About 后置展示
 已经保存的 v1.0.0 证据。单次 Workspace 结果不能当作正式模型排名。
@@ -182,7 +192,7 @@ Input 卡片内的简短说明与运行状态会明确区分冷启动与热复�
 
 ## Compatibility promise
 
-`Ailumetra` is the shared series identity and `Ailumetra Studio` is this
+`AlvenX` is the shared series identity and `AlvenX Studio` is this
 project's interface name. The repository remains `OpenMultimodalLab`, the
 Python distribution remains `openmultimodal-lab`, and the CLI remains `oml`; existing commands and
 v1.0.0 evidence paths are intentionally unchanged.

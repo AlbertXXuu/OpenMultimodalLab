@@ -1,10 +1,10 @@
-# Ailumetra launch kit
+# AlvenX launch kit
 
 This directory contains truthful, reusable launch copy for the first external
 feedback cycle. It is preparation material, not evidence that any post was
 published or that any channel adopted the project.
 
-![Ailumetra social preview](../assets/ailumetra-social-preview.png)
+![AlvenX social preview](../assets/alvenx-social-preview.png)
 
 Rebuild the preview with `python scripts/build_social_preview.py`. The script
 uses the vendored Instrument Sans payload and a local Chromium-family browser;

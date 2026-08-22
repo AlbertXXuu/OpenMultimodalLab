@@ -1,8 +1,9 @@
-"""Build the deterministic 1280x640 Ailumetra social preview image."""
+"""Build the deterministic 1280x640 AlvenX social preview image."""
 
 from __future__ import annotations
 
 import argparse
+import base64
 import html
 import shutil
 import subprocess
@@ -19,7 +20,8 @@ FONT_PATH = (
     / "fonts"
     / "InstrumentSans-wdth-wght.woff2.b64"
 )
-DEFAULT_OUTPUT = PROJECT_ROOT / "docs" / "assets" / "ailumetra-social-preview.png"
+DEFAULT_OUTPUT = PROJECT_ROOT / "docs" / "assets" / "alvenx-social-preview.png"
+WORDMARK_PATH = PROJECT_ROOT / "docs" / "assets" / "alvenx-wordmark.svg"
 CANVAS_SIZE = (1280, 640)
 
 
@@ -64,6 +66,7 @@ def _find_browser(explicit: Path | None) -> Path:
 
 def _preview_html() -> str:
     font_base64 = "".join(FONT_PATH.read_text(encoding="ascii").split())
+    wordmark_base64 = base64.b64encode(WORDMARK_PATH.read_bytes()).decode("ascii")
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -91,22 +94,10 @@ body {{
   position: absolute; inset: 34px; overflow: hidden;
   border: 2px solid #dbeafe; border-radius: 34px; background: #fff;
 }}
-.brand {{ position: absolute; top: 38px; left: 48px; }}
-.brand-name {{
-  display: flex; align-items: baseline; font-size: 76px; line-height: .82;
-  font-weight: 620; font-stretch: 92%; letter-spacing: -.065em;
+.brand {{
+  position: absolute; top: 21px; left: 48px; width: 430px; height: 150px;
 }}
-.brand-ai {{
-  text-transform: uppercase; font-weight: 700; font-stretch: 86%;
-  letter-spacing: -.105em; margin-right: -.045em; color: transparent;
-  background: linear-gradient(120deg,#60a5fa 0%,#3b82f6 52%,#2563eb 100%);
-  background-clip: text; -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}}
-.brand-signal {{
-  margin: 14px 0 0 3px; color: #64748b; font-size: 14px;
-  font-weight: 650; letter-spacing: .29em;
-}}
+.brand img {{ display: block; width: 430px; height: 150px; }}
 .eyebrow {{
   position: absolute; left: 50px; top: 171px; color: #2563eb;
   font-size: 17px; font-weight: 650; letter-spacing: .08em;
@@ -156,11 +147,8 @@ h1 span {{
 </style>
 </head>
 <body>
-  <main class="canvas" aria-label="Ailumetra social preview">
-    <div class="brand">
-      <div class="brand-name"><span class="brand-ai">Ai</span><span>lumetra</span></div>
-      <div class="brand-signal">OPEN MULTIMODAL EVIDENCE</div>
-    </div>
+  <main class="canvas" aria-label="AlvenX social preview">
+    <div class="brand"><img src="data:image/svg+xml;base64,{wordmark_base64}" alt="AlvenX — Multimodal Evidence"></div>
     <div class="eyebrow">LOCAL-FIRST · REPRODUCIBLE · OPEN SOURCE</div>
     <h1>Local multimodal evidence,<br><span>on hardware you own.</span></h1>
     <p class="summary">Compare real vision-language models and rebuild every result<br>
@@ -186,7 +174,7 @@ h1 span {{
 def build_preview(output: Path, *, browser: Path | None = None) -> None:
     executable = _find_browser(browser)
     output.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="ailumetra-social-preview-") as temp_dir:
+    with tempfile.TemporaryDirectory(prefix="alvenx-social-preview-") as temp_dir:
         source = Path(temp_dir) / "preview.html"
         source.write_text(_preview_html(), encoding="utf-8")
         command = [

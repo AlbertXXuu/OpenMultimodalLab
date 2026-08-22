@@ -1,4 +1,4 @@
-# Ailumetra Open-Source Project Standard
+# AlvenX Open-Source Project Standard
 
 **Standard:** AOS-0.1<br>
 **Effective date:** 2026-08-15<br>
@@ -7,11 +7,11 @@
 ## 1. Purpose and status
 
 This document is the engineering and public-delivery contract for projects in
-the Ailumetra open-source series. It exists to make separate repositories feel
+the AlvenX open-source series. It exists to make separate repositories feel
 related without forcing them into one codebase or one research scope.
 
 It is a maintainer-owned project standard, not an external certification, a
-legal entity, or a claim that Ailumetra is a registered trademark. A repository
+legal entity, or a claim that AlvenX is a registered trademark. A repository
 may be technically complete while external adoption remains unvalidated; the
 standard keeps those states separate.
 
@@ -32,7 +32,7 @@ The identity order is fixed:
 1. **Functional project name** — primary repository, package, CLI, and README
    heading.
 2. **Functional description** — the concrete developer job the project does.
-3. **Ailumetra** — the secondary series identity and shared quality story.
+3. **AlvenX** — the secondary series identity and shared quality story.
 
 Therefore:
 
@@ -40,11 +40,11 @@ Therefore:
 - the wordmark signal line must describe the project domain;
 - the README H1 must use the functional project name;
 - repository, distribution, import, and CLI names remain function-led;
-- `Ailumetra` must not replace a clear product name or imply that a company,
+- `AlvenX` must not replace a clear product name or imply that a company,
   hosted service, or certification program already exists.
 
 The standard does not require every project to use `Lab`, nor does it require
-an `ailumetra-` package prefix. Shared identity is not a reason to create a
+an `alvenx-` package prefix. Shared identity is not a reason to create a
 shared runtime dependency.
 
 ## 3. Research and scope separation
@@ -82,11 +82,11 @@ scope boundary.
 
 ## 4. README public contract
 
-The first screen of every public Ailumetra repository follows this order:
+The first screen of every public AlvenX repository follows this order:
 
-1. shared Ailumetra wordmark with a project-specific signal line;
+1. shared AlvenX wordmark with a project-specific signal line;
 2. functional project-name H1;
-3. one bold sentence connecting the project to Ailumetra;
+3. one bold sentence connecting the project to AlvenX;
 4. truthful CI, runtime, and license badges;
 5. English/Chinese language switch when both documents are maintained;
 6. one practical question or developer job;
@@ -206,7 +206,7 @@ architecture do not satisfy the cadence.
 ## 10. Conformance and evolution
 
 Each project records items as `pass`, `partial`, `pending`, or `not applicable`
-in `docs/ailumetra-conformance.md`. A project may remain in the series with
+in `docs/alvenx-conformance.md`. A project may remain in the series with
 pending items when the README states them accurately.
 
 Changes to this standard require:

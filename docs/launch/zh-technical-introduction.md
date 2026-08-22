@@ -1,11 +1,11 @@
-# Ailumetra：在 8 GB 消费级 GPU 上，把多模态模型对比变成可复核证据
+# AlvenX：在 8 GB 消费级 GPU 上，把多模态模型对比变成可复核证据
 
 选择本地视觉语言模型时，我们经常看到一张成功截图、一个平均分，或者一条
 缺少环境信息的结论。但真正准备在自己的电脑上运行模型时，更重要的问题是：
 **同一组任务、同一台硬件、同一套推理协议下，哪个模型更合适，失败和性能
 代价是什么，别人能否复核？**
 
-为此，我开发了 Ailumetra 背后的开源评测引擎 OpenMultimodalLab。它不是通用
+为此，我开发了 AlvenX 背后的开源评测引擎 OpenMultimodalLab。它不是通用
 排行榜，而是一套本地优先、证据优先的多模态评测工作流。
 
 ## 它解决什么问题
@@ -50,7 +50,7 @@ Qwen 的平均任务得分为 0.784，中位 TTFT 为 120.5 ms；SmolVLM2 的平
 仓库：<https://github.com/AlbertXXuu/OpenMultimodalLab>
 
 第一次体验可以先运行零模型依赖的 smoke 流程；拥有 8 GB NVIDIA GPU 的用户
-可以按 Qwen3-VL 或 SmolVLM2 教程运行真实后端。项目还提供本地 Ailumetra
+可以按 Qwen3-VL 或 SmolVLM2 教程运行真实后端。项目还提供本地 AlvenX
 Studio，用于上传单张图片、文档截图或短视频并查看模型回答和运行指标。
 
 ## 我现在需要的反馈
