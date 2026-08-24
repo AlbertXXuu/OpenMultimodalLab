@@ -25,6 +25,7 @@ from .studio import (
     safe_studio_error,
 )
 from .studio_assets import (
+    ALVENX_MONOGRAM_PATH,
     BRAND_HEADER_HTML,
     CLEARED_STATUS_HTML,
     EMPTY_METRICS_HTML,
@@ -423,4 +424,5 @@ def launch_studio(
         theme="base",
         css=STUDIO_CSS,
         js=STUDIO_NAV_JS,
+        favicon_path=ALVENX_MONOGRAM_PATH,
     )

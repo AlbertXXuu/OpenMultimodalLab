@@ -63,6 +63,7 @@ where = ["src"]
 [tool.setuptools.package-data]
 openmultimodal_lab = [
   "assets/brand/*.b64",
+  "assets/brand/*.svg",
   "assets/fonts/*.b64",
   "assets/fonts/*.txt",
   "assets/studio/*.css",

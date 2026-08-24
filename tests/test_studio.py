@@ -31,6 +31,8 @@ from openmultimodal_lab.studio import (
     select_media,
 )
 from openmultimodal_lab.studio_assets import (
+    ALVENX_MONOGRAM_PATH,
+    ALVENX_MONOGRAM_SHA256,
     ALVENX_WORDMARK_SHA256,
     BRAND_HEADER_HTML,
     CLEARED_STATUS_HTML,
@@ -451,6 +453,19 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertNotIn("<text", wordmark)
         self.assertNotIn("font-family", wordmark)
 
+    def test_packaged_favicon_is_the_canonical_square_ax_monogram(self) -> None:
+        payload = ALVENX_MONOGRAM_PATH.read_bytes()
+        monogram = payload.decode("utf-8")
+
+        self.assertEqual(
+            hashlib.sha256(payload).hexdigest(), ALVENX_MONOGRAM_SHA256
+        )
+        self.assertIn(
+            'width="1000" height="1000" viewBox="0 0 1000 1000"', monogram
+        )
+        self.assertIn("AlvenX AX monogram", monogram)
+        self.assertNotIn("AlvenX.com", monogram)
+
     def test_media_guidance_documents_bounded_aspect_safe_inputs(self) -> None:
         self.assertIn("25 MiB", IMAGE_UPLOAD_GUIDANCE_HTML)
         self.assertIn("full frame preserved", IMAGE_UPLOAD_GUIDANCE_HTML)
@@ -737,6 +752,7 @@ class StudioGradioTests(unittest.TestCase):
         self.assertFalse(fake.kwargs["enable_monitoring"])
         self.assertTrue(fake.kwargs["strict_cors"])
         self.assertEqual(fake.kwargs["js"], STUDIO_NAV_JS)
+        self.assertEqual(fake.kwargs["favicon_path"], ALVENX_MONOGRAM_PATH)
 
         with self.assertRaisesRegex(ValueError, "loopback"):
             launch_studio(host="0.0.0.0")

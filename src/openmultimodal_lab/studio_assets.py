@@ -6,6 +6,7 @@ import base64
 import hashlib
 from html import escape
 from importlib.resources import files
+from pathlib import Path
 
 from .studio import (
     PLAYGROUND_MAX_NEW_TOKENS,
@@ -22,6 +23,23 @@ INSTRUMENT_SANS_SHA256 = (
 ALVENX_WORDMARK_SHA256 = (
     "8ae10e02c27091e29e0191a7934506118f144aae11898b20222d7f9d587e2662"
 )
+ALVENX_MONOGRAM_SHA256 = (
+    "45367ec933c2ed8565cdf9e683fd4b856057d375435b46c62acb4fbb2cbeef16"
+)
+
+
+def _verified_monogram_path() -> Path:
+    path = Path(__file__).resolve().parent / "assets/brand/alvenx-monogram.svg"
+    payload = path.read_bytes()
+    if (
+        not payload.lstrip().startswith(b"<svg")
+        or hashlib.sha256(payload).hexdigest() != ALVENX_MONOGRAM_SHA256
+    ):
+        raise RuntimeError("The bundled AX monogram failed integrity check.")
+    return path
+
+
+ALVENX_MONOGRAM_PATH = _verified_monogram_path()
 
 
 def _verified_base64(relative: str, expected_sha256: str, magic: bytes) -> str:
