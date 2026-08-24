@@ -675,12 +675,12 @@ class StudioGradioTests(unittest.TestCase):
                 for index, item in enumerate(app.config["components"])
             }
             self.assertLess(
-                component_order[run_button["id"]],
                 component_order[backend_component["id"]],
+                component_order[run_button["id"]],
             )
             self.assertLess(
-                component_order[clear_button["id"]],
                 component_order[backend_component["id"]],
+                component_order[clear_button["id"]],
             )
             prompt_prepare_event = next(
                 item
