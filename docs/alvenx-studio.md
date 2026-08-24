@@ -1,10 +1,10 @@
 # AlvenX Studio
 
-AlvenX Studio is the optional local interface for OpenMultimodalLab. It is
-designed for a clear three-step workflow: open one media input, run one real
-vision-language model, and inspect the response and runtime signals. The
-existing `oml run` and `oml report` commands remain the reproducible benchmark
-interface and source of durable evidence.
+AlvenX Studio is the optional local interface for OpenMultimodalLab. Its Run
+workflow makes four boundaries explicit: select one source, pin one local
+model, define the prompt and generation limits, then inspect the response next
+to its runtime evidence. The existing `oml run` and `oml report` commands
+remain the reproducible benchmark interface and source of durable evidence.
 
 ## Install on Windows
 
@@ -30,39 +30,39 @@ without opening a tab, or `--port 8765` to choose another local port.
 
 ## What each tab means
 
-- **Workspace** is the default view. It keeps model selection, one image,
-  document screenshot, or short video, the prompt, optional generation
-  controls, model response, and runtime metrics in one input-to-output surface.
-  Its inference is explicitly unscored and is not a formal benchmark.
+- **Run** is the default workbench. It keeps one image, document screenshot, or
+  short video together with local-model selection, prompt and bounded
+  generation controls, response, status, and runtime metrics. Its inference is
+  explicitly unscored and is not a formal benchmark.
 - **Reports** opens a bounded JSONL record produced by `oml run`, derives the
   summary with the existing reporter, and never rewrites the source file.
-- **About** presents the already preserved v1.0.0 evidence after the functional
-  surfaces. It does not rerun a model or replace the published result.
+- **Method** explains the preserved v1 scope and why task control, measurement,
+  and interpretation remain separate. It does not rerun a model or replace a
+  published result.
 
-The backend selector sits below the primary Run/Clear actions so media and
-prompt work remain the first visual focus. The selected backend still applies
-to the next run; Qwen3-VL remains the default.
+The source comes first, followed by backend, prompt, generation controls, and
+the Run/Clear actions. The selected backend applies to the next run; Qwen3-VL
+remains the default.
 
 Only one queued model call runs at a time. When the backend changes, the old
 adapter is released before the next model loads, which keeps the interface
 practical on the verified 8 GB GPU profile.
 
-The Workspace opens directly into its Input and Output cards instead of
-repeating a marketing title and four-step guide. A compact note inside the
-Input card and the run status distinguish a **cold start** from **warm reuse**.
+The Run view starts with a compact four-step map and a visible local-only
+boundary, followed by two coordinated panels: **Prepare the experiment** and
+**Read result and runtime together**. A panel note and the run status
+distinguish a **cold start** from **warm reuse**.
 The first request loads the selected model and can take substantially
 longer; after a successful request, Studio confirms that the model remains
 warm for the next run. Clearing media, prompt, and output does not unload that
-model. The unboxed brand row removes decorative framing above the Workspace;
-the primary navigation has no redundant divider, while its selected state,
-media selector, cards, and controls use a nested radius system. Media and response
-surfaces use compact, bounded default heights with aspect-safe previews,
-scrolling text, and full-screen media controls so the two working panels enter
-the initial laptop viewport without discarding content. On desktop, both cards
-stay equal-height and fully bounded in the viewport while their longer contents
-scroll independently; narrower layouts return to normal document scrolling.
+model. The wordmark is a static identity element: it is not a button and has no
+hidden click interaction. The glass header, segmented navigation, media
+selector, panels, and controls follow a nested radius system. Media and
+response surfaces use bounded heights with aspect-safe previews, scrolling
+text, and full-screen media controls. Narrow layouts return to natural document
+scrolling and do not introduce horizontal overflow.
 
-### Workspace generation controls
+### Run generation controls
 
 - **Max new tokens** is a hard output-length allowance, not a quality setting.
   Studio defaults to 512, permits up to 1,024, and shows an amber warning when
@@ -118,7 +118,7 @@ project's code or assets:
 - [Gradio Blocks](https://www.gradio.app/docs/gradio/blocks) supplies the local
   application shell, queueing, accessible components, and bounded file flow.
 
-The AlvenX logo is an original, text-only sans-serif wordmark. All brand
+The AlvenX logo is an original, outline-based sans-serif wordmark. All brand
 layout CSS, copy, and interactions in this repository are original project
 work. No third-party frontend template or artwork is copied.
 
@@ -140,7 +140,7 @@ owner-approved connected `Al`, `l–v`, `e–n`, and `n–X` outline relationshi
 `v–e` remains physically separate. Its continuous blue-to-indigo-to-violet
 `Al` gradient is shared by the Studio header and portable README artwork. The Studio embeds the
 same outlined SVG bytes used by the README, verifies them against SHA-256
-`a17e802a71b30b04a26e5b0da6c1adda93b0705463d237d142f50dac4ed40192`,
+`f6d2ed3ca53b65a274235b8d563fc3eb248199baf82f1496f7e8aac38c37c8d2`,
 and does not reconstruct `Al` and `venX` with browser letter spacing.
 Chinese text follows the embedded Latin face with professional platform CJK
 fallbacks. Because the wordmark stores glyphs as SVG outlines, it remains
@@ -151,12 +151,18 @@ now a stable design contract. They should change only for a demonstrated
 accessibility, licensing, or rendering defect and after an explicit brand
 decision plus desktop and mobile visual regression review.
 
-The interface implements the owner-approved AlvenX interface standard
-`2026-08-22.8`. Its static product canvas uses the same airy light-blue family
-as alvenx.com (`#FBFDFF → #F1F7FF → #E7F1FF`) with fixed, low-contrast radial
-depth. Studio deliberately does not inherit the website's animated ambient
-fields: a long-running evidence tool should not add continuous background
-motion or GPU work.
+The interface implements AlvenX interface revision `2026-08-25.1`. This OML
+canvas is the locked common background for the OML, BrowserAgentRegression,
+and PhysGauge studios. From back to front it is:
+
+- a blue radial field at `12% 5%`, `42%` alpha, fading by `34%`;
+- a violet radial field at `84% 7%`, `28%` alpha, fading by `36%`;
+- an indigo radial field at `68% 88%`, `14%` alpha, fading by `38%`;
+- `linear-gradient(145deg, #FBFDFF 0%, #F1F7FF 49%, #E7F1FF 100%)`.
+
+All four layers use fixed attachment. The studios deliberately do not inherit
+the website's animated ambient fields: a long-running evidence tool should not
+add continuous background motion or GPU work.
 
 Instrument Sans, dark `#0B1731` primary ink, `#334155` reading ink, and the
 canonical `#2563EB → #4F46E5 → #7C3AED` accent remain shared. Primary run and
@@ -171,20 +177,18 @@ quiet and mostly opaque. Green is not part of the Studio brand palette.
 ## 中文说明
 
 AlvenX Studio 是 OpenMultimodalLab 的可选本地界面，不替代可复现的
-`oml run` / `oml report` 流程。默认 Workspace 把模型、媒体、Prompt、回答和
-实时指标放在同一功能区；Reports 只读打开已有 JSONL 结果；About 后置展示
-已经保存的 v1.0.0 证据。单次 Workspace 结果不能当作正式模型排名。
+`oml run` / `oml report` 流程。默认 Run 按“Source → Model → Prompt → Evidence”
+组织媒体、模型、Prompt、回答和实时指标；Reports 只读打开已有 JSONL 结果；
+Method 说明 v1 测量边界。单次 Run 结果不能当作正式模型排名。
 
-Workspace 在主导航后直接显示 Input/Output 卡片，不再重复宣传标题和四步提示。
-Input 卡片内的简短说明与运行状态会明确区分冷启动与热复用：第一次请求需要加载模型，成功后模型会
+Run 页先显示紧凑的四步引导和“仅本机”边界，再显示“准备实验”和“证据控制台”
+两张工作卡片。卡片说明与运行状态会明确区分冷启动与热复用：第一次请求需要加载模型，成功后模型会
 留在显存中供下一次请求复用；Clear 只清空媒体、Prompt、回答和指标，不卸载
 模型；清空后在 Prompt 为空时点击 Run，会自动恢复默认视觉描述 Prompt。模型
-选择放在 Run/Clear 下方，所选后端仍用于下一次运行。顶部品牌行取消装饰性大
-外框，主导航取消多余分隔线；选中状态、媒体分段
-控件和工作卡片采用统一的嵌套圆角层级，并压缩默认媒体与回答区域高度，使常见
-笔记本首屏能直接看到 Input/Output 工作区；
-桌面端两张卡片等高且外框完整留在视口内，较长内容在卡片内部滚动；窄屏恢复
-自然页面滚动。媒体仍按原始比例完整显示，长回答则在框内滚动。
+选择位于媒体之后，所选后端用于下一次运行。顶部 AlvenX 标志只作为静态品牌
+元素，不可点击、没有隐藏彩蛋。玻璃标题栏、分段导航、媒体控件和工作卡片采用
+统一的嵌套圆角层级；窄屏恢复自然页面滚动且不产生横向溢出。媒体仍按原始比例
+完整显示，长回答在框内滚动。
 
 界面只能监听本机回环地址，关闭公开分享、监控和分析，并将 GPU 推理并发限制
 为 1。切换模型时会释放上一个模型，以适配已验证的 8 GB 消费级 GPU。公开

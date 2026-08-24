@@ -26,7 +26,6 @@ from .studio import (
 from .studio_assets import (
     BRAND_HEADER_HTML,
     CLEARED_STATUS_HTML,
-    EASTER_EGG_JS,
     EMPTY_METRICS_HTML,
     EMPTY_REPORT_HTML,
     EMPTY_STATUS_HTML,
@@ -176,8 +175,8 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
     ) as app:
         gr.HTML(BRAND_HEADER_HTML, elem_id="studio-brand-header")
 
-        with gr.Tabs(selected="workspace", elem_id="studio-tabs"):
-            with gr.Tab("Workspace", id="workspace"):
+        with gr.Tabs(selected="run", elem_id="studio-tabs"):
+            with gr.Tab("Run", id="run"):
                 gr.HTML(WORKSPACE_GUIDE_HTML)
                 with gr.Row(elem_classes="studio-workspace"):
                     with gr.Column(
@@ -210,15 +209,6 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                                     elem_id="studio-video-input",
                                     elem_classes="studio-media-input",
                                 )
-                        prompt = gr.Textbox(
-                            value=DEFAULT_PROMPT,
-                            label="Prompt",
-                            lines=3,
-                            max_lines=8,
-                            max_length=PLAYGROUND_PROMPT_MAX_CHARS,
-                            placeholder="Ask about visual content, text, layout, or motion...",
-                            elem_classes="studio-control",
-                        )
                         backend = gr.Dropdown(
                             choices=[
                                 (label, name)
@@ -228,6 +218,15 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                             label="Local backend",
                             info="Choose the local model before starting the run.",
                             filterable=False,
+                            elem_classes="studio-control",
+                        )
+                        prompt = gr.Textbox(
+                            value=DEFAULT_PROMPT,
+                            label="Prompt",
+                            lines=3,
+                            max_lines=8,
+                            max_length=PLAYGROUND_PROMPT_MAX_CHARS,
+                            placeholder="Ask about visual content, text, layout, or motion...",
                             elem_classes="studio-control",
                         )
                         with gr.Accordion(
@@ -388,7 +387,7 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                     show_progress="minimal",
                 )
 
-            with gr.Tab("About", id="about"):
+            with gr.Tab("Method", id="method"):
                 gr.HTML(OVERVIEW_HTML)
 
     app.queue(api_open=False, max_size=8, default_concurrency_limit=1)
@@ -422,5 +421,4 @@ def launch_studio(
         footer_links=[],
         theme="base",
         css=STUDIO_CSS,
-        js=EASTER_EGG_JS,
     )

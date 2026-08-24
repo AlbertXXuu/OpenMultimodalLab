@@ -65,4 +65,5 @@ openmultimodal_lab = [
   "assets/brand/*.b64",
   "assets/fonts/*.b64",
   "assets/fonts/*.txt",
+  "assets/studio/*.css",
 ]

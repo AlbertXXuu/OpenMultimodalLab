@@ -180,11 +180,11 @@ model-quality result.
 
 ## AlvenX Studio
 
-AlvenX Studio adds an optional, polished local interface without changing
-the reproducible CLI workflow. It opens directly into a one-input Workspace
-with model controls, media, response, and live runtime evidence; Reports and
-the project About view follow behind it. Formal benchmark evidence remains
-separate.
+AlvenX Studio adds an optional local evidence workbench without changing the
+reproducible CLI workflow. Its **Run** view guides one source through model and
+prompt configuration into a response with live runtime evidence; **Reports**
+opens preserved JSONL records read-only, and **Method** explains the v1
+measurement boundary. Formal benchmark evidence remains separate.
 
 Run it inside an existing Python 3.11/3.12 model environment; the Studio extra
 installs the interface, not the selected model backend or a CUDA-enabled
@@ -197,12 +197,13 @@ PyTorch build.
 ```
 
 The Studio listens on `127.0.0.1`, disables public sharing and analytics, and
-serializes model calls for an 8 GB GPU. Workspace responses are explicitly
-unscored; the interface distinguishes the first cold model load from later
-warm reuse, and Clear resets both media tabs, the prompt, response, and metrics
-without unloading the model. Running with that cleared prompt restores the
-default visual-description prompt automatically. Use `oml run` for durable,
-comparable evidence.
+serializes model calls for an 8 GB GPU. Interactive Run responses are
+explicitly unscored; the interface distinguishes the first cold model load
+from later warm reuse, and Clear resets both media tabs, the prompt, response,
+and metrics without unloading the model. Running with that cleared prompt
+restores the default visual-description prompt automatically. The AlvenX
+wordmark is a static identity element with no hidden click interaction. Use
+`oml run` for durable, comparable evidence.
 See the [Studio guide and security boundary](docs/alvenx-studio.md).
 
 ## Run a real local model

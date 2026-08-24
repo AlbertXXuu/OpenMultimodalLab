@@ -13,7 +13,6 @@ from openmultimodal_lab.adapters import MockAdapter
 from openmultimodal_lab.models import EvaluationTask, ModelOutput
 from openmultimodal_lab.runner import run_benchmark
 from openmultimodal_lab.studio import (
-    DEVELOPER_ID,
     MAX_REPORT_ROWS,
     PLAYGROUND_MAX_NEW_TOKENS,
     PLAYGROUND_MAX_TIMEOUT_SECONDS,
@@ -22,8 +21,6 @@ from openmultimodal_lab.studio import (
     PLAYGROUND_UI_MIN_NEW_TOKENS,
     PLAYGROUND_UI_MIN_TIMEOUT_SECONDS,
     STUDIO_BRAND,
-    STUDIO_NAME,
-    STUDIO_TAGLINE,
     StudioInputError,
     StudioRuntime,
     PlaygroundResult,
@@ -37,7 +34,6 @@ from openmultimodal_lab.studio_assets import (
     ALVENX_WORDMARK_SHA256,
     BRAND_HEADER_HTML,
     CLEARED_STATUS_HTML,
-    EASTER_EGG_JS,
     EMPTY_METRICS_HTML,
     EMPTY_STATUS_HTML,
     IMAGE_UPLOAD_GUIDANCE_HTML,
@@ -269,7 +265,7 @@ class StudioRuntimeTests(unittest.TestCase):
             60,
         )
         self.assertEqual(response, "")
-        self.assertIn("LIVE METRICS", metrics)
+        self.assertIn("LIVE TELEMETRY", metrics)
         self.assertNotIn("Albert", status)
 
         summary, text, rows = _open_report(None)
@@ -311,44 +307,49 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn("UNSCORED", metrics)
         self.assertIn("Completed locally", status)
 
-    def test_brand_assets_are_local_and_include_accessible_developer_signal(self) -> None:
-        combined = BRAND_HEADER_HTML + STUDIO_CSS + EASTER_EGG_JS
+    def test_brand_assets_are_local_and_wordmark_is_not_interactive(self) -> None:
+        combined = BRAND_HEADER_HTML + STUDIO_CSS
         self.assertIn(STUDIO_BRAND, combined)
-        self.assertIn(STUDIO_NAME, combined)
-        self.assertIn(STUDIO_TAGLINE, combined)
-        self.assertIn(DEVELOPER_ID, combined)
         self.assertIn("data:image/svg+xml;base64,", BRAND_HEADER_HTML)
         self.assertIn('class="brand-wordmark-image"', BRAND_HEADER_HTML)
-        self.assertIn("width: clamp(150px,13.5vw,178px)", STUDIO_CSS)
-        self.assertNotIn("transform: translateY(-12px)", STUDIO_CSS)
+        self.assertIn("width: clamp(146px, 13vw, 176px)", STUDIO_CSS)
+        self.assertIn("cursor: default", STUDIO_CSS)
         self.assertNotIn("<svg", BRAND_HEADER_HTML.casefold())
-        self.assertIn("event.altKey", EASTER_EGG_JS)
-        self.assertIn('event.key.toLowerCase() === "a"', EASTER_EGG_JS)
+        self.assertNotIn("<button", BRAND_HEADER_HTML.casefold())
+        self.assertNotIn("developer-signal", combined)
+        self.assertNotIn("addEventListener", combined)
         self.assertNotIn("http://", combined)
         self.assertNotIn("https://", combined)
 
     def test_studio_uses_an_explicit_light_surface_palette(self) -> None:
-        self.assertIn("--alx-bg: #eef6ff", STUDIO_CSS)
-        self.assertIn("--alx-panel: rgb(255 255 255 / 78%)", STUDIO_CSS)
-        self.assertIn("--alx-text: #0b1731", STUDIO_CSS)
+        self.assertIn("--alx-panel: rgb(255 255 255 / 72%)", STUDIO_CSS)
+        self.assertIn("--alx-ink: #0b1731", STUDIO_CSS)
         self.assertIn("--alx-reading: #334155", STUDIO_CSS)
         self.assertIn("--alx-muted: #52647a", STUDIO_CSS)
         self.assertIn("color-scheme: light", STUDIO_CSS)
-        self.assertNotIn("--alx-bg: #070b12", STUDIO_CSS)
-        self.assertNotIn("--alx-panel: #0d1420", STUDIO_CSS)
+        self.assertIn(
+            "radial-gradient(circle at 12% 5%, rgb(147 197 253 / 42%), transparent 34%)",
+            STUDIO_CSS,
+        )
+        self.assertIn(
+            "radial-gradient(circle at 84% 7%, rgb(167 139 250 / 28%), transparent 36%)",
+            STUDIO_CSS,
+        )
 
     def test_studio_uses_one_locked_brand_type_system(self) -> None:
         self.assertIn('font-family: "Instrument Sans"', STUDIO_CSS)
-        self.assertIn('--alx-font-sans: "Instrument Sans"', STUDIO_CSS)
+        self.assertIn('--alx-font: "Instrument Sans"', STUDIO_CSS)
         self.assertIn('font-feature-settings: "ss01" 1, "ss02" 1', STUDIO_CSS)
         self.assertNotIn('class="brand-ai"', BRAND_HEADER_HTML)
         self.assertIn("text-transform: uppercase", STUDIO_CSS)
-        self.assertIn("font-variant-numeric: tabular-nums", STUDIO_CSS)
         self.assertIn(
             "linear-gradient(145deg, #fbfdff 0%, #f1f7ff 49%, #e7f1ff 100%)",
             STUDIO_CSS,
         )
-        self.assertIn("var(--alx-blue) 0%", STUDIO_CSS)
+        self.assertIn(
+            "var(--alx-blue), var(--alx-indigo) 52%, var(--alx-violet)",
+            STUDIO_CSS,
+        )
         self.assertNotIn("#0f766e", STUDIO_CSS)
         self.assertNotIn("--alx-teal", STUDIO_CSS)
         self.assertNotIn(
@@ -357,22 +358,19 @@ class StudioRuntimeTests(unittest.TestCase):
         )
 
     def test_studio_uses_the_locked_static_interface_standard(self) -> None:
-        self.assertIn("--alx-glass-fill: rgb(255 255 255 / 28%)", STUDIO_CSS)
-        self.assertIn("--alx-glass-fill-hover: rgb(255 255 255 / 35%)", STUDIO_CSS)
+        self.assertIn("--alx-glass: rgb(255 255 255 / 28%)", STUDIO_CSS)
+        self.assertIn("--alx-glass-hover: rgb(255 255 255 / 35%)", STUDIO_CSS)
         self.assertIn("--alx-glass-edge: rgb(255 255 255 / 68%)", STUDIO_CSS)
-        self.assertIn("--alx-glass-highlight: rgb(255 255 255 / 72%)", STUDIO_CSS)
-        self.assertIn("--alx-glass-blur: 24px", STUDIO_CSS)
+        self.assertIn("--alx-highlight: rgb(255 255 255 / 72%)", STUDIO_CSS)
         self.assertIn("background-attachment: fixed", STUDIO_CSS)
-        self.assertIn("scrollbar-gutter: stable", STUDIO_CSS)
         self.assertNotIn("@keyframes", STUDIO_CSS)
-        self.assertIn('button[role="tab"]:focus-visible', STUDIO_CSS)
+        self.assertIn('[role="tab"]:focus-visible', STUDIO_CSS)
         self.assertIn("outline: 3px solid rgb(37 99 235 / 42%)", STUDIO_CSS)
-        self.assertIn(".gradio-container button.primary", STUDIO_CSS)
-        self.assertIn("background-color: var(--alx-glass-fill)", STUDIO_CSS)
-        self.assertIn("background-color: var(--alx-glass-fill-hover)", STUDIO_CSS)
+        self.assertIn("#studio-run-button", STUDIO_CSS)
+        self.assertIn("background-color: var(--alx-glass)", STUDIO_CSS)
+        self.assertIn("background-color: var(--alx-glass-hover)", STUDIO_CSS)
         self.assertIn("border-color: rgb(255 255 255 / 84%)", STUDIO_CSS)
         self.assertIn("inset 0 1px 0 rgb(255 255 255 / 80%)", STUDIO_CSS)
-        self.assertIn("0 0 32px rgb(255 255 255 / 16%)", STUDIO_CSS)
         self.assertIn("@media (prefers-reduced-motion: reduce)", STUDIO_CSS)
         self.assertNotIn("button.primary:hover { filter: brightness", STUDIO_CSS)
 
@@ -448,22 +446,12 @@ class StudioRuntimeTests(unittest.TestCase):
 
     def test_media_guidance_documents_bounded_aspect_safe_inputs(self) -> None:
         self.assertIn("25 MiB", IMAGE_UPLOAD_GUIDANCE_HTML)
-        self.assertIn("never crops", IMAGE_UPLOAD_GUIDANCE_HTML)
+        self.assertIn("full frame preserved", IMAGE_UPLOAD_GUIDANCE_HTML)
         self.assertIn("50 MiB", VIDEO_UPLOAD_GUIDANCE_HTML)
         self.assertIn("60 seconds", VIDEO_UPLOAD_GUIDANCE_HTML)
-        self.assertIn("H.265/HEVC", VIDEO_UPLOAD_GUIDANCE_HTML)
+        self.assertIn("H.264", VIDEO_UPLOAD_GUIDANCE_HTML)
         self.assertIn("object-fit: contain", STUDIO_CSS)
-        self.assertIn("max-height: 360px", STUDIO_CSS)
-        self.assertIn("height: auto !important", STUDIO_CSS)
-        self.assertIn("max-width: 100% !important", STUDIO_CSS)
-        self.assertNotIn(
-            ".studio-media-input { height: 210px !important",
-            STUDIO_CSS,
-        )
-        self.assertNotIn(
-            ".studio-media-input { height: 180px !important",
-            STUDIO_CSS,
-        )
+        self.assertIn("max-height: 320px", STUDIO_CSS)
 
     def test_workspace_is_function_first_and_visually_grouped(self) -> None:
         workspace = (
@@ -472,42 +460,26 @@ class StudioRuntimeTests(unittest.TestCase):
             + STUDIO_CSS
         )
 
-        self.assertIn("INPUT", workspace)
-        self.assertIn("OUTPUT", workspace)
-        self.assertIn("Cold once · warm reuse", workspace)
+        self.assertIn("RUN CONFIGURATION", workspace)
+        self.assertIn("EVIDENCE CONSOLE", workspace)
+        self.assertIn("Cold load once · warm reuse", workspace)
         self.assertIn(".studio-workspace", STUDIO_CSS)
         self.assertIn(".workspace-panel", STUDIO_CSS)
-        self.assertIn("::-webkit-scrollbar-button", STUDIO_CSS)
-        self.assertIn("display: none !important; width: 0 !important; height: 0 !important", STUDIO_CSS)
-        self.assertIn("border-radius: 20px", STUDIO_CSS)
-        self.assertIn("height: clamp(520px, calc(100vh - 230px), 860px)", STUDIO_CSS)
-        self.assertIn("#studio-tabs { margin-top: 0 !important; }", STUDIO_CSS)
-        self.assertIn("margin: 0 4px 7px !important", STUDIO_CSS)
-        self.assertIn("flex-wrap: nowrap !important", STUDIO_CSS)
-        self.assertIn(".workspace-panel > * { flex-shrink: 0", STUDIO_CSS)
-        self.assertIn("height: auto; overflow-y: visible", STUDIO_CSS)
-        self.assertNotIn(".startup-hint", STUDIO_CSS)
-        self.assertIn("Workspace workflow", WORKSPACE_GUIDE_HTML)
-        self.assertIn("Set the run", WORKSPACE_GUIDE_HTML)
-        self.assertIn("--alx-radius-pill: 999px", STUDIO_CSS)
-        self.assertIn("border-radius: var(--alx-radius-pill)", STUDIO_CSS)
+        self.assertIn("Turn one source into inspectable evidence", WORKSPACE_GUIDE_HTML)
+        self.assertIn("Nothing leaves this machine", WORKSPACE_GUIDE_HTML)
+        self.assertIn("<ol>", WORKSPACE_GUIDE_HTML)
+        self.assertIn(".run-map", STUDIO_CSS)
         self.assertIn("#media-tabs", STUDIO_CSS)
-        self.assertIn('button[role="tab"]::after { display: none', STUDIO_CSS)
-        self.assertIn('.tab-container[role="tablist"]::after', STUDIO_CSS)
-        self.assertIn("box-shadow: none !important", STUDIO_CSS)
         self.assertIn("#alvenx-header", STUDIO_CSS)
         self.assertIn("border-radius: 26px", STUDIO_CSS)
         self.assertIn("background: rgb(255 255 255 / 26%)", STUDIO_CSS)
-        self.assertIn("Cross-product component contract", STUDIO_CSS)
-        self.assertIn("font-size: 14px !important; line-height: 1.55", STUDIO_CSS)
+        self.assertIn("interface revision 2026-08-25.1", STUDIO_CSS)
+        self.assertIn("line-height: 1.55 !important", STUDIO_CSS)
         self.assertIn('#media-tabs .visually-hidden button', STUDIO_CSS)
-        self.assertIn(".workspace-panel .form", STUDIO_CSS)
-        self.assertIn("width: 100% !important", STUDIO_CSS)
-        self.assertNotIn(".local-badge { font-size: 0; }", STUDIO_CSS)
 
     def test_run_status_explains_cold_and_warm_model_reuse(self) -> None:
-        self.assertIn("Cold start", EMPTY_STATUS_HTML)
-        self.assertIn("later runs reuse it", EMPTY_STATUS_HTML)
+        self.assertIn("Ready for a cold run", EMPTY_STATUS_HTML)
+        self.assertIn("remains warm", EMPTY_STATUS_HTML)
         result = PlaygroundResult(
             response_text="done",
             latency_ms=100.0,
@@ -517,7 +489,7 @@ class StudioRuntimeTests(unittest.TestCase):
             usage={"output_tokens": 12, "max_new_tokens": 64},
         )
 
-        self.assertIn("model is warm for the next run", render_success_status(result))
+        self.assertIn("Model warm", render_success_status(result))
 
     def test_hevc_notice_explains_browser_model_compatibility_split(self) -> None:
         info = VideoUploadInfo(
@@ -532,7 +504,7 @@ class StudioRuntimeTests(unittest.TestCase):
 
         notice = render_video_upload_info(info)
 
-        self.assertIn("HEVC/H.265 detected", notice)
+        self.assertIn("HEVC/H.265 · model-readable", notice)
         self.assertIn("play only the audio", notice)
         self.assertIn("Local model analysis still uses PyAV", notice)
         self.assertIn("1280×720", notice)
@@ -632,12 +604,11 @@ class StudioGradioTests(unittest.TestCase):
                 item["props"].get("label")
                 for item in app.config["components"]
                 if item.get("type") == "tabitem"
-                and item["props"].get("id")
-                in {"workspace", "reports", "about"}
+                and item["props"].get("id") in {"run", "reports", "method"}
             ]
             self.assertEqual(
                 tab_labels[:3],
-                ["Workspace", "Reports", "About"],
+                ["Run", "Reports", "Method"],
             )
             clear_button = next(
                 item
@@ -758,6 +729,7 @@ class StudioGradioTests(unittest.TestCase):
         self.assertEqual(fake.kwargs["allowed_paths"], [])
         self.assertFalse(fake.kwargs["enable_monitoring"])
         self.assertTrue(fake.kwargs["strict_cors"])
+        self.assertNotIn("js", fake.kwargs)
 
         with self.assertRaisesRegex(ValueError, "loopback"):
             launch_studio(host="0.0.0.0")
