@@ -147,9 +147,9 @@ Linux 使用同一组 CLI 参数，只需改为 `.venv/bin/python` 和
 
 `mock` 只验证基础设施，不能用它的得分描述真实模型能力。
 
-## AlvenX Studio
+## 本地界面
 
-AlvenX Studio 是不改变可复现 CLI 流程的可选本地界面。它默认直接打开
+OpenMultimodalLab 提供不改变可复现 CLI 流程的可选本地界面。它默认直接打开
 单输入 Workspace，把模型、媒体、Prompt、回答和实时指标集中在一个功能区；
 Reports 和项目介绍后置，同时严格区分试玩结果与正式评测证据。
 
@@ -162,12 +162,12 @@ Reports 和项目介绍后置，同时严格区分试玩结果与正式评测证
 .\.venv-ml\Scripts\oml.exe studio
 ```
 
-Studio 只监听 `127.0.0.1`，关闭公开分享和分析，并把模型调用串行化以适配
+界面只监听 `127.0.0.1`，关闭公开分享和分析，并把模型调用串行化以适配
 8 GB 显卡。界面会区分首次冷加载和后续热复用；Clear 会同时清空两个媒体
 标签、Prompt、回答与指标，但不卸载模型；清空后直接运行会自动恢复默认视觉
 描述 Prompt。Workspace 回答明确不评分；需要可保存、可比较的证据时仍使用
 `oml run`。完整使用方法和安全边界见
-[Studio 说明](docs/alvenx-studio.md)。
+[本地界面说明](docs/alvenx-studio.md)。
 
 ## 运行真实本地模型
 

@@ -1,6 +1,6 @@
-# AlvenX Studio
+# OpenMultimodalLab local interface
 
-AlvenX Studio is the optional local interface for OpenMultimodalLab. Its Run
+The optional OpenMultimodalLab interface uses a Run
 workflow makes four boundaries explicit: select one source, pin one local
 model, define the prompt and generation limits, then inspect the response next
 to its runtime evidence. The existing `oml run` and `oml report` commands
@@ -94,7 +94,7 @@ scrolling and do not introduce horizontal overflow.
   upload, Studio reports the codec and explains that an audio-only or frozen
   HEVC preview does not mean local model decoding failed.
 - Media previews adapt to the source aspect ratio, use letterboxing rather than
-  cropping, and stop growing at a bounded desktop or mobile height.
+  cropping, and stop growing at a bounded workspace height.
 - User-facing exceptions redact common absolute local paths.
 - The Studio has no delete, overwrite, publication, or GitHub action.
 
@@ -138,20 +138,21 @@ while only literal code and local paths retain an explicit monospace face. The
 wordmark keeps the accessible and public name `AlvenX` while using the
 owner-approved connected `Al`, `l–v`, `e–n`, and `n–X` outline relationships;
 `v–e` remains physically separate. Its continuous blue-to-indigo-to-violet
-`Al` gradient is shared by the Studio header and portable README artwork. The Studio embeds the
-same outlined SVG bytes used by the README, verifies them against SHA-256
-`f6d2ed3ca53b65a274235b8d563fc3eb248199baf82f1496f7e8aac38c37c8d2`,
-and does not reconstruct `Al` and `venX` with browser letter spacing.
+`Al` gradient is shared by the header and portable README artwork. The interface embeds the
+canonical subtitle-free AlvenX wordmark, verifies it against SHA-256
+`8ae10e02c27091e29e0191a7934506118f144aae11898b20222d7f9d587e2662`,
+and does not reconstruct `Al` and `venX` with browser letter spacing. The README
+may use a project-specific lockup; the application header does not.
 Chinese text follows the embedded Latin face with professional platform CJK
 fallbacks. Because the wordmark stores glyphs as SVG outlines, it remains
-identical on GitHub and in Studio without requiring a local font install.
+identical across local interfaces without requiring a local font install.
 
 This font family, upstream revision, feature set, and wordmark construction are
 now a stable design contract. They should change only for a demonstrated
 accessibility, licensing, or rendering defect and after an explicit brand
-decision plus desktop and mobile visual regression review.
+decision plus desktop visual regression review.
 
-The interface implements AlvenX interface revision `2026-08-25.1`. This OML
+The interface implements AlvenX interface revision `2026-08-25.2`. This OML
 canvas is the locked common background for the OML, BrowserAgentRegression,
 and PhysGauge studios. From back to front it is:
 
@@ -176,7 +177,7 @@ quiet and mostly opaque. Green is not part of the Studio brand palette.
 
 ## 中文说明
 
-AlvenX Studio 是 OpenMultimodalLab 的可选本地界面，不替代可复现的
+OpenMultimodalLab 的可选本地界面不替代可复现的
 `oml run` / `oml report` 流程。默认 Run 按“Source → Model → Prompt → Evidence”
 组织媒体、模型、Prompt、回答和实时指标；Reports 只读打开已有 JSONL 结果；
 Method 说明 v1 测量边界。单次 Run 结果不能当作正式模型排名。
@@ -187,7 +188,7 @@ Run 页先显示紧凑的四步引导和“仅本机”边界，再显示“准�
 模型；清空后在 Prompt 为空时点击 Run，会自动恢复默认视觉描述 Prompt。模型
 选择位于媒体之后，所选后端用于下一次运行。顶部 AlvenX 标志只作为静态品牌
 元素，不可点击、没有隐藏彩蛋。玻璃标题栏、分段导航、媒体控件和工作卡片采用
-统一的嵌套圆角层级；窄屏恢复自然页面滚动且不产生横向溢出。媒体仍按原始比例
+统一的嵌套圆角层级。媒体仍按原始比例
 完整显示，长回答在框内滚动。
 
 界面只能监听本机回环地址，关闭公开分享、监控和分析，并将 GPU 推理并发限制
@@ -196,7 +197,7 @@ Run 页先显示紧凑的四步引导和“仅本机”边界，再显示“准�
 
 ## Compatibility promise
 
-`AlvenX` is the shared series identity and `AlvenX Studio` is this
-project's interface name. The repository remains `OpenMultimodalLab`, the
+`AlvenX` is the shared series identity; this interface remains part of
+`OpenMultimodalLab` rather than introducing another product name. The repository remains `OpenMultimodalLab`, the
 Python distribution remains `openmultimodal-lab`, and the CLI remains `oml`; existing commands and
 v1.0.0 evidence paths are intentionally unchanged.

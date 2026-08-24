@@ -1,4 +1,4 @@
-"""Dependency-free application services for the optional AlvenX Studio."""
+"""Dependency-free services for the optional OpenMultimodalLab interface."""
 
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ from .reporting import format_summary, load_records, summarize
 
 
 STUDIO_BRAND = "AlvenX"
-STUDIO_NAME = "AlvenX Studio"
+STUDIO_NAME = "OpenMultimodalLab"
 STUDIO_TAGLINE = "Measure multimodal AI. See clearly."
 DEVELOPER_ID = "ALONICA"
 

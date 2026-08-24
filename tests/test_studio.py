@@ -319,6 +319,12 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn('data-studio-tab="run"', BRAND_HEADER_HTML)
         self.assertIn('data-studio-tab="reports"', BRAND_HEADER_HTML)
         self.assertIn('data-studio-tab="method"', BRAND_HEADER_HTML)
+        self.assertIn('document.title = "OpenMultimodalLab · AlvenX"', STUDIO_NAV_JS)
+        self.assertIn("top: 14px", STUDIO_CSS)
+        self.assertIn(
+            "width: calc(min(100%, 1480px) - 2 * clamp(18px, 5vw, 74px))",
+            STUDIO_CSS,
+        )
         self.assertNotIn("developer-signal", combined)
         self.assertNotIn("addEventListener", combined)
         self.assertNotIn("http://", combined)
@@ -398,29 +404,27 @@ class StudioRuntimeTests(unittest.TestCase):
         )
         self.assertIn("SIL OPEN FONT LICENSE Version 1.1", license_text)
 
-    def test_public_wordmark_uses_portable_font_outlines(self) -> None:
+    def test_packaged_header_wordmark_uses_canonical_font_outlines(self) -> None:
         project_root = Path(__file__).resolve().parents[1]
-        source = project_root / "docs/assets/alvenx-wordmark.svg"
         packaged = (
             project_root
             / "src/openmultimodal_lab/assets/brand/alvenx-wordmark.svg.b64"
         )
-        source_bytes = source.read_bytes()
         packaged_bytes = base64.b64decode(
             "".join(packaged.read_text(encoding="ascii").split()),
             validate=True,
         )
-        canonical_source_bytes = source_bytes.replace(b"\r\n", b"\n").replace(
-            b"\r", b"\n"
-        )
-        wordmark = canonical_source_bytes.decode("utf-8")
+        wordmark = packaged_bytes.decode("utf-8")
 
         self.assertNotIn(b"\r", packaged_bytes)
-        self.assertEqual(packaged_bytes, canonical_source_bytes)
         self.assertEqual(
-            hashlib.sha256(canonical_source_bytes).hexdigest(),
+            hashlib.sha256(packaged_bytes).hexdigest(),
             ALVENX_WORDMARK_SHA256,
         )
+        self.assertIn('viewBox="0 0 330 100"', wordmark)
+        self.assertIn("<title id=\"title\">AlvenX</title>", wordmark)
+        self.assertNotIn("Multimodal Evidence", wordmark)
+        self.assertNotIn('class="signal"', wordmark)
         self.assertIn("Instrument Sans outlines", wordmark)
         self.assertGreaterEqual(wordmark.count('class="accent"'), 1)
         self.assertIn('id="brand-gradient"', wordmark)
@@ -435,15 +439,14 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn('id="brand-Al"', wordmark)
         self.assertIn('href="#brand-Al"', wordmark)
         self.assertIn('href="#brand-v" x="817.227"', wordmark)
-        self.assertIn('transform="translate(8.937 92)', wordmark)
-        self.assertIn('transform="translate(4.869 126)', wordmark)
+        self.assertIn('transform="translate(8.937 82)', wordmark)
         self.assertIn('id="brand-nX-ligature"', wordmark)
         self.assertIn(
             'href="#brand-X" transform="translate(2207.949 0) scale(.877778)"',
             wordmark,
         )
         self.assertNotIn("teal", wordmark.casefold())
-        self.assertGreater(wordmark.count("<path"), 10)
+        self.assertGreaterEqual(wordmark.count("<path"), 7)
         self.assertNotIn("<text", wordmark)
         self.assertNotIn("font-family", wordmark)
 
@@ -476,7 +479,7 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn("#alvenx-header", STUDIO_CSS)
         self.assertIn("border-radius: 26px", STUDIO_CSS)
         self.assertIn("background: rgb(255 255 255 / 26%)", STUDIO_CSS)
-        self.assertIn("interface revision 2026-08-25.1", STUDIO_CSS)
+        self.assertIn("interface revision 2026-08-25.2", STUDIO_CSS)
         self.assertIn("line-height: 1.55 !important", STUDIO_CSS)
         self.assertIn('#media-tabs .visually-hidden button', STUDIO_CSS)
 

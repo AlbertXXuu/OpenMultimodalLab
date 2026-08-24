@@ -178,15 +178,15 @@ python3.11 -m venv .venv
 The `mock` backend verifies infrastructure only. Do not use its score as a
 model-quality result.
 
-## AlvenX Studio
+## Local interface
 
-AlvenX Studio adds an optional local evidence workbench without changing the
+OpenMultimodalLab includes an optional local evidence workbench without changing the
 reproducible CLI workflow. Its **Run** view guides one source through model and
 prompt configuration into a response with live runtime evidence; **Reports**
 opens preserved JSONL records read-only, and **Method** explains the v1
 measurement boundary. Formal benchmark evidence remains separate.
 
-Run it inside an existing Python 3.11/3.12 model environment; the Studio extra
+Run it inside an existing Python 3.11/3.12 model environment; the `studio` extra
 installs the interface, not the selected model backend or a CUDA-enabled
 PyTorch build.
 
@@ -196,7 +196,7 @@ PyTorch build.
 .\.venv-ml\Scripts\oml.exe studio
 ```
 
-The Studio listens on `127.0.0.1`, disables public sharing and analytics, and
+The interface listens on `127.0.0.1`, disables public sharing and analytics, and
 serializes model calls for an 8 GB GPU. Interactive Run responses are
 explicitly unscored; the interface distinguishes the first cold model load
 from later warm reuse, and Clear resets both media tabs, the prompt, response,
@@ -204,7 +204,7 @@ and metrics without unloading the model. Running with that cleared prompt
 restores the default visual-description prompt automatically. The AlvenX
 wordmark is a static identity element with no hidden click interaction. Use
 `oml run` for durable, comparable evidence.
-See the [Studio guide and security boundary](docs/alvenx-studio.md).
+See the [local interface guide and security boundary](docs/alvenx-studio.md).
 
 ## Run a real local model
 

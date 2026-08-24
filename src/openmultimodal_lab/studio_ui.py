@@ -1,4 +1,4 @@
-"""Optional Gradio interface for AlvenX Studio.
+"""Optional Gradio interface for OpenMultimodalLab.
 
 Gradio is imported lazily so the benchmark core keeps its zero-dependency install.
 """
@@ -18,6 +18,7 @@ from .studio import (
     PLAYGROUND_UI_DEFAULT_TIMEOUT_SECONDS,
     PLAYGROUND_UI_MIN_NEW_TOKENS,
     PLAYGROUND_UI_MIN_TIMEOUT_SECONDS,
+    STUDIO_NAME,
     StudioRuntime,
     inspect_video_upload,
     load_report_view,
@@ -70,7 +71,7 @@ def _import_gradio() -> Any:
         import gradio as gr
     except (ImportError, OSError) as exc:
         raise StudioDependencyError(
-            'AlvenX Studio requires the optional UI dependencies. Install '
+            'The OpenMultimodalLab interface requires the optional UI dependencies. Install '
             'them with: python -m pip install -e ".[studio]"'
         ) from exc
     return gr
@@ -170,7 +171,7 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
     active_runtime = runtime or StudioRuntime()
 
     with gr.Blocks(
-        title="AlvenX Studio",
+        title=f"{STUDIO_NAME} · AlvenX",
         fill_width=True,
         analytics_enabled=False,
     ) as app:
@@ -400,10 +401,10 @@ def launch_studio(
     port: int = 7860,
     inbrowser: bool = True,
 ) -> Any:
-    """Launch AlvenX Studio on a loopback address only."""
+    """Launch the OpenMultimodalLab interface on a loopback address only."""
 
     if host not in LOOPBACK_HOSTS:
-        raise ValueError("AlvenX Studio only accepts a loopback host")
+        raise ValueError("The OpenMultimodalLab interface only accepts a loopback host")
     if not isinstance(port, int) or isinstance(port, bool) or not 1 <= port <= 65535:
         raise ValueError("port must be an integer from 1 to 65535")
 

@@ -1,4 +1,4 @@
-"""Content, renderers, and packaged presentation assets for AlvenX Studio."""
+"""Content, renderers, and packaged presentation assets for OpenMultimodalLab."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ INSTRUMENT_SANS_SHA256 = (
     "aa72922aafcc0dc18f36ec1d805b0212057dabe8b9d5b8b57f67035aea1b826d"
 )
 ALVENX_WORDMARK_SHA256 = (
-    "f6d2ed3ca53b65a274235b8d563fc3eb248199baf82f1496f7e8aac38c37c8d2"
+    "8ae10e02c27091e29e0191a7934506118f144aae11898b20222d7f9d587e2662"
 )
 
 
@@ -80,7 +80,7 @@ BRAND_HEADER_HTML = f"""
          src="data:image/svg+xml;base64,{_alvenx_wordmark_base64()}"
          alt="AlvenX">
   </div>
-  <nav class="header-nav" aria-label="Studio views">
+  <nav class="header-nav" aria-label="OpenMultimodalLab views">
     <button type="button" class="active" data-studio-tab="run" aria-current="page">Run</button>
     <button type="button" data-studio-tab="reports">Reports</button>
     <button type="button" data-studio-tab="method">Method</button>
@@ -91,6 +91,7 @@ BRAND_HEADER_HTML = f"""
 
 
 STUDIO_NAV_JS = r"""(() => {
+  document.title = "OpenMultimodalLab · AlvenX";
   let attempts = 0;
   const bind = () => {
     const header = document.querySelector("#alvenx-header");

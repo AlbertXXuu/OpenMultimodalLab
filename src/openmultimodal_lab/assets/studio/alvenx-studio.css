@@ -1,4 +1,4 @@
-/* AlvenX Studio · interface revision 2026-08-25.1 */
+/* OpenMultimodalLab interface revision 2026-08-25.2 */
 :root {
   color-scheme: light;
   --alx-font: "Instrument Sans", "Microsoft YaHei UI", "PingFang SC", Arial, sans-serif;
@@ -99,10 +99,10 @@ body { margin: 0; }
 #alvenx-header {
   position: fixed;
   z-index: 40;
-  top: 18px;
+  top: 14px;
   left: 50%;
   display: flex;
-  width: min(90vw, 1440px);
+  width: calc(min(100%, 1480px) - 2 * clamp(18px, 5vw, 74px));
   min-height: 70px;
   align-items: center;
   gap: 28px;

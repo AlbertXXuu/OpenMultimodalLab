@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 - Add a reproducible 1280×640 AlvenX social preview, truthful bilingual
   launch drafts, an external-feedback measurement plan, and an IP/brand
   readiness checklist that avoids unverified ownership or registration claims.
-- Add the optional, local-only AlvenX Studio with an unscored single-media
+- Add the optional, local-only OpenMultimodalLab interface with an unscored single-media
   playground, read-only JSONL report explorer, bounded uploads, serialized GPU
   access, and the developer signal `ALONICA`.
 - Introduce the owner-approved AlvenX public brand while preserving the
@@ -62,7 +62,7 @@ All notable changes to this project will be documented in this file.
   TRADEMARKS, and citation metadata without claiming registration.
 - Add a privacy-aware first-run feedback template so external adoption can
   become reproducible product evidence instead of an unstructured comment.
-- Restyle AlvenX Studio with an explicit light theme, accessible dark text,
+- Restyle the OpenMultimodalLab local interface with an explicit light theme, accessible dark text,
   and restrained blue-to-violet gradients limited to the wordmark and hero
   emphasis across desktop and mobile layouts.
 - Lock the complete Studio type system to a self-hosted, integrity-bound
