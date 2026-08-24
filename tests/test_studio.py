@@ -40,6 +40,7 @@ from openmultimodal_lab.studio_assets import (
     INSTRUMENT_SANS_REVISION,
     INSTRUMENT_SANS_SHA256,
     STUDIO_CSS,
+    STUDIO_NAV_JS,
     VIDEO_UPLOAD_GUIDANCE_HTML,
     WORKSPACE_GUIDE_HTML,
     WORKSPACE_INPUT_HEADER_HTML,
@@ -312,10 +313,12 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn(STUDIO_BRAND, combined)
         self.assertIn("data:image/svg+xml;base64,", BRAND_HEADER_HTML)
         self.assertIn('class="brand-wordmark-image"', BRAND_HEADER_HTML)
-        self.assertIn("width: clamp(146px, 13vw, 176px)", STUDIO_CSS)
+        self.assertIn("width: 160px", STUDIO_CSS)
         self.assertIn("cursor: default", STUDIO_CSS)
         self.assertNotIn("<svg", BRAND_HEADER_HTML.casefold())
-        self.assertNotIn("<button", BRAND_HEADER_HTML.casefold())
+        self.assertIn('data-studio-tab="run"', BRAND_HEADER_HTML)
+        self.assertIn('data-studio-tab="reports"', BRAND_HEADER_HTML)
+        self.assertIn('data-studio-tab="method"', BRAND_HEADER_HTML)
         self.assertNotIn("developer-signal", combined)
         self.assertNotIn("addEventListener", combined)
         self.assertNotIn("http://", combined)
@@ -729,7 +732,7 @@ class StudioGradioTests(unittest.TestCase):
         self.assertEqual(fake.kwargs["allowed_paths"], [])
         self.assertFalse(fake.kwargs["enable_monitoring"])
         self.assertTrue(fake.kwargs["strict_cors"])
-        self.assertNotIn("js", fake.kwargs)
+        self.assertEqual(fake.kwargs["js"], STUDIO_NAV_JS)
 
         with self.assertRaisesRegex(ValueError, "loopback"):
             launch_studio(host="0.0.0.0")

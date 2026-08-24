@@ -80,12 +80,56 @@ BRAND_HEADER_HTML = f"""
          src="data:image/svg+xml;base64,{_alvenx_wordmark_base64()}"
          alt="AlvenX">
   </div>
-  <div class="header-context" aria-label="Runtime boundary">
-    <span><i aria-hidden="true"></i> Local runtime</span>
-    <span>Evidence first</span>
-  </div>
+  <nav class="header-nav" aria-label="Studio views">
+    <button type="button" class="active" data-studio-tab="run" aria-current="page">Run</button>
+    <button type="button" data-studio-tab="reports">Reports</button>
+    <button type="button" data-studio-tab="method">Method</button>
+  </nav>
+  <span class="local-badge"><i aria-hidden="true"></i> Local only</span>
 </header>
 """.strip()
+
+
+STUDIO_NAV_JS = r"""(() => {
+  let attempts = 0;
+  const bind = () => {
+    const header = document.querySelector("#alvenx-header");
+    const tabRoot = document.querySelector("#studio-tabs > .tab-wrapper");
+    if (!header || !tabRoot) {
+      if (attempts++ < 240) requestAnimationFrame(bind);
+      return;
+    }
+
+    const controls = [...header.querySelectorAll("[data-studio-tab]")];
+    const tabs = () => [...tabRoot.querySelectorAll("button[role='tab']")];
+    tabRoot.setAttribute("aria-hidden", "true");
+    tabs().forEach((tab) => { tab.tabIndex = -1; });
+    const sync = () => {
+      const selected = tabs().find((tab) => tab.getAttribute("aria-selected") === "true");
+      controls.forEach((control) => {
+        const active = control.dataset.studioTab === selected?.dataset.tabId;
+        control.classList.toggle("active", active);
+        active
+          ? control.setAttribute("aria-current", "page")
+          : control.removeAttribute("aria-current");
+      });
+    };
+
+    controls.forEach((control) => {
+      control.onclick = () => {
+        tabs().find((tab) => tab.dataset.tabId === control.dataset.studioTab)?.click();
+        sync();
+      };
+    });
+    new MutationObserver(sync).observe(tabRoot, {
+      attributes: true,
+      subtree: true,
+      attributeFilter: ["aria-selected"],
+    });
+    sync();
+  };
+  bind();
+})();"""
 
 
 WORKSPACE_GUIDE_HTML = """

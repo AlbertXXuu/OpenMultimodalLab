@@ -33,6 +33,7 @@ from .studio_assets import (
     OVERVIEW_HTML,
     REPORT_INTRO_HTML,
     STUDIO_CSS,
+    STUDIO_NAV_JS,
     VIDEO_UPLOAD_GUIDANCE_HTML,
     WORKSPACE_GUIDE_HTML,
     WORKSPACE_INPUT_HEADER_HTML,
@@ -234,32 +235,31 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                             open=True,
                             elem_classes="generation-controls",
                         ):
-                            with gr.Row():
-                                max_tokens = gr.Slider(
-                                    minimum=PLAYGROUND_UI_MIN_NEW_TOKENS,
-                                    maximum=PLAYGROUND_MAX_NEW_TOKENS,
-                                    value=PLAYGROUND_UI_DEFAULT_NEW_TOKENS,
-                                    step=16,
-                                    precision=0,
-                                    label="Max new tokens",
-                                    info=(
-                                        "Output length limit. Lower values can "
-                                        "finish faster but may truncate; 512 is "
-                                        "recommended."
-                                    ),
-                                )
-                                timeout = gr.Slider(
-                                    minimum=PLAYGROUND_UI_MIN_TIMEOUT_SECONDS,
-                                    maximum=PLAYGROUND_MAX_TIMEOUT_SECONDS,
-                                    value=PLAYGROUND_UI_DEFAULT_TIMEOUT_SECONDS,
-                                    step=30,
-                                    precision=0,
-                                    label="Timeout (seconds)",
-                                    info=(
-                                        "Includes first model load. Increase this "
-                                        "if a cold run times out."
-                                    ),
-                                )
+                            max_tokens = gr.Slider(
+                                minimum=PLAYGROUND_UI_MIN_NEW_TOKENS,
+                                maximum=PLAYGROUND_MAX_NEW_TOKENS,
+                                value=PLAYGROUND_UI_DEFAULT_NEW_TOKENS,
+                                step=16,
+                                precision=0,
+                                label="Max new tokens",
+                                info=(
+                                    "Output length limit. Lower values can "
+                                    "finish faster but may truncate; 512 is "
+                                    "recommended."
+                                ),
+                            )
+                            timeout = gr.Slider(
+                                minimum=PLAYGROUND_UI_MIN_TIMEOUT_SECONDS,
+                                maximum=PLAYGROUND_MAX_TIMEOUT_SECONDS,
+                                value=PLAYGROUND_UI_DEFAULT_TIMEOUT_SECONDS,
+                                step=30,
+                                precision=0,
+                                label="Timeout (seconds)",
+                                info=(
+                                    "Includes first model load. Increase this "
+                                    "if a cold run times out."
+                                ),
+                            )
                         with gr.Row(elem_classes="workspace-actions"):
                             run_button = gr.Button(
                                 "Run locally",
@@ -421,4 +421,5 @@ def launch_studio(
         footer_links=[],
         theme="base",
         css=STUDIO_CSS,
+        js=STUDIO_NAV_JS,
     )
