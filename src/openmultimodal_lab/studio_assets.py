@@ -179,6 +179,15 @@ WORKSPACE_OUTPUT_HEADER_HTML = """
 """.strip()
 
 
+WORKSPACE_GUIDE_HTML = """
+<aside class="workspace-guide" aria-label="Workspace workflow">
+  <div><span>01</span><strong>Add one source</strong><small>Image, document, or short video</small></div>
+  <div><span>02</span><strong>Set the run</strong><small>Prompt, backend, limits, and timeout</small></div>
+  <div><span>03</span><strong>Read the evidence</strong><small>Response, latency, throughput, and memory</small></div>
+</aside>
+""".strip()
+
+
 IMAGE_UPLOAD_GUIDANCE_HTML = """
 <div class="media-guidance" role="note">
   <strong>Image boundary</strong>
@@ -837,6 +846,88 @@ body {
   .panel-note { display: none; }
   .studio-media-input { min-height: 220px; }
   .studio-media-input img, .studio-media-input video { max-height: 360px !important; }
+}
+/* Cross-product component contract · interface revision 2026-08-24.2 */
+:root {
+  --alx-panel-strong: rgb(255 255 255 / 76%);
+  --alx-display-line-height: 1.02;
+  --alx-heading-line-height: 1.08;
+  --alx-body-line-height: 1.62;
+  --alx-control-height: 44px;
+}
+html, body, .gradio-container {
+  min-height: 100%;
+  background:
+    radial-gradient(circle at 12% 5%, rgb(147 197 253 / 42%), transparent 34%),
+    radial-gradient(circle at 84% 7%, rgb(167 139 250 / 28%), transparent 36%),
+    radial-gradient(circle at 68% 88%, rgb(79 70 229 / 14%), transparent 38%),
+    linear-gradient(145deg, #fbfdff 0%, #f1f7ff 49%, #e7f1ff 100%) !important;
+  background-attachment: fixed !important;
+}
+.gradio-container { line-height: var(--alx-body-line-height); }
+#alvenx-header {
+  min-height: 70px; margin: 8px 4px 14px; padding: 12px 18px 12px 22px;
+  border: 1px solid var(--alx-glass-edge); border-radius: 26px;
+  background: rgb(255 255 255 / 26%); box-shadow: inset 0 1px 0 var(--alx-glass-highlight),
+    inset 0 -1px 0 rgb(79 70 229 / 6%), 0 24px 72px rgb(71 105 148 / 11%);
+  backdrop-filter: blur(18px) saturate(148%);
+  -webkit-backdrop-filter: blur(18px) saturate(148%);
+}
+.brand-wordmark-image { width: clamp(150px,13.5vw,178px); }
+.header-tagline { font-size: 14px; line-height: 1.55; }
+#studio-tabs { margin-top: 0 !important; }
+#studio-tabs > .tab-nav, #studio-tabs > div:first-child {
+  margin: 0 4px 12px !important; min-height: 44px; align-items: center;
+}
+#studio-tabs button[role="tab"] { min-height: 44px; padding: 8px 18px !important; font-size: 12px; }
+.workspace-guide {
+  display: grid; grid-template-columns: repeat(3,1fr); margin: 2px 4px 14px;
+  border: 1px solid var(--alx-border); border-radius: 18px;
+  background: rgb(255 255 255 / 48%); overflow: hidden;
+}
+.workspace-guide > div { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px;
+  min-height: 76px; align-content: center; padding: 14px 18px; }
+.workspace-guide > div + div { border-left: 1px solid var(--alx-border); }
+.workspace-guide span { grid-row: 1 / 3; color: var(--alx-blue); font-size: 12px;
+  font-weight: 700; font-variant-numeric: tabular-nums; }
+.workspace-guide strong { color: var(--alx-text); font-size: 14px; line-height: 1.3; }
+.workspace-guide small { color: var(--alx-muted); font-size: 12px; line-height: 1.45; }
+.workspace-panel { height: clamp(520px, calc(100vh - 230px), 860px);
+  background: var(--alx-panel-strong); }
+.hero-panel h1 { overflow: visible; line-height: var(--alx-display-line-height);
+  padding-bottom: .06em; }
+.section-heading h2, .tab-intro h2 { line-height: var(--alx-heading-line-height); }
+.hero-panel > p, .workflow-grid p, .empty-state p {
+  line-height: var(--alx-body-line-height);
+}
+.gradio-container textarea,
+.gradio-container input:not([type="range"]):not([type="file"]),
+.gradio-container select {
+  min-height: var(--alx-control-height); border-radius: 14px !important;
+  font-size: 14px !important; line-height: 1.55 !important;
+}
+.workspace-output #studio-response textarea { line-height: var(--alx-body-line-height) !important; }
+.gradio-container button.primary { min-height: 58px; }
+.signal-kicker, .eyebrow, .model-title small, .score-cell span, .number-cell span,
+.status-cell, .evidence-note, .workflow-grid article > span, .workflow-grid p,
+.tab-intro p, .panel-index, .panel-note, .media-guidance, .media-guidance strong,
+.media-guidance small.media-facts, .live-card span, .live-card small,
+.unscored-pill, .protocol-pill, .runtime-foot, .run-status, #studio-report-table {
+  font-size: 12px;
+}
+@media (max-width: 940px) {
+  .workspace-guide { grid-template-columns: 1fr; }
+  .workspace-guide > div { min-height: 64px; }
+  .workspace-guide > div + div { border-left: 0; border-top: 1px solid var(--alx-border); }
+  .workspace-panel { height: auto; }
+}
+@media (max-width: 620px) {
+  #alvenx-header { margin: 4px 0 10px; padding: 10px 12px; border-radius: 22px; }
+  #studio-tabs { margin-top: 0 !important; }
+  .workspace-guide { margin-inline: 0; }
+  #media-tabs button[role="tab"], #media-tabs .visually-hidden button {
+    min-height: 32px; padding: 5px 4px !important; font-size: 12px !important;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .gradio-container *, .gradio-container *::before, .gradio-container *::after {

@@ -35,6 +35,7 @@ from .studio_assets import (
     REPORT_INTRO_HTML,
     STUDIO_CSS,
     VIDEO_UPLOAD_GUIDANCE_HTML,
+    WORKSPACE_GUIDE_HTML,
     WORKSPACE_INPUT_HEADER_HTML,
     WORKSPACE_OUTPUT_HEADER_HTML,
     render_error_status,
@@ -177,6 +178,7 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
 
         with gr.Tabs(selected="workspace", elem_id="studio-tabs"):
             with gr.Tab("Workspace", id="workspace"):
+                gr.HTML(WORKSPACE_GUIDE_HTML)
                 with gr.Row(elem_classes="studio-workspace"):
                     with gr.Column(
                         scale=6,
@@ -217,9 +219,20 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                             placeholder="Ask about visual content, text, layout, or motion...",
                             elem_classes="studio-control",
                         )
+                        backend = gr.Dropdown(
+                            choices=[
+                                (label, name)
+                                for name, label in BACKEND_LABELS.items()
+                            ],
+                            value="qwen3-vl",
+                            label="Local backend",
+                            info="Choose the local model before starting the run.",
+                            filterable=False,
+                            elem_classes="studio-control",
+                        )
                         with gr.Accordion(
                             "Generation controls",
-                            open=False,
+                            open=True,
                             elem_classes="generation-controls",
                         ):
                             with gr.Row():
@@ -255,16 +268,6 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                                 elem_id="studio-run-button",
                             )
                             clear_button = gr.Button("Clear", variant="secondary")
-                        backend = gr.Dropdown(
-                            choices=[
-                                (label, name)
-                                for name, label in BACKEND_LABELS.items()
-                            ],
-                            value="qwen3-vl",
-                            label="Local backend",
-                            filterable=False,
-                            elem_classes="studio-control",
-                        )
                         status = gr.HTML(EMPTY_STATUS_HTML)
 
                     with gr.Column(

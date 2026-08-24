@@ -198,16 +198,17 @@ class VideoCorpusToolingTests(unittest.TestCase):
             write_avi(right_video, CLIPS[0].renderer())
             write_avi(down_video, CLIPS[2].renderer())
 
-            def decode(path: Path) -> tuple[object, list[object]]:
+            def decode(path: Path) -> tuple[tuple[int, int, object], list[object]]:
                 with av.open(str(path)) as container:
                     stream = container.streams.video[0]
+                    metadata = (stream.width, stream.height, stream.average_rate)
                     frames = [
                         frame.to_ndarray(format="rgb24")
                         for frame in container.decode(video=0)
                     ]
-                return stream, frames
+                return metadata, frames
 
-            stream, right_frames = decode(right_video)
+            stream_metadata, right_frames = decode(right_video)
             _, down_frames = decode(down_video)
 
         def red_x(frame: object) -> float:
@@ -228,9 +229,10 @@ class VideoCorpusToolingTests(unittest.TestCase):
 
         self.assertEqual(len(right_frames), FRAME_COUNT)
         self.assertEqual(len(down_frames), FRAME_COUNT)
-        self.assertEqual(stream.width, WIDTH)
-        self.assertEqual(stream.height, HEIGHT)
-        self.assertEqual(float(stream.average_rate), float(FPS))
+        width, height, average_rate = stream_metadata
+        self.assertEqual(width, WIDTH)
+        self.assertEqual(height, HEIGHT)
+        self.assertEqual(float(average_rate), float(FPS))
         self.assertLess(red_x(right_frames[0]), red_x(right_frames[-1]))
         self.assertLess(green_y(down_frames[0]), green_y(down_frames[-1]))
 

@@ -45,6 +45,7 @@ from openmultimodal_lab.studio_assets import (
     INSTRUMENT_SANS_SHA256,
     STUDIO_CSS,
     VIDEO_UPLOAD_GUIDANCE_HTML,
+    WORKSPACE_GUIDE_HTML,
     WORKSPACE_INPUT_HEADER_HTML,
     WORKSPACE_OUTPUT_HEADER_HTML,
     render_playground_metrics,
@@ -479,14 +480,15 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn("::-webkit-scrollbar-button", STUDIO_CSS)
         self.assertIn("display: none !important; width: 0 !important; height: 0 !important", STUDIO_CSS)
         self.assertIn("border-radius: 20px", STUDIO_CSS)
-        self.assertIn("height: clamp(420px, calc(100vh - 165px), 860px)", STUDIO_CSS)
-        self.assertIn("#studio-tabs { margin-top: -34px !important; }", STUDIO_CSS)
+        self.assertIn("height: clamp(520px, calc(100vh - 230px), 860px)", STUDIO_CSS)
+        self.assertIn("#studio-tabs { margin-top: 0 !important; }", STUDIO_CSS)
         self.assertIn("margin: 0 4px 7px !important", STUDIO_CSS)
         self.assertIn("flex-wrap: nowrap !important", STUDIO_CSS)
         self.assertIn(".workspace-panel > * { flex-shrink: 0", STUDIO_CSS)
         self.assertIn("height: auto; overflow-y: visible", STUDIO_CSS)
         self.assertNotIn(".startup-hint", STUDIO_CSS)
-        self.assertNotIn("workspace-steps", workspace)
+        self.assertIn("Workspace workflow", WORKSPACE_GUIDE_HTML)
+        self.assertIn("Set the run", WORKSPACE_GUIDE_HTML)
         self.assertIn("--alx-radius-pill: 999px", STUDIO_CSS)
         self.assertIn("border-radius: var(--alx-radius-pill)", STUDIO_CSS)
         self.assertIn("#media-tabs", STUDIO_CSS)
@@ -494,7 +496,11 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn('.tab-container[role="tablist"]::after', STUDIO_CSS)
         self.assertIn("box-shadow: none !important", STUDIO_CSS)
         self.assertIn("#alvenx-header", STUDIO_CSS)
-        self.assertIn("background: transparent; backdrop-filter: none", STUDIO_CSS)
+        self.assertIn("border-radius: 26px", STUDIO_CSS)
+        self.assertIn("background: rgb(255 255 255 / 26%)", STUDIO_CSS)
+        self.assertIn("Cross-product component contract", STUDIO_CSS)
+        self.assertIn("font-size: 14px !important; line-height: 1.55", STUDIO_CSS)
+        self.assertIn('#media-tabs .visually-hidden button', STUDIO_CSS)
         self.assertIn(".workspace-panel .form", STUDIO_CSS)
         self.assertIn("width: 100% !important", STUDIO_CSS)
         self.assertNotIn(".local-badge { font-size: 0; }", STUDIO_CSS)
