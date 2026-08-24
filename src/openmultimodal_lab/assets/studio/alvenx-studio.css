@@ -87,7 +87,7 @@ body { margin: 0; }
 
 #studio-brand-header {
   position: relative !important;
-  z-index: 40;
+  z-index: 100;
   height: 82px;
   margin: 0 !important;
   padding: 0 !important;
@@ -98,7 +98,7 @@ body { margin: 0; }
 #studio-brand-header .prose { margin: 0 !important; padding: 0 !important; }
 #alvenx-header {
   position: fixed;
-  z-index: 40;
+  z-index: 100;
   top: 14px;
   left: 50%;
   display: flex;

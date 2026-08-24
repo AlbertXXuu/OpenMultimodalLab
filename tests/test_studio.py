@@ -321,6 +321,7 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn('data-studio-tab="method"', BRAND_HEADER_HTML)
         self.assertIn('document.title = "OpenMultimodalLab · AlvenX"', STUDIO_NAV_JS)
         self.assertIn("top: 14px", STUDIO_CSS)
+        self.assertGreaterEqual(STUDIO_CSS.count("z-index: 100"), 2)
         self.assertIn(
             "width: calc(min(100%, 1480px) - 2 * clamp(18px, 5vw, 74px))",
             STUDIO_CSS,
