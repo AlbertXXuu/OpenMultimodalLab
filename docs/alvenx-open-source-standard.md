@@ -12,15 +12,15 @@ related without forcing them into one codebase or one research scope.
 
 It is a maintainer-owned project standard, not an external certification, a
 legal entity, or a claim that AlvenX is a registered trademark. A repository
-may be technically complete while external adoption remains unvalidated; the
-standard keeps those states separate.
+may be technically complete before adoption is measured; the owner chooses when
+to activate that separate measurement.
 
 The current series contains:
 
 | Project | Primary research object | Current role |
 |---|---|---|
 | OpenMultimodalLab | Model capability under fixed tasks and inference conditions | Released evaluation infrastructure |
-| Browser Agent Regression | Agent-system reliability under controlled browser changes | Time-boxed Phase 0 validation |
+| Browser Agent Regression | Agent-system reliability under controlled browser changes | Released regression infrastructure |
 
 This file is the canonical copy of AOS-0.1. Each repository keeps a short
 conformance record rather than duplicating the whole standard.
@@ -163,7 +163,7 @@ only when the current validation or release workflow needs them.
 - remote CI passes on the advertised primary platform;
 - evidence links resolve from the public repository;
 - security, licensing, and privacy checks pass;
-- the repository clearly says which user-demand gates remain open.
+- the repository clearly states its current focus and active evidence scope.
 
 ### Level R1 — Formal release
 
@@ -174,8 +174,8 @@ only when the current validation or release workflow needs them.
   issue remains;
 - the owner explicitly approves the external release action.
 
-External adoption is tracked separately at every level. Stars, page views, and
-the maintainer's own runs do not count as independent use.
+When adoption measurement is activated, it is tracked separately from technical
+release readiness and uses directly observed developer behavior or feedback.
 
 ## 8. Claims and language
 
@@ -198,7 +198,7 @@ commit quota. Useful updates fall into at least one category:
 - an engineering change with a verified user-visible outcome;
 - a reproducible experiment with evidence;
 - a documented failure, limitation, or decision;
-- external-user feedback converted into an issue or fix.
+- developer feedback converted into an issue or fix.
 
 Empty version bumps, cosmetic churn, generated commit noise, and speculative
 architecture do not satisfy the cadence.

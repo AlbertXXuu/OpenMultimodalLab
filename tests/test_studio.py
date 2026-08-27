@@ -41,6 +41,7 @@ from openmultimodal_lab.studio_assets import (
     IMAGE_UPLOAD_GUIDANCE_HTML,
     INSTRUMENT_SANS_REVISION,
     INSTRUMENT_SANS_SHA256,
+    OVERVIEW_HTML,
     STUDIO_CSS,
     STUDIO_NAV_JS,
     VIDEO_UPLOAD_GUIDANCE_HTML,
@@ -488,7 +489,9 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn(".studio-workspace", STUDIO_CSS)
         self.assertIn(".workspace-panel", STUDIO_CSS)
         self.assertIn("Turn one source into inspectable evidence", WORKSPACE_GUIDE_HTML)
-        self.assertIn("Nothing leaves this machine", WORKSPACE_GUIDE_HTML)
+        self.assertIn("Inputs stay in the local Studio process", WORKSPACE_GUIDE_HTML)
+        self.assertIn("Measure multimodal models", OVERVIEW_HTML)
+        self.assertIn("Unscored preview", WORKSPACE_OUTPUT_HEADER_HTML)
         self.assertIn("<ol>", WORKSPACE_GUIDE_HTML)
         self.assertIn(".run-map", STUDIO_CSS)
         self.assertIn("#media-tabs", STUDIO_CSS)

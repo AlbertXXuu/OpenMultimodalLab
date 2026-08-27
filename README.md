@@ -49,9 +49,9 @@ one warm-up, three complete measured repetitions, greedy decoding, batch size
 
 Qwen achieved the higher aggregate score and lower median latency. SmolVLM2
 used about 70% less peak allocated GPU memory and led some categories,
-including OCR and event order. This is an evidence-backed hardware/task
-trade-off, not a universal model ranking; all media are controlled synthetic
-assets and cross-family token throughput is not directly equivalent.
+including OCR and event order. These results describe the pinned models,
+102 controlled synthetic tasks, recorded hardware, and decoding protocol;
+cross-family token throughput uses different token definitions.
 
 ![Formal 102-task Qwen3-VL-2B and SmolVLM2-500M comparison](docs/reports/v1.0.0-candidate/overview.svg)
 

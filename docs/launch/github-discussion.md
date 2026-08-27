@@ -16,15 +16,15 @@ SmolVLM2-500M-Video-Instruct revisions on the same NVIDIA RTX 4060 Laptop GPU:
 - raw JSONL and SHA-bound manifests committed alongside a byte-rebuildable
   report.
 
-The result is a hardware/task trade-off, not a universal ranking: Qwen led the
-aggregate score and median latency, while SmolVLM2 used about 70% less peak GPU
-memory and led selected categories. All current media are controlled synthetic
-assets, and only two small models are included.
+Within the pinned 102-task protocol and recorded RTX 4060 Laptop GPU, Qwen led
+the aggregate score and median latency, while SmolVLM2 used about 70% less peak
+GPU memory and led selected categories. The evidence set contains two small
+models and controlled synthetic media.
 
-If you have an 8 GB NVIDIA GPU, the most useful contribution is an independent
-first run from a clean environment. Please report the operating system, GPU,
-Python version, exact command, and the first blocker or surprising result. Do
-not include private paths, tokens, or sensitive media.
+If you try the workflow, useful feedback includes the operating system, GPU,
+Python version, exact command, and the first confusing step or surprising
+result. This helps improve setup, evidence readability, and model-adapter
+integration. Do not include private paths, tokens, or sensitive media.
 
 Repository: <https://github.com/AlbertXXuu/OpenMultimodalLab>
 

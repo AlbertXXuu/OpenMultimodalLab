@@ -25,9 +25,9 @@ SmolVLM2-500M-Video-Instruct revisions on one RTX 4060 Laptop GPU (8,188 MiB):
 - peak allocated GPU memory 4,180.5 MiB vs. 1,265.3 MiB;
 - zero runtime failures in the formal grid.
 
-This is not a universal leaderboard. The corpus is controlled synthetic data,
-the comparison currently covers only two small models, and results from one
-GPU should not be transferred to another hardware profile without rerunning.
+The current evidence set covers two small models, controlled synthetic data,
+and one recorded GPU under a pinned protocol. Rerun the protocol to obtain
+measurements for another hardware profile.
 
 Repo and reproducible evidence:
 <https://github.com/AlbertXXuu/OpenMultimodalLab>

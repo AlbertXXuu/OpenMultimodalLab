@@ -103,7 +103,7 @@ BRAND_HEADER_HTML = f"""
     <button type="button" data-studio-tab="reports">Reports</button>
     <button type="button" data-studio-tab="method">Method</button>
   </nav>
-  <span class="local-badge"><i aria-hidden="true"></i> Local only</span>
+  <span class="local-badge"><i aria-hidden="true"></i> v1.0.0</span>
 </header>
 """.strip()
 
@@ -165,7 +165,7 @@ WORKSPACE_GUIDE_HTML = """
     <li><span>03</span><strong>Prompt</strong><small>bounded generation controls</small></li>
     <li><span>04</span><strong>Evidence</strong><small>output and runtime signals</small></li>
   </ol>
-  <aside><span aria-hidden="true">●</span><strong>Nothing leaves this machine.</strong>
+  <aside><span aria-hidden="true">●</span><strong>Inputs stay in the local Studio process.</strong>
     <small>Runs stay unscored until evaluated by a versioned task protocol.</small></aside>
 </section>
 """.strip()
@@ -184,7 +184,7 @@ WORKSPACE_OUTPUT_HEADER_HTML = """
 <header class="workspace-panel-header">
   <div><span class="panel-index">02</span><span class="kicker">EVIDENCE CONSOLE</span>
     <h2>Read result and runtime together</h2></div>
-  <span class="panel-note">Preview · not a benchmark score</span>
+  <span class="panel-note">Unscored preview</span>
 </header>
 """.strip()
 
@@ -209,7 +209,7 @@ VIDEO_UPLOAD_GUIDANCE_HTML = """
 REPORT_INTRO_HTML = """
 <section class="report-intro">
   <div><span class="kicker">DURABLE EVIDENCE</span>
-    <h1>Inspect a run without rewriting it.</h1></div>
+    <h1>Inspect the preserved run.</h1></div>
   <p>Open a JSONL record produced by <code>oml run</code>. Summary, protocol status,
      and individual attempts remain traceable to the source file.</p>
 </section>
@@ -220,7 +220,7 @@ OVERVIEW_HTML = """
 <main class="method-stack studio-shell">
   <section class="method-hero">
     <span class="kicker">OPENMULTIMODALLAB · V1</span>
-    <h1>Measurement software,<br><em>not a model leaderboard.</em></h1>
+    <h1>Measure multimodal models,<br><em>with reproducible evidence.</em></h1>
     <p>OpenMultimodalLab runs pinned local vision-language models against versioned
        tasks and preserves enough evidence to reproduce, inspect, and challenge a result.</p>
   </section>
@@ -232,11 +232,11 @@ OVERVIEW_HTML = """
   </section>
   <section class="method-grid">
     <article><span>01 · CONTROL</span><h2>Pin what changes.</h2>
-      <p>Task, media, prompt, backend revision, warm-up, repetitions, and hardware
-         context belong in the record—not in memory.</p></article>
+      <p>The record preserves task, media, prompt, backend revision, warm-up,
+         repetitions, and hardware context.</p></article>
     <article><span>02 · MEASURE</span><h2>Separate quality from speed.</h2>
-      <p>Scores, latency, TTFT, throughput, and peak memory answer different questions.
-         The interface never collapses them into one magic number.</p></article>
+      <p>Scores, latency, TTFT, throughput, and peak memory remain separate so each
+         answers its own measurement question.</p></article>
     <article><span>03 · INTERPRET</span><h2>Keep the boundary visible.</h2>
       <p>A playground response is unscored. A formal comparison requires the versioned
          task protocol and its preserved JSONL evidence.</p></article>
@@ -271,9 +271,9 @@ Inputs and output were reset; any loaded model remains warm.</div>
 EMPTY_REPORT_HTML = """
 <section class="metric-panel empty-state">
   <div class="panel-top"><span class="kicker">RUN SUMMARY</span>
-    <span class="protocol-pill informal">NO FILE</span></div>
+    <span class="protocol-pill informal">SELECT A RUN</span></div>
   <h3>Select one preserved JSONL record.</h3>
-  <p>The report view is read-only and never modifies the evidence file.</p>
+  <p>The read-only report view preserves the source evidence file.</p>
 </section>
 """.strip()
 
@@ -401,7 +401,7 @@ def render_success_status(result: PlaygroundResult) -> str:
     return (
         '<div class="run-status success"><span aria-hidden="true"></span>'
         f"<strong>Completed locally.</strong> Model warm · {escape(result.media_kind)} · "
-        "no quality score assigned</div>"
+        "unscored preview</div>"
     )
 
 
