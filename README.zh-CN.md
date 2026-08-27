@@ -127,7 +127,7 @@ flowchart LR
 核心路径不会下载模型，可在 Python 3.11、3.12 或 3.13 运行：
 
 ```powershell
-git clone https://github.com/AlbertXXuu/OpenMultimodalLab.git
+git clone --branch v1.0.0 --depth 1 https://github.com/AlbertXXuu/OpenMultimodalLab.git
 cd OpenMultimodalLab
 
 py -3.11 -m venv .venv
