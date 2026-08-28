@@ -9,6 +9,9 @@ updates:
       timezone: Asia/Shanghai
     open-pull-requests-limit: 2
     versioning-strategy: increase-if-necessary
+    # The v1.0 runtime constraints remain bound to the signed release evidence.
+    exclude-paths:
+      - "requirements/model-windows-py311-constraints.txt"
     groups:
       python-dependencies:
         patterns:
