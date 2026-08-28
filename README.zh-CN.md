@@ -334,7 +334,8 @@ revision、许可证、安装路径、已验证硬件、Adapter 契约测试和�
 第一次使用本项目本身也是一种贡献。你可以提交一份
 [结构化首次运行反馈](https://github.com/AlbertXXuu/OpenMultimodalLab/issues/new?template=first_run_feedback.yml)，
 说明运行环境、尝试的操作、成功部分和最希望改进的一点。发布前请移除密钥、
-私人媒体、用户名和本地绝对路径。
+私人媒体、用户名和本地绝对路径。独立验证结果按[采用台账](docs/ADOPTION.md)
+的明确规则计数；Stars 和浏览量不作为真实使用。
 
 ## 许可证
 

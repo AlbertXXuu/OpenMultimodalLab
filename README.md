@@ -380,7 +380,9 @@ Trying the project for the first time is also a contribution. Share a
 [structured first-run report](https://github.com/AlbertXXuu/OpenMultimodalLab/issues/new?template=first_run_feedback.yml)
 with your environment, the path you tried, what worked, and the single most
 valuable improvement. Remove secrets, private media, usernames, and absolute
-local paths before posting.
+local paths before posting. Independently verified outcomes are counted under
+the explicit rules in the [adoption ledger](docs/ADOPTION.md); Stars and views
+are not treated as usage.
 
 ## License
 
