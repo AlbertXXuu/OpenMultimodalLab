@@ -12,6 +12,10 @@
 
 [简体中文](README.zh-CN.md)
 
+> Maintenance status: `v1.0.0` is the frozen public release. Current work focuses on
+> maintenance, reproduction, external validation, and clearly separated follow-up experiments.
+> See the [maintenance policy](docs/MAINTENANCE.md) and [portfolio evidence](PORTFOLIO.md).
+
 A local-first, reproducible benchmark toolkit for answering a practical
 question: **which vision-language model works best for this task and this
 hardware, and what evidence supports that choice?**
@@ -353,6 +357,14 @@ Small, testable contributions that improve reproducibility are welcome.
 Before proposing another model, include its exact revision, license,
 installation path, verified hardware, adapter contract tests, and known
 limitations.
+
+After installing the core package, run the bounded contributor smoke first. It
+uses the mock backend, forces the supported offline environment flags, validates
+the generated JSONL and manifest, and removes its temporary artifacts:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\contributor_smoke.py
+```
 
 ```powershell
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v

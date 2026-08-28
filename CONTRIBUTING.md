@@ -12,6 +12,7 @@ OpenMultimodalLab 已发布 `v1.0.0`。优先接受小型、可测试、能改�
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e .
+python scripts/contributor_smoke.py
 python -m unittest discover -s tests -v
 python scripts/check_repository.py
 python -m pip wheel . --no-deps --wheel-dir dist

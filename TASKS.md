@@ -5,6 +5,11 @@
 
 ## Now：发布后可靠性审查
 
+- [x] 明确 v1 冻结维护政策与一页式作品证据，不改写发布标签或哈希证据。
+- [x] 从全新 `v1.0.0` 克隆审计公开 quick start，区分 Windows 正常路径、
+  严格离线构建工具缺口与 Ubuntu 系统 venv 前置条件。
+- [ ] contributor smoke 已在当前开发环境和全新离线 wheel venv 通过，并加入
+  Linux Python 3.11/3.12 CI；等待远程 CI 实际运行后关闭该项。
 - [x] 逐项核对 README、维护文档、教程与发布状态，移除过时的候选版表述。
 - [x] 拒绝数据集、结果、恢复记录和 manifest 中的 `NaN`/`Infinity`。
 - [x] 让 `oml report` 对字段损坏或记录不完整的输入给出稳定错误，而不是

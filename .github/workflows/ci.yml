@@ -40,6 +40,12 @@ jobs:
         run: python -m compileall -q src tests
       - name: Check installed requirements
         run: python -m pip check
+      - name: Run offline contributor smoke
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          PIP_NO_INDEX: "1"
+        run: python scripts/contributor_smoke.py
       - name: Run offline tests
         run: python -m unittest discover -s tests -v
 

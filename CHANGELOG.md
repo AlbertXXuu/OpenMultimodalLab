@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Add a bounded contributor smoke that verifies the installed CLI, mock inference,
+  JSON report parity, output hash/size, manifest state, and an enforced socket guard
+  in disposable storage; run it in the Linux Python 3.11/3.12 CI matrix.
+- Add the post-v1 maintenance policy, portfolio evidence page, and a factual
+  fresh-install audit covering the passing Windows quick start, offline build-tool
+  prerequisite, and the unavailable Ubuntu venv prerequisite.
 - Add a reproducible 1280×640 AlvenX social preview, truthful bilingual
   launch drafts, an external-feedback measurement plan, and an IP/brand
   readiness checklist that avoids unverified ownership or registration claims.

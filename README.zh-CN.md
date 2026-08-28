@@ -12,6 +12,9 @@
 
 [English](README.md)
 
+> 维护状态：`v1.0.0` 是冻结的公开正式版。当前工作聚焦维护、复现、外部验证和明确分离的
+> 后续实验。详见[维护政策](docs/MAINTENANCE.md)与[作品证据页](PORTFOLIO.md)。
+
 一个本地优先、强调可复现证据的多模态模型评测工具。它要回答的不是“哪个
 模型最热门”，而是：**在这组任务和这台硬件上，哪个视觉语言模型更合适，
 这个结论能否被复核？**
@@ -310,6 +313,13 @@ v1 之后只推进现有证据还不能回答的问题：非作者首次使用�
 
 优先接受小型、可测试、能改善可复现性的贡献。新增模型时需要提供精确
 revision、许可证、安装路径、已验证硬件、Adapter 契约测试和限制。
+
+安装核心包后，先运行一次有界的 contributor smoke。它使用 mock 后端，设置受支持的离线
+环境变量，校验生成的 JSONL 与 manifest，并在结束时删除临时产物：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\contributor_smoke.py
+```
 
 ```powershell
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
