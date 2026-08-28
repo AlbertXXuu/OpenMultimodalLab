@@ -31,7 +31,8 @@ python -m pip wheel . --no-deps --wheel-dir dist
 
 ## 新增模型 Adapter
 
-新增 Adapter 时应提供：
+先运行[第三方 Adapter 教程](docs/guides/third-party-adapter.md)中的离线示例和
+契约测试。新增 Adapter 时应提供：
 
 - 模型名称、revision 和许可证链接；
 - 安装依赖；
