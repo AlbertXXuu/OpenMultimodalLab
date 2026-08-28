@@ -128,6 +128,16 @@ class RepositoryCheckTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("*.csv text eol=lf\n", attributes)
+        dependabot = (
+            PROJECT_ROOT / ".github" / "dependabot.yml"
+        ).read_text(encoding="utf-8")
+        pip_updates = dependabot.split(
+            "  - package-ecosystem: pip\n", 1
+        )[1].split("\n  - package-ecosystem:", 1)[0]
+        self.assertIn(
+            '      - "requirements/model-windows-py311-constraints.txt"\n',
+            pip_updates,
+        )
 
 
 if __name__ == "__main__":
