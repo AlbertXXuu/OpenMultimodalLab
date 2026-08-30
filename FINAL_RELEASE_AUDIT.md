@@ -1,8 +1,9 @@
 # OpenMultimodalLab v1.1.0 final release audit
 
-- Status: **CANDIDATE — Linux CI required before PASS**
+- Status: **PASS**
 - Audit date: `2026-08-30` (`Asia/Shanghai`)
 - Audited source commit: `dc4bb67b2c348113440c8d6bfbe9c1edc63ebe91`
+- First complete Linux-CI candidate commit: `b77c46c2d0fdc6202a15f293e584c375de179b48`
 - Target release: `v1.1.0`
 
 ## Release meaning
@@ -19,8 +20,9 @@ from the development checkout. Windows validation used Windows NT `10.0.26200.0`
 `7.6.4`, Python `3.11.0`, and Chromium `151.0.7922.34`. Built distributions were installed in two
 new isolated environments, one from the wheel and one from the source distribution.
 
-Linux is not inferred from the Windows result. This audit remains a candidate until the complete
-pull-request head passes the repository's GitHub Actions matrix on Ubuntu.
+Linux is not inferred from the Windows result. The complete candidate passed the repository's
+GitHub Actions matrix on Ubuntu. This record remains valid only while every check on the current
+head of pull request [#55](https://github.com/AlbertXXuu/OpenMultimodalLab/pull/55) is green.
 
 ## Readiness checklist
 
@@ -33,7 +35,7 @@ pull-request head passes the repository's GitHub Actions matrix on Ubuntu.
 | Windows/local tests | PASS | `201` unittest tests ran, `3` skipped; offline contributor smoke passed `3/3` tasks with its socket guard active. |
 | Repository checker | PASS | `194` text files, `275` Markdown links, and `1,056` JSON/JSONL documents validated, including this audit record. |
 | Committed evidence/report check | PASS | Rebuilt report verifier matched `4` sources and `5` outputs; runtime-license policy validation passed. |
-| Linux CI | PENDING | Required on the complete `closure/v1.1.0` pull-request head before this audit may become PASS. |
+| Linux CI | PASS | [Run 33314875863](https://github.com/AlbertXXuu/OpenMultimodalLab/actions/runs/33314875863) passed test on Python 3.11/3.12, repository quality, installed-wheel smoke, and Studio UI on the complete candidate. |
 | README / README.zh-CN | PASS | Both are present, coherent with the `1.1.0` candidate identity, and retain the stable `v1.0.0` reproduction path. |
 | CHANGELOG / MAINTENANCE | PASS | `CHANGELOG.md` and `docs/MAINTENANCE.md` are present and describe a bounded closure release plus maintenance-only follow-up. |
 | PORTFOLIO | PASS | Problem, original decisions, difficult failure modes, results, negative/limited evidence, and individual contribution are recorded. |
@@ -72,8 +74,8 @@ frozen evidence object changed.
 
 ## Findings and disposition
 
-- **P0 blockers:** `0` locally; final count is contingent on Linux CI.
-- **P1 blockers:** `0` locally; final count is contingent on Linux CI.
+- **P0 blockers:** `0`.
+- **P1 blockers:** `0`.
 - **P2 accepted:** setuptools warns that the legacy TOML license table and license classifiers are
   deprecated, with a stated deadline of `2027-02-18`. The sdist and wheel build and install
   correctly. Migrating requires raising the build-system floor from setuptools 68 and changing
@@ -82,6 +84,6 @@ frozen evidence object changed.
 
 ## Gate decision
 
-Local release readiness is **PASS**. Overall P10 readiness remains **PENDING** until the exact
-pull-request head passes every Linux CI job. No tag or release may be created from this candidate
-before that evidence exists.
+Release readiness is **PASS** with P0/P1 counts of zero. The audit-status reconciliation changes
+only this document and must pass the same pull-request checks before merge. No tag or release may
+be created until P11 validates the merged commit and reconfirms its current-head CI.
