@@ -103,7 +103,7 @@ BRAND_HEADER_HTML = f"""
     <button type="button" data-studio-tab="reports">Reports</button>
     <button type="button" data-studio-tab="method">Method</button>
   </nav>
-  <span class="local-badge"><i aria-hidden="true"></i>Studio v1.1.0 candidate · Evidence v1.0.0</span>
+  <span class="local-badge"><i aria-hidden="true"></i>Studio v1.1.0 · Evidence v1.0.0</span>
 </header>
 """.strip()
 

@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.1.0] - Unreleased
+## [1.1.0] - 2026-08-30
 
 ### Added
 
@@ -41,7 +41,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - Normalize current software, runtime, Studio, and documentation identity as the `v1.1.0`
-  presentation and maintenance closure candidate while preserving the unchanged `v1.0.0`
+  presentation and maintenance closure release while preserving the unchanged `v1.0.0`
   research/evidence baseline.
 - Adopt AlvenX interface standard `2026-08-22.8` across Studio: Instrument Sans,
   the canonical airy light-blue canvas and ink palette, quieter translucent

@@ -33,7 +33,7 @@ head of pull request [#55](https://github.com/AlbertXXuu/OpenMultimodalLab/pull/
 | Source distribution | PASS | Built and installed in a new environment; metadata and CLI both reported `1.1.0`. |
 | Wheel | PASS | Built and installed with no dependencies in a new environment; `pip check`, CLI identity, doctor, mock run, and report path passed outside the development checkout. |
 | Windows/local tests | PASS | `201` unittest tests ran, `3` skipped; offline contributor smoke passed `3/3` tasks with its socket guard active. |
-| Repository checker | PASS | `194` text files, `275` Markdown links, and `1,056` JSON/JSONL documents validated, including this audit record. |
+| Repository checker | PASS | `194` text files, `277` Markdown links, and `1,056` JSON/JSONL documents validated, including this audit record. |
 | Committed evidence/report check | PASS | Rebuilt report verifier matched `4` sources and `5` outputs; runtime-license policy validation passed. |
 | Linux CI | PASS | [Run 33314875863](https://github.com/AlbertXXuu/OpenMultimodalLab/actions/runs/33314875863) passed test on Python 3.11/3.12, repository quality, installed-wheel smoke, and Studio UI on the complete candidate. |
 | README / README.zh-CN | PASS | Both are present, coherent with the `1.1.0` candidate identity, and retain the stable `v1.0.0` reproduction path. |
@@ -84,6 +84,14 @@ frozen evidence object changed.
 
 ## Gate decision
 
-Release readiness is **PASS** with P0/P1 counts of zero. The audit-status reconciliation changes
-only this document and must pass the same pull-request checks before merge. No tag or release may
-be created until P11 validates the merged commit and reconfirms its current-head CI.
+Release readiness is **PASS** with P0/P1 counts of zero. No tag or release may be created until the
+bounded P11 identity delta below passes the same pull-request checks and its exact commit becomes
+`main`.
+
+## P11 release-identity delta
+
+After the P10 candidate passed, P11 changed only the release-state wording in `README.md`,
+`README.zh-CN.md`, `CHANGELOG.md`, `docs/MAINTENANCE.md`, `TASKS.md`, the Studio badge, and its
+exact-label test. Software remains `1.1.0`; evidence remains `v1.0.0`; no package contract,
+benchmark, result, asset, protocol, or claim changed. This document's containing commit is the tag
+candidate and must pass every check on PR #55 before it may become `main` or `v1.1.0`.

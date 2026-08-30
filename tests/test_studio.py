@@ -324,7 +324,7 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn('data-studio-tab="run"', BRAND_HEADER_HTML)
         self.assertIn('data-studio-tab="reports"', BRAND_HEADER_HTML)
         self.assertIn('data-studio-tab="method"', BRAND_HEADER_HTML)
-        self.assertIn("Studio v1.1.0 candidate", BRAND_HEADER_HTML)
+        self.assertIn("Studio v1.1.0 · Evidence v1.0.0", BRAND_HEADER_HTML)
         self.assertIn("Evidence v1.0.0", BRAND_HEADER_HTML)
         self.assertIn('document.title = "OpenMultimodalLab · AlvenX"', STUDIO_NAV_JS)
         self.assertIn("top: 14px", STUDIO_CSS)
