@@ -16,7 +16,7 @@ class PackageMetadataTests(unittest.TestCase):
             (PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(__version__, "1.1.0")
+        self.assertEqual(__version__, "1.1.1")
         self.assertEqual(pyproject["project"]["version"], __version__)
         self.assertIn(
             "Development Status :: 4 - Beta",

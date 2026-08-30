@@ -95,3 +95,10 @@ After the P10 candidate passed, P11 changed only the release-state wording in `R
 exact-label test. Software remains `1.1.0`; evidence remains `v1.0.0`; no package contract,
 benchmark, result, asset, protocol, or claim changed. This document's containing commit is the tag
 candidate and must pass every check on PR #55 before it may become `main` or `v1.1.0`.
+
+## P11 post-publication quick-start correction
+
+The published `v1.1.0` README cloned `v1.0.0` for the core path and then documented the Studio from
+the same checkout, although Studio was added after the frozen research tag. Following the no-tag-
+rewrite rule, `v1.1.1` changes only the clone target and current package/Studio/documentation
+identity. The immutable `v1.0.0` research objects and all benchmark evidence remain unchanged.

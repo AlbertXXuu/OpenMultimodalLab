@@ -12,8 +12,9 @@
 
 [English](README.md)
 
-> 版本状态：当前软件是 `v1.1.0` 收尾正式版；研究与证据基线仍是不可变的 `v1.0.0`
-> 公开正式版。本次发布只收束展示与维护，不产生新的基准结论。详见
+> 版本状态：当前软件是 `v1.1.1` 收尾维护版；研究与证据基线仍是不可变的 `v1.0.0`
+> 公开正式版。收尾版本只处理展示与维护，不产生新的基准结论；`v1.1.1` 修正文档中的
+> 当前软件克隆目标。详见
 > [维护政策](docs/MAINTENANCE.md)与[作品证据页](PORTFOLIO.md)。
 
 一个本地优先、强调可复现证据的多模态模型评测工具。它要回答的不是“哪个
@@ -131,7 +132,7 @@ flowchart LR
 核心路径不会下载模型，可在 Python 3.11、3.12 或 3.13 运行：
 
 ```powershell
-git clone --branch v1.0.0 --depth 1 https://github.com/AlbertXXuu/OpenMultimodalLab.git
+git clone --branch v1.1.1 --depth 1 https://github.com/AlbertXXuu/OpenMultimodalLab.git
 cd OpenMultimodalLab
 
 py -3.11 -m venv .venv

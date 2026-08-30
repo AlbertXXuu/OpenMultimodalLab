@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2026-08-31
+
+### Fixed
+
+- Correct the current-software quick start to clone `v1.1.1`, where the documented Studio exists,
+  while retaining `v1.0.0` as the immutable research and evidence reproduction baseline.
+
 ## [1.1.0] - 2026-08-31
 
 ### Added
