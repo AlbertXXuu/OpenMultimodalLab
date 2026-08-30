@@ -31,7 +31,7 @@ pull-request head passes the repository's GitHub Actions matrix on Ubuntu.
 | Source distribution | PASS | Built and installed in a new environment; metadata and CLI both reported `1.1.0`. |
 | Wheel | PASS | Built and installed with no dependencies in a new environment; `pip check`, CLI identity, doctor, mock run, and report path passed outside the development checkout. |
 | Windows/local tests | PASS | `201` unittest tests ran, `3` skipped; offline contributor smoke passed `3/3` tasks with its socket guard active. |
-| Repository checker | PASS | `193` text files, `275` Markdown links, and `1,056` JSON/JSONL documents validated. |
+| Repository checker | PASS | `194` text files, `275` Markdown links, and `1,056` JSON/JSONL documents validated, including this audit record. |
 | Committed evidence/report check | PASS | Rebuilt report verifier matched `4` sources and `5` outputs; runtime-license policy validation passed. |
 | Linux CI | PENDING | Required on the complete `closure/v1.1.0` pull-request head before this audit may become PASS. |
 | README / README.zh-CN | PASS | Both are present, coherent with the `1.1.0` candidate identity, and retain the stable `v1.0.0` reproduction path. |
