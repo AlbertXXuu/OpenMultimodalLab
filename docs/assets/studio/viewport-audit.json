@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0",
+  "checked_on": "2026-08-30",
+  "software_version": "1.1.0-candidate",
+  "browser": "Playwright Chromium",
+  "page": "http://127.0.0.1:7860/",
+  "viewport_height_px": 1000,
+  "tabs_checked": [
+    "Run",
+    "Reports",
+    "Method"
+  ],
+  "all_tabs_no_horizontal_overflow": true,
+  "shared_header_contract": {
+    "position": "fixed",
+    "z_index": 100,
+    "top_px": 14,
+    "minimum_height_px": 70,
+    "gap_px": 28,
+    "padding": "12px 18px 12px 22px",
+    "border_radius_px": 26,
+    "background": "rgb(255 255 255 / 26%)",
+    "backdrop_filter": "blur(18px) saturate(148%)",
+    "wordmark_width_px": 160
+  },
+  "viewports": [
+    {
+      "width_px": 900,
+      "scroll_width_px": 900,
+      "horizontal_overflow": false,
+      "generation_controls_expanded": false,
+      "workspace_direction": "column",
+      "run_map_columns": 1,
+      "minimum_critical_target_height_px": 44,
+      "screenshot": "oml-studio-900px.png",
+      "screenshot_height_px": 2604,
+      "screenshot_sha256": "bff602d462b11fc3f92189fe511f422ba46e38ce4970a9076f19640e89c8551c"
+    },
+    {
+      "width_px": 1024,
+      "scroll_width_px": 1024,
+      "horizontal_overflow": false,
+      "generation_controls_expanded": false,
+      "workspace_direction": "column",
+      "run_map_columns": 1,
+      "minimum_critical_target_height_px": 44,
+      "screenshot": "oml-studio-1024px.png",
+      "screenshot_height_px": 2552,
+      "screenshot_sha256": "ce1f34ca42eb98b4b7396df0a9c4310b73cb0c4f6662cc8de6bbbaf9c2853733"
+    },
+    {
+      "width_px": 1280,
+      "scroll_width_px": 1280,
+      "horizontal_overflow": false,
+      "generation_controls_expanded": false,
+      "workspace_direction": "row",
+      "run_map_columns": 3,
+      "minimum_critical_target_height_px": 44,
+      "screenshot": "oml-studio-1280px.png",
+      "screenshot_height_px": 1753,
+      "screenshot_sha256": "809f594474aa5645f6a58a78f9ae216863bdf4fa0cbe378d419c8b44d01c864e"
+    },
+    {
+      "width_px": 1440,
+      "scroll_width_px": 1440,
+      "horizontal_overflow": false,
+      "generation_controls_expanded": false,
+      "workspace_direction": "row",
+      "run_map_columns": 3,
+      "minimum_critical_target_height_px": 44,
+      "screenshot": "oml-studio-1440px.png",
+      "screenshot_height_px": 1782,
+      "screenshot_sha256": "a63dd27be6b96b0a60dff089ecfac5b1df834f992dba70f81a3865a770465e78"
+    },
+    {
+      "width_px": 1600,
+      "scroll_width_px": 1600,
+      "horizontal_overflow": false,
+      "generation_controls_expanded": false,
+      "workspace_direction": "row",
+      "run_map_columns": 3,
+      "minimum_critical_target_height_px": 44,
+      "screenshot": "oml-studio-1600px.png",
+      "screenshot_height_px": 1748,
+      "screenshot_sha256": "66f4fd0cfbba0d18c9bb44079f2858e3fb5355c80cbd2eb2bb3101ec5ce8f35a"
+    }
+  ],
+  "keyboard": {
+    "generation_controls": {
+      "initial_display": "none",
+      "display_after_enter": "block",
+      "display_after_second_enter": "none",
+      "focus_outline": "3px solid rgb(37 99 235 / 42%)"
+    },
+    "header_navigation": {
+      "reports_activated_with_enter": true,
+      "run_restored_with_enter": true
+    }
+  },
+  "result_hierarchy": [
+    "status",
+    "score",
+    "latency",
+    "ttft",
+    "peak_vram"
+  ],
+  "score_without_protocol": "Unscored"
+}

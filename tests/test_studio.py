@@ -3,6 +3,8 @@ from __future__ import annotations
 import base64
 import hashlib
 import importlib.util
+import json
+import struct
 import sys
 import tempfile
 import unittest
@@ -308,7 +310,7 @@ class StudioRuntimeTests(unittest.TestCase):
             )
 
         self.assertTrue(response)
-        self.assertIn("UNSCORED", metrics)
+        self.assertIn("Unscored", metrics)
         self.assertIn("Completed locally", status)
 
     def test_brand_assets_are_local_and_wordmark_is_not_interactive(self) -> None:
@@ -322,6 +324,8 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn('data-studio-tab="run"', BRAND_HEADER_HTML)
         self.assertIn('data-studio-tab="reports"', BRAND_HEADER_HTML)
         self.assertIn('data-studio-tab="method"', BRAND_HEADER_HTML)
+        self.assertIn("Studio v1.1.0 candidate", BRAND_HEADER_HTML)
+        self.assertIn("Evidence v1.0.0", BRAND_HEADER_HTML)
         self.assertIn('document.title = "OpenMultimodalLab · AlvenX"', STUDIO_NAV_JS)
         self.assertIn("top: 14px", STUDIO_CSS)
         self.assertGreaterEqual(STUDIO_CSS.count("z-index: 100"), 2)
@@ -498,9 +502,87 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn("#alvenx-header", STUDIO_CSS)
         self.assertIn("border-radius: 26px", STUDIO_CSS)
         self.assertIn("background: rgb(255 255 255 / 26%)", STUDIO_CSS)
-        self.assertIn("interface revision 2026-08-25.2", STUDIO_CSS)
+        self.assertIn("interface revision 2026-08-30.1", STUDIO_CSS)
         self.assertIn("line-height: 1.55 !important", STUDIO_CSS)
         self.assertIn('#media-tabs .visually-hidden button', STUDIO_CSS)
+        self.assertIn("html, body { min-width: 0", STUDIO_CSS)
+        self.assertIn("@media (max-width: 1099px)", STUDIO_CSS)
+        self.assertIn("flex-direction: column !important", STUDIO_CSS)
+        self.assertIn("summary:focus-visible", STUDIO_CSS)
+        self.assertIn(".generation-controls > .label-wrap", STUDIO_CSS)
+        self.assertNotIn("min-width: 1080px", STUDIO_CSS)
+
+        ui_source = (
+            Path(__file__).resolve().parents[1]
+            / "src/openmultimodal_lab/studio_ui.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn('"Generation controls",\n                            open=False,', ui_source)
+
+    def test_playground_result_hierarchy_is_explicitly_unscored(self) -> None:
+        result = PlaygroundResult(
+            response_text="done",
+            latency_ms=100.0,
+            model_revision="revision-1",
+            backend="qwen3-vl",
+            media_kind="image",
+            usage={
+                "ttft_ms": 12.5,
+                "output_tokens_per_second": 20.0,
+                "peak_gpu_memory_mb": 512.0,
+            },
+        )
+
+        metrics = render_playground_metrics(result)
+
+        for label in ("Score", "Latency", "TTFT", "Peak VRAM"):
+            self.assertIn(f"<span>{label}</span>", metrics)
+        self.assertIn("Unscored", metrics)
+        self.assertIn("COMPLETED", metrics)
+        self.assertIn("Output rate", metrics)
+        self.assertIn("READY", EMPTY_METRICS_HTML)
+
+    def test_studio_viewport_evidence_matches_the_closure_contract(self) -> None:
+        evidence_root = (
+            Path(__file__).resolve().parents[1] / "docs/assets/studio"
+        )
+        audit = json.loads(
+            (evidence_root / "viewport-audit.json").read_text(encoding="utf-8")
+        )
+
+        self.assertEqual(
+            [item["width_px"] for item in audit["viewports"]],
+            [900, 1024, 1280, 1440, 1600],
+        )
+        self.assertEqual(audit["tabs_checked"], ["Run", "Reports", "Method"])
+        self.assertTrue(audit["all_tabs_no_horizontal_overflow"])
+        self.assertTrue(
+            all(not item["horizontal_overflow"] for item in audit["viewports"])
+        )
+        self.assertTrue(
+            all(
+                item["minimum_critical_target_height_px"] >= 44
+                for item in audit["viewports"]
+            )
+        )
+        self.assertEqual(
+            [item["workspace_direction"] for item in audit["viewports"]],
+            ["column", "column", "row", "row", "row"],
+        )
+        self.assertEqual(audit["score_without_protocol"], "Unscored")
+        self.assertEqual(
+            audit["keyboard"]["generation_controls"]["display_after_enter"],
+            "block",
+        )
+
+        for item in audit["viewports"]:
+            payload = (evidence_root / item["screenshot"]).read_bytes()
+            self.assertEqual(hashlib.sha256(payload).hexdigest(), item["screenshot_sha256"])
+            self.assertEqual(payload[:8], b"\x89PNG\r\n\x1a\n")
+            self.assertEqual(struct.unpack(">I", payload[16:20])[0], item["width_px"])
+            self.assertEqual(
+                struct.unpack(">I", payload[20:24])[0],
+                item["screenshot_height_px"],
+            )
 
     def test_run_status_explains_cold_and_warm_model_reuse(self) -> None:
         self.assertIn("Ready for a cold run", EMPTY_STATUS_HTML)

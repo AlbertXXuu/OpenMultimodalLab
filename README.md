@@ -12,9 +12,10 @@
 
 [简体中文](README.zh-CN.md)
 
-> Maintenance status: `v1.0.0` is the frozen public release. Current work focuses on
-> maintenance, reproduction, external validation, and clearly separated follow-up experiments.
-> See the [maintenance policy](docs/MAINTENANCE.md) and [portfolio evidence](PORTFOLIO.md).
+> Version status: current software is the `v1.1.0` closure candidate. The research and evidence
+> baseline remains the immutable `v1.0.0` public release; the candidate adds presentation and
+> maintenance work, not a new benchmark claim. See the
+> [maintenance policy](docs/MAINTENANCE.md) and [portfolio evidence](PORTFOLIO.md).
 
 A local-first, reproducible benchmark toolkit for answering a practical
 question: **which vision-language model works best for this task and this

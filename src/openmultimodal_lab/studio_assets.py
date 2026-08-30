@@ -103,7 +103,7 @@ BRAND_HEADER_HTML = f"""
     <button type="button" data-studio-tab="reports">Reports</button>
     <button type="button" data-studio-tab="method">Method</button>
   </nav>
-  <span class="local-badge"><i aria-hidden="true"></i> v1.0.0</span>
+  <span class="local-badge"><i aria-hidden="true"></i>Studio v1.1.0 candidate · Evidence v1.0.0</span>
 </header>
 """.strip()
 
@@ -248,10 +248,14 @@ OVERVIEW_HTML = """
 EMPTY_METRICS_HTML = """
 <section class="metric-panel empty-state">
   <div class="panel-top"><span class="kicker">LIVE TELEMETRY</span>
-    <span class="unscored-pill">UNSCORED</span></div>
-  <h3>Run evidence will appear here.</h3>
-  <p>Wall latency, TTFT, output throughput, peak GPU memory, backend revision, and
-     output length are reported when the adapter provides them.</p>
+    <span class="status-pill idle">READY</span></div>
+  <div class="live-grid">
+    <article class="live-card"><span>Score</span><strong>Unscored</strong><small>preview only</small></article>
+    <article class="live-card"><span>Latency</span><strong>n/a</strong></article>
+    <article class="live-card"><span>TTFT</span><strong>n/a</strong></article>
+    <article class="live-card"><span>Peak VRAM</span><strong>n/a</strong></article>
+  </div>
+  <p>Runtime evidence appears after the local adapter completes a run.</p>
 </section>
 """.strip()
 
@@ -347,14 +351,11 @@ def _metric_card(label: str, value: str, note: str = "") -> str:
 def render_playground_metrics(result: PlaygroundResult) -> str:
     usage = result.usage
     cards = [
-        _metric_card("Wall latency", _metric_value(result.latency_ms, " ms")),
+        _metric_card("Score", "Unscored", "preview only"),
+        _metric_card("Latency", _metric_value(result.latency_ms, " ms")),
         _metric_card("TTFT", _metric_value(usage.get("ttft_ms"), " ms")),
         _metric_card(
-            "Output rate",
-            _metric_value(usage.get("output_tokens_per_second"), " tok/s"),
-        ),
-        _metric_card(
-            "Peak GPU memory",
+            "Peak VRAM",
             _metric_value(usage.get("peak_gpu_memory_mb"), " MiB"),
         ),
     ]
@@ -369,12 +370,13 @@ def render_playground_metrics(result: PlaygroundResult) -> str:
     return (
         '<section class="metric-panel"><div class="panel-top">'
         '<span class="kicker">LIVE TELEMETRY</span>'
-        '<span class="unscored-pill">UNSCORED</span></div>'
+        '<span class="status-pill complete">COMPLETED</span></div>'
         f'<div class="live-grid">{"".join(cards)}</div>'
         '<div class="runtime-foot">'
         f"<span>Backend <strong>{escape(result.backend)}</strong></span>"
         f"<span>Revision <code>{escape(result.model_revision[:12])}</code></span>"
         f"<span>Model load <strong>{escape(model_load)}</strong></span>"
+        f"<span>Output rate <strong>{escape(_metric_value(usage.get('output_tokens_per_second'), ' tok/s'))}</strong></span>"
         f"<span>Output <strong>{escape(output_length)}</strong></span>"
         "</div></section>"
     )

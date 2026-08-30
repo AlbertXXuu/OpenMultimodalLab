@@ -234,7 +234,7 @@ def build_app(runtime: StudioRuntime | None = None) -> Any:
                         )
                         with gr.Accordion(
                             "Generation controls",
-                            open=True,
+                            open=False,
                             elem_classes="generation-controls",
                         ):
                             max_tokens = gr.Slider(
