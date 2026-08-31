@@ -324,11 +324,17 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn('data-studio-tab="run"', BRAND_HEADER_HTML)
         self.assertIn('data-studio-tab="reports"', BRAND_HEADER_HTML)
         self.assertIn('data-studio-tab="method"', BRAND_HEADER_HTML)
-        self.assertIn("Studio v1.1.1 · Evidence v1.0.0", BRAND_HEADER_HTML)
+        self.assertIn("Studio v1.1.2 · Evidence v1.0.0", BRAND_HEADER_HTML)
         self.assertIn("Evidence v1.0.0", BRAND_HEADER_HTML)
         self.assertIn('document.title = "OpenMultimodalLab · AlvenX"', STUDIO_NAV_JS)
         self.assertIn("top: 14px", STUDIO_CSS)
         self.assertGreaterEqual(STUDIO_CSS.count("z-index: 100"), 2)
+        header_nav_css = STUDIO_CSS.split(".header-nav {", 1)[1].split("}", 1)[0]
+        header_nav_button_css = STUDIO_CSS.split(".header-nav button {", 1)[1].split(
+            "}", 1
+        )[0]
+        self.assertIn("padding: 0;", header_nav_css)
+        self.assertIn("margin: 0 !important;", header_nav_button_css)
         self.assertIn(
             "width: calc(min(100%, 1480px) - 2 * clamp(18px, 5vw, 74px))",
             STUDIO_CSS,

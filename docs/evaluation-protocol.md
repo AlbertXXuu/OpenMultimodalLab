@@ -233,6 +233,13 @@ The native Transformers visual-text adapters record the same fields:
 - `latency_ms`: adapter invocation plus deterministic evaluation in the runner;
 - `peak_gpu_memory_mb`: maximum CUDA memory allocated during generation.
 
+For the current PyTorch CUDA adapters, `peak_gpu_memory_mb` means allocator
+memory, not total process VRAM or the peak for the whole device. An alternative
+runtime must declare its measurement boundary. An NVML measurement must retain
+the idle baseline, sampling interval, and whether another process contaminated
+the observation. Results from different memory boundaries must not share one
+memory ranking.
+
 `output_tokens_per_second` counts generated token IDs, including terminal
 special tokens, over `generation_ms`. `decode_tokens_per_second` excludes the
 first generated token and divides by `generation_ms - ttft_ms`.

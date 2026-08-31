@@ -11,7 +11,8 @@
 - v1.0 正式实验已在该 8GB GPU 上完成；可用磁盘空间属于运行时状态，不在
   文档中长期固定。
 - 维护目标是每周 2～3 次有证据的更新；具体投入时间按学业安排调整。
-- 现有工作区内已有 LocalModelLab 和 AgentReliabilityLab，本项目不覆盖它们。
+- 早期 LocalModelLab 与 AgentReliabilityLab 文档中的有效方法边界已分别提炼到本项目路线图、
+  评测协议和 AlvenX incubator；旧的无代码研究残余已清理，不再构成并行项目。
 
 ## 2. 当前假设
 
@@ -43,6 +44,9 @@
 选择 `OpenMultimodalLab`，不修改已有 LocalModelLab 和 AgentReliabilityLab。
 
 原因：三者研究问题不同，独立仓库更容易形成清楚的 README、路线图和面试故事。
+
+这是创建仓库时的历史决定。后续整理仅提炼仍有效的方法约束并清理未实现旧文档，未把旧路线图或
+通用 Agent 平台范围并入 OpenMultimodalLab。
 
 ### D-002：先做评测核心
 
