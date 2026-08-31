@@ -12,10 +12,10 @@
 
 [简体中文](README.zh-CN.md)
 
-> Version status: current software is the `v1.1.1` closure maintenance release. The research and
-> evidence baseline remains the immutable `v1.0.0` public release. The closure line adds
-> presentation and maintenance work, not a new benchmark claim; `v1.1.1` corrects the documented
-> current-software clone target. See the
+> Version status: current software is the `v1.1.2` maintenance patch. The research and evidence
+> baseline remains the immutable `v1.0.0` public release. This patch aligns the packaged Studio
+> header with the canonical cross-product geometry and clarifies measurement and future-runtime
+> boundaries; it does not add benchmark evidence or change published results. See the
 > [maintenance policy](docs/MAINTENANCE.md) and [portfolio evidence](PORTFOLIO.md).
 
 A local-first, reproducible benchmark toolkit for answering a practical
@@ -153,7 +153,7 @@ The core path does not download a model and works on Python 3.11, 3.12, or
 3.13. The primary examples use Windows PowerShell:
 
 ```powershell
-git clone --branch v1.1.1 --depth 1 https://github.com/AlbertXXuu/OpenMultimodalLab.git
+git clone --branch v1.1.2 --depth 1 https://github.com/AlbertXXuu/OpenMultimodalLab.git
 cd OpenMultimodalLab
 
 py -3.11 -m venv .venv

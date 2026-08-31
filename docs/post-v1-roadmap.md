@@ -61,8 +61,13 @@ An adapter that only makes another model import successfully is not enough.
 
 ### Later: conditional scope
 
-- Quantized or alternative runtimes when they enable a measured hardware or
-  latency use case.
+- Quantized or alternative runtimes only after a concrete low-memory or latency
+  problem is observed. Compare quality, TTFT, decode speed, memory, OOM behavior,
+  and effective context under the same immutable model revision, task set,
+  prompt/chat template, and generation protocol. Differences across GGUF, AWQ,
+  GPTQ, NF4, or different backends cannot be attributed to bit width alone.
+  Long-context/OOM gradients and 50-run stability checks begin only after a
+  candidate signal exists; they are not a standing benchmark matrix.
 - Additional task families when their media can be regenerated and reviewed.
 - A UI or remote execution layer only when CLI user evidence shows it removes a
   real barrier without weakening provenance.

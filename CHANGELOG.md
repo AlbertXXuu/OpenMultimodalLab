@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2026-08-31
+
+### Fixed
+
+- Remove framework-added padding and button margins from the Studio header navigation so the
+  packaged interface retains the canonical AlvenX header height across the audited desktop widths.
+
+### Clarified
+
+- Define the current CUDA `peak_gpu_memory_mb` value as PyTorch allocator memory rather than total
+  process or device VRAM, and require alternative measurement boundaries to remain separate.
+- Require an observed low-memory or latency problem before adding a quantized or alternative
+  runtime comparison, with matched revisions, tasks, prompts, generation settings, and metrics.
+- Record that useful boundaries from two early documentation-only project remnants were retained
+  without merging their abandoned scope into OpenMultimodalLab.
+
+The immutable `v1.0.0` research tag, datasets, raw results, report bundle, and published
+measurements remain unchanged. Source validation is recorded in
+`docs/reports/v1.1.2-patch-validation.md`; final remote provenance belongs to the AlvenX
+post-closure audit and GitHub Release.
+
+Compare: [`v1.1.1...v1.1.2`](https://github.com/AlbertXXuu/OpenMultimodalLab/compare/v1.1.1...v1.1.2)
+
 ## [1.1.1] - 2026-08-31
 
 ### Fixed
