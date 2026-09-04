@@ -26,6 +26,7 @@ Create an isolated environment:
 
 ```powershell
 py -3.11 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade "pip>=26.2"
 .\.venv\Scripts\python.exe -m pip install -e .
 ```
 

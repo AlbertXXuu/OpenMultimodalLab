@@ -13,6 +13,7 @@ core package:
 
 ```powershell
 python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade "pip>=26.2"
 .\.venv\Scripts\python.exe -m pip install -e .
 .\.venv\Scripts\python.exe -m examples.custom_adapter.run_example
 .\.venv\Scripts\python.exe -m unittest examples.custom_adapter.test_contract -v

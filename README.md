@@ -157,6 +157,7 @@ git clone --branch v1.1.2 --depth 1 https://github.com/AlbertXXuu/OpenMultimodal
 cd OpenMultimodalLab
 
 py -3.11 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade "pip>=26.2"
 .\.venv\Scripts\python.exe -m pip install -e .
 
 .\.venv\Scripts\oml.exe doctor
@@ -172,6 +173,7 @@ Linux uses the same CLI arguments with POSIX environment paths:
 
 ```bash
 python3.11 -m venv .venv
+.venv/bin/python -m pip install --upgrade "pip>=26.2"
 .venv/bin/python -m pip install -e .
 .venv/bin/oml doctor
 .venv/bin/oml run \
@@ -197,6 +199,7 @@ installs the interface, not the selected model backend or a CUDA-enabled
 PyTorch build.
 
 ```powershell
+.\.venv-ml\Scripts\python.exe -m pip install --upgrade "pip>=26.2"
 .\.venv-ml\Scripts\python.exe -m pip install -e ".[studio]"
 .\.venv-ml\Scripts\oml.exe doctor --backend qwen3-vl
 .\.venv-ml\Scripts\oml.exe studio

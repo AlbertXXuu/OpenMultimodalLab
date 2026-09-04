@@ -45,7 +45,7 @@ Use a separate Python 3.11 or 3.12 environment for real models:
 
 ```powershell
 py -3.11 -m venv .venv-ml
-.\.venv-ml\Scripts\python.exe -m pip install --upgrade pip
+.\.venv-ml\Scripts\python.exe -m pip install --upgrade "pip>=26.2"
 .\.venv-ml\Scripts\python.exe -m pip install -e ".[smolvlm2]"
 .\.venv-ml\Scripts\oml.exe doctor --backend smolvlm2
 ```

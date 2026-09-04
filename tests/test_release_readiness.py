@@ -174,6 +174,28 @@ class ReleaseReadinessTests(unittest.TestCase):
         self.assertIn("hash_match=True", detail)
         self.assertFalse(tampered)
 
+    def test_constraints_reject_pip_upgrade_without_matching_snapshot(self) -> None:
+        baseline = (
+            PROJECT_ROOT / "requirements/model-windows-py311-constraints.txt"
+        )
+        snapshot = (
+            PROJECT_ROOT / "docs/reports/results/final-runtime-license-audit.json"
+        )
+        original = baseline.read_bytes()
+        self.assertEqual(original.count(b"pip==26.1.2"), 1)
+        baseline_passed, _ = _constraints_status(baseline, snapshot)
+        self.assertTrue(baseline_passed)
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            constraints = Path(temp_dir) / "constraints.txt"
+            constraints.write_bytes(
+                original.replace(b"pip==26.1.2", b"pip==26.2")
+            )
+            passed, detail = _constraints_status(constraints, snapshot)
+
+        self.assertFalse(passed)
+        self.assertIn("match_snapshot=False", detail)
+
     def test_current_readiness_reports_proven_gates_and_real_blockers(self) -> None:
         checks = {
             check.id: check

@@ -136,6 +136,7 @@ git clone --branch v1.1.2 --depth 1 https://github.com/AlbertXXuu/OpenMultimodal
 cd OpenMultimodalLab
 
 py -3.11 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade "pip>=26.2"
 .\.venv\Scripts\python.exe -m pip install -e .
 
 .\.venv\Scripts\oml.exe doctor
@@ -162,6 +163,7 @@ Reports 和项目介绍后置，同时严格区分试玩结果与正式评测证
 界面，不会替你安装所选模型后端或支持 CUDA 的 PyTorch。
 
 ```powershell
+.\.venv-ml\Scripts\python.exe -m pip install --upgrade "pip>=26.2"
 .\.venv-ml\Scripts\python.exe -m pip install -e ".[studio]"
 .\.venv-ml\Scripts\oml.exe doctor --backend qwen3-vl
 .\.venv-ml\Scripts\oml.exe studio
