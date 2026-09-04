@@ -6,6 +6,13 @@
 
 ## Now：发布后可靠性审查
 
+- [x] 针对 [Dependabot 安全告警 #1](https://github.com/AlbertXXuu/OpenMultimodalLab/security/dependabot/1)
+  与 [PR #58](https://github.com/AlbertXXuu/OpenMultimodalLab/pull/58)，为当前安装入口和
+  CI 每个环境补齐 `pip>=26.2`。两个活动环境已升级至 `26.2.1`，其余包版本未变；
+  Windows 全新 editable/wheel 安装、13 项相关测试与 19 项发布门禁通过，203 项完整
+  测试通过（1 项既有 Windows 跳过）。冻结审计三份文件本轮逐字节未变，新增回归
+  继续拒绝历史 pip pin 漂移。远端 Linux CI 验收与告警处置记录在替代维护 PR 中。
+
 - [x] 明确 v1 冻结维护政策与一页式作品证据，不改写发布标签或哈希证据。
 - [x] 从全新 `v1.0.0` 克隆审计公开 quick start，区分 Windows 正常路径、
   严格离线构建工具缺口与 Ubuntu 系统 venv 前置条件。

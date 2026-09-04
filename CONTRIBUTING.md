@@ -11,6 +11,7 @@ OpenMultimodalLab 已发布 `v1.0.0`。优先接受小型、可测试、能改�
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade "pip>=26.2"
 python -m pip install -e .
 python scripts/contributor_smoke.py
 python -m unittest discover -s tests -v

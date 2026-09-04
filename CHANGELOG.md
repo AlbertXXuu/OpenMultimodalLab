@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Security
+
+- Require `pip>=26.2` before current package installations and in every CI
+  environment to address CVE-2026-13346. Preserve the immutable v1.0.0 package
+  inventory and verify that changes to its pip pin still fail the release gate.
+
 ## [1.1.2] - 2026-08-31
 
 ### Fixed

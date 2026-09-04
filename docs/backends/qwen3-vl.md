@@ -34,7 +34,7 @@ The following configuration was selected for the initial Windows experiment:
 
 ```powershell
 py -3.11 -m venv .venv-ml
-.\.venv-ml\Scripts\python.exe -m pip install --upgrade pip
+.\.venv-ml\Scripts\python.exe -m pip install --upgrade "pip>=26.2"
 .\.venv-ml\Scripts\python.exe -m pip install `
   torch==2.13.0 `
   torchvision==0.28.0 `

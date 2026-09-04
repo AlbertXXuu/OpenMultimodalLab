@@ -2,9 +2,35 @@
 
 ## Supported state
 
-OpenMultimodalLab `v1.0.0` is the current stable release. Security fixes land
+OpenMultimodalLab `v1.1.2` is the current maintained release; `v1.0.0` is the
+immutable research/evidence baseline. Security fixes land
 on `main`; backports and a patch release are decided case by case from impact
 and compatibility. No long-term-support branch is promised.
+
+## Installation tooling
+
+Before installing or updating the package in each environment, upgrade pip:
+
+```text
+python -m pip install --upgrade "pip>=26.2"
+python -m pip --version
+```
+
+pip versions below 26.2 are affected by
+[CVE-2026-13346](https://github.com/advisories/GHSA-qwm4-qh6w-59xr), which requires
+a malicious package index. Use a trusted index for the bootstrap as well as
+subsequent installations. The supported installation guides and CI apply this
+minimum separately to each environment, including newly created wheel-test venvs.
+
+The [Windows model constraints](requirements/model-windows-py311-constraints.txt)
+record the packages present during the frozen v1.0.0 license audit. The old pip
+entry is historical evidence, not a current installer requirement. Current
+installation commands do not consume this file. Preserve it together with its
+bound snapshot and report; see the [maintenance policy](docs/MAINTENANCE.md).
+Do not use the historical file as a `pip install -r` installation list. A `-c`
+constraint does not itself install packages, but its old pip pin conflicts with
+the current pip minimum if pip is also requested. Record new environment audits
+under new names rather than overwriting the released evidence.
 
 ## Report a vulnerability
 

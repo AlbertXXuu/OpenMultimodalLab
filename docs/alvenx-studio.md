@@ -12,6 +12,7 @@ Use the Python 3.11 or 3.12 model environment documented for the selected
 backend. If that environment already works, add only the Studio extra:
 
 ```powershell
+.\.venv-ml\Scripts\python.exe -m pip install --upgrade "pip>=26.2"
 .\.venv-ml\Scripts\python.exe -m pip install -e ".[studio]"
 .\.venv-ml\Scripts\oml.exe studio
 ```
@@ -20,6 +21,7 @@ For a new Qwen3-VL environment, install the backend and Studio together after
 installing the appropriate CUDA-enabled PyTorch build:
 
 ```powershell
+.\.venv-ml\Scripts\python.exe -m pip install --upgrade "pip>=26.2"
 .\.venv-ml\Scripts\python.exe -m pip install -e ".[qwen3-vl,studio]"
 .\.venv-ml\Scripts\oml.exe doctor --backend qwen3-vl
 .\.venv-ml\Scripts\oml.exe studio
