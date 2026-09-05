@@ -21,7 +21,7 @@ INSTRUMENT_SANS_SHA256 = (
     "aa72922aafcc0dc18f36ec1d805b0212057dabe8b9d5b8b57f67035aea1b826d"
 )
 ALVENX_WORDMARK_SHA256 = (
-    "8ae10e02c27091e29e0191a7934506118f144aae11898b20222d7f9d587e2662"
+    "6cc422fb2ed289bee723f1c6e6d19baec63c18d988616eb5b90d8332a30b7b1e"
 )
 ALVENX_MONOGRAM_SHA256 = (
     "45367ec933c2ed8565cdf9e683fd4b856057d375435b46c62acb4fbb2cbeef16"
@@ -93,11 +93,11 @@ def _studio_theme() -> str:
 
 BRAND_HEADER_HTML = f"""
 <header id="alvenx-header" class="studio-shell">
-  <div class="brand-wordmark">
+  <button type="button" class="brand-wordmark" data-alvenx-home aria-label="AlvenX — Back to top">
     <img class="brand-wordmark-image"
          src="data:image/svg+xml;base64,{_alvenx_wordmark_base64()}"
          alt="AlvenX">
-  </div>
+  </button>
   <nav class="header-nav" aria-label="OpenMultimodalLab views">
     <button type="button" class="active" data-studio-tab="run" aria-current="page">Run</button>
     <button type="button" data-studio-tab="reports">Reports</button>
@@ -119,6 +119,14 @@ STUDIO_NAV_JS = r"""(() => {
       return;
     }
 
+    header.querySelector("[data-alvenx-home]").onclick = () => {
+      if (window.scrollY === 0) return;
+      window.scrollTo({
+        top: 0,
+        left: window.scrollX,
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+      });
+    };
     const controls = [...header.querySelectorAll("[data-studio-tab]")];
     const tabs = () => [...tabRoot.querySelectorAll("button[role='tab']")];
     tabRoot.setAttribute("aria-hidden", "true");

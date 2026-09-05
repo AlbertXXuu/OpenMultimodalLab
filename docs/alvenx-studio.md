@@ -57,8 +57,11 @@ distinguish a **cold start** from **warm reuse**.
 The first request loads the selected model and can take substantially
 longer; after a successful request, Studio confirms that the model remains
 warm for the next run. Clearing media, prompt, and output does not unload that
-model. The wordmark is a static identity element: it is not a button and has no
-hidden click interaction. The glass header, segmented navigation, media
+model. The AlvenX wordmark button returns to the actual document top and is
+a no-op when already there. Home navigation revision `2026-09-04.1` preserves
+the URL, browser history, selected view, inputs, and results. It supports keyboard
+activation and uses instant scrolling when reduced motion is requested.
+The glass header, segmented navigation, media
 selector, panels, and controls follow a nested radius system. Media and
 response surfaces use bounded heights with aspect-safe previews, scrolling
 text, and full-screen media controls. Narrow layouts return to natural document
@@ -142,9 +145,14 @@ owner-approved connected `Al`, `l–v`, `e–n`, and `n–X` outline relationshi
 `v–e` remains physically separate. Its continuous blue-to-indigo-to-violet
 `Al` gradient is shared by the header and portable README artwork. The interface embeds the
 canonical subtitle-free AlvenX wordmark, verifies it against SHA-256
-`8ae10e02c27091e29e0191a7934506118f144aae11898b20222d7f9d587e2662`,
+`6cc422fb2ed289bee723f1c6e6d19baec63c18d988616eb5b90d8332a30b7b1e`,
 and does not reconstruct `Al` and `venX` with browser letter spacing. The README
-may use a project-specific lockup; the application header does not.
+uses the same subtitle-free `docs/assets/alvenx-wordmark.svg`, with the project
+signal rendered as separate text below it. The preserved project-specific
+`docs/assets/alvenx-lockup.svg` supplies the social preview artwork.
+Wordmark canvas alignment revision `2026-09-04.1` centers the visible outlines
+within the existing 330×100 canvas. The glyph and color baseline remains
+`2026-08-22.4`; the AX brand baseline remains `2026-08-24.1`.
 Chinese text follows the embedded Latin face with professional platform CJK
 fallbacks. Because the wordmark stores glyphs as SVG outlines, it remains
 identical across local interfaces without requiring a local font install.

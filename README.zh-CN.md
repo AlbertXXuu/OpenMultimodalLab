@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="docs/assets/alvenx-wordmark.svg" width="320" alt="AlvenX — Multimodal Evidence">
+  <img src="docs/assets/alvenx-wordmark.svg" width="320" alt="AlvenX">
+  <br>
+  <sub>MULTIMODAL EVIDENCE</sub>
 </p>
 
 # OpenMultimodalLab

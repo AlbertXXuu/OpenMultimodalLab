@@ -7,7 +7,8 @@ published or that any channel adopted the project.
 ![AlvenX social preview](../assets/alvenx-social-preview.png)
 
 Rebuild the preview with `python scripts/build_social_preview.py`. The script
-uses the vendored Instrument Sans payload and a local Chromium-family browser;
+uses the preserved `docs/assets/alvenx-lockup.svg` artwork, the vendored
+Instrument Sans payload, and a local Chromium-family browser;
 the committed PNG is 1280×640 and remains below GitHub's 1 MB limit.
 
 ## Goal
