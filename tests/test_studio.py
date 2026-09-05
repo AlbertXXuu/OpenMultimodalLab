@@ -23,9 +23,9 @@ from openmultimodal_lab.studio import (
     PLAYGROUND_UI_MIN_NEW_TOKENS,
     PLAYGROUND_UI_MIN_TIMEOUT_SECONDS,
     STUDIO_BRAND,
+    PlaygroundResult,
     StudioInputError,
     StudioRuntime,
-    PlaygroundResult,
     VideoUploadInfo,
     inspect_video_upload,
     load_report_view,
@@ -92,6 +92,78 @@ class RecordingAdapter:
                 "peak_gpu_memory_mb": 512.0,
             },
         )
+
+
+@unittest.skipUnless(importlib.util.find_spec("playwright"), "Playwright is optional")
+class StudioHomeBrowserTests(unittest.TestCase):
+    def test_home_preserves_url_and_workspace_for_pointer_keyboard_and_reduced_motion(self) -> None:
+        from playwright.sync_api import sync_playwright
+
+        # Exercise the shipped header, styles, and binding with the DOM contract
+        # used by Gradio; no inference backend or model download is needed.
+        document = (
+            '<!doctype html><html><head><meta charset="utf-8"><style>' + STUDIO_CSS + '</style></head>'
+            '<body><form class="gradio-container" style="height:3000px">'
+            '<div id="studio-brand-header">' + BRAND_HEADER_HTML + '</div>'
+            '<div id="studio-tabs"><div class="tab-wrapper">'
+            '<button type="button" role="tab" data-tab-id="run" aria-selected="false">Run</button>'
+            '<button type="button" role="tab" data-tab-id="reports" aria-selected="true">Reports</button>'
+            '</div></div><textarea id="saved-input">Keep this prompt</textarea>'
+            '<output id="saved-result">Keep this result</output></form>'
+            '<script>' + STUDIO_NAV_JS + '</script></body></html>'
+        )
+        with sync_playwright() as playwright:
+            browser = playwright.chromium.launch()
+            try:
+                page = browser.new_page(viewport={"width": 1440, "height": 900})
+                page.route("http://oml.test/**", lambda route: route.fulfill(body=document, content_type="text/html"))
+                page.goto("http://oml.test/?source=local#reports")
+                home = page.get_by_role("button", name="AlvenX — Back to top")
+                page.wait_for_function("() => document.querySelector('[data-alvenx-home]').onclick !== null")
+                page.evaluate("""() => {
+                    window.__homeDocument = 'retained';
+                    window.__homeSubmits = 0;
+                    document.querySelector('form').addEventListener('submit', event => {
+                        event.preventDefault(); window.__homeSubmits++;
+                    });
+                    window.__homeCalls = [];
+                    const scroll = window.scrollTo.bind(window);
+                    window.scrollTo = options => { window.__homeCalls.push(options); scroll(options); };
+                }""")
+                state = """() => ({url: location.href, history: history.length,
+                    input: document.querySelector('#saved-input').value,
+                    output: document.querySelector('#saved-result').textContent,
+                    view: document.querySelector('[aria-selected="true"]').dataset.tabId,
+                    document: window.__homeDocument, submits: window.__homeSubmits})"""
+                before = page.evaluate(state)
+                for reduced in ("no-preference", "reduce"):
+                    page.emulate_media(reduced_motion=reduced)
+                    for activation in ("click", "Enter", "Space"):
+                        page.evaluate("window.scrollTo({top:0,behavior:'instant'}); window.__homeCalls=[]")
+                        if activation == "click":
+                            home.click()
+                        else:
+                            home.evaluate("element => element.focus({preventScroll:true})")
+                            home.press(activation)
+                        self.assertEqual(page.evaluate("window.scrollY"), 0)
+                        self.assertEqual(page.evaluate("window.__homeCalls"), [])
+                        page.evaluate("window.scrollTo({top:1800,behavior:'instant'}); window.__homeCalls=[]")
+                        self.assertGreater(page.evaluate("window.scrollY"), 0)
+                        if activation == "click":
+                            home.click()
+                        else:
+                            home.evaluate("element => element.focus({preventScroll:true})")
+                            home.press(activation)
+                        page.wait_for_function("() => window.scrollY === 0")
+                        self.assertEqual(page.evaluate("window.__homeCalls"), [{
+                            "top": 0, "left": 0,
+                            "behavior": "instant" if reduced == "reduce" else "smooth",
+                        }])
+                        self.assertEqual(page.evaluate(state), before)
+                self.assertEqual(home.evaluate("element => getComputedStyle(element).width"), "160px")
+                self.assertEqual(home.evaluate("element => getComputedStyle(element).outlineStyle"), "solid")
+            finally:
+                browser.close()
 
 
 class StudioRuntimeTests(unittest.TestCase):
@@ -313,13 +385,13 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn("Unscored", metrics)
         self.assertIn("Completed locally", status)
 
-    def test_brand_assets_are_local_and_wordmark_is_not_interactive(self) -> None:
+    def test_brand_assets_are_local_and_wordmark_has_accessible_home_control(self) -> None:
         combined = BRAND_HEADER_HTML + STUDIO_CSS
         self.assertIn(STUDIO_BRAND, combined)
         self.assertIn("data:image/svg+xml;base64,", BRAND_HEADER_HTML)
         self.assertIn('class="brand-wordmark-image"', BRAND_HEADER_HTML)
         self.assertIn("width: 160px", STUDIO_CSS)
-        self.assertIn("cursor: default", STUDIO_CSS)
+        self.assertIn('data-alvenx-home aria-label="AlvenX — Back to top"', BRAND_HEADER_HTML)
         self.assertNotIn("<svg", BRAND_HEADER_HTML.casefold())
         self.assertIn('data-studio-tab="run"', BRAND_HEADER_HTML)
         self.assertIn('data-studio-tab="reports"', BRAND_HEADER_HTML)
@@ -358,6 +430,17 @@ class StudioRuntimeTests(unittest.TestCase):
             "radial-gradient(circle at 84% 7%, rgb(167 139 250 / 28%), transparent 36%)",
             STUDIO_CSS,
         )
+        for fragment in (
+            ".media-guidance.warning { border-color: rgb(79 70 229 / 28%); background: rgb(79 70 229 / 8%); }",
+            ".media-guidance.compatible { border-color: rgb(37 99 235 / 20%); background: rgb(147 197 253 / 28%); }",
+            ".run-status.warning { border-color: rgb(79 70 229 / 28%); background: rgb(79 70 229 / 8%); color: var(--alx-indigo); }",
+            ".run-status.warning > span { background: var(--alx-indigo); }",
+            ".run-status.error { border-color: rgb(124 58 237 / 42%); background: rgb(237 233 254 / 62%); color: #6d28d9; }",
+            ".run-status.error > span { background: var(--alx-violet); }",
+            ".status-pill.complete { background: rgb(147 197 253 / 28%); color: var(--alx-blue); }",
+            ".protocol-pill.formal { background: rgb(147 197 253 / 28%); color: var(--alx-blue); }",
+        ):
+            self.assertIn(fragment, STUDIO_CSS)
 
     def test_studio_uses_one_locked_brand_type_system(self) -> None:
         self.assertIn('font-family: "Instrument Sans"', STUDIO_CSS)
@@ -453,7 +536,7 @@ class StudioRuntimeTests(unittest.TestCase):
         self.assertIn('id="brand-Al"', wordmark)
         self.assertIn('href="#brand-Al"', wordmark)
         self.assertIn('href="#brand-v" x="817.227"', wordmark)
-        self.assertIn('transform="translate(8.937 82)', wordmark)
+        self.assertIn('transform="translate(24.004 82)', wordmark)
         self.assertIn('id="brand-nX-ligature"', wordmark)
         self.assertIn(
             'href="#brand-X" transform="translate(2207.949 0) scale(.877778)"',

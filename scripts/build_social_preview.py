@@ -21,7 +21,7 @@ FONT_PATH = (
     / "InstrumentSans-wdth-wght.woff2.b64"
 )
 DEFAULT_OUTPUT = PROJECT_ROOT / "docs" / "assets" / "alvenx-social-preview.png"
-WORDMARK_PATH = PROJECT_ROOT / "docs" / "assets" / "alvenx-wordmark.svg"
+LOCKUP_PATH = PROJECT_ROOT / "docs" / "assets" / "alvenx-lockup.svg"
 CANVAS_SIZE = (1280, 640)
 
 
@@ -66,7 +66,7 @@ def _find_browser(explicit: Path | None) -> Path:
 
 def _preview_html() -> str:
     font_base64 = "".join(FONT_PATH.read_text(encoding="ascii").split())
-    wordmark_base64 = base64.b64encode(WORDMARK_PATH.read_bytes()).decode("ascii")
+    wordmark_base64 = base64.b64encode(LOCKUP_PATH.read_bytes()).decode("ascii")
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -181,6 +181,8 @@ def build_preview(output: Path, *, browser: Path | None = None) -> None:
             str(executable),
             "--headless=new",
             "--disable-gpu",
+            "--enable-unsafe-swiftshader",
+            "--no-sandbox",
             "--hide-scrollbars",
             "--force-device-scale-factor=1",
             f"--window-size={CANVAS_SIZE[0]},{CANVAS_SIZE[1]}",
@@ -192,6 +194,8 @@ def build_preview(output: Path, *, browser: Path | None = None) -> None:
             check=False,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             timeout=45,
         )
         if completed.returncode != 0 or not output.is_file():

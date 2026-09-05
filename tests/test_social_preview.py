@@ -23,8 +23,8 @@ class SocialPreviewTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
 
         self.assertIn("InstrumentSans-wdth-wght.woff2.b64", builder)
-        self.assertIn("WORDMARK_PATH", builder)
-        self.assertIn("base64.b64encode(WORDMARK_PATH.read_bytes())", builder)
+        self.assertIn("LOCKUP_PATH", builder)
+        self.assertIn("base64.b64encode(LOCKUP_PATH.read_bytes())", builder)
         self.assertIn("data:image/svg+xml;base64,{wordmark_base64}", builder)
         self.assertNotIn('class="brand-l"', builder)
         self.assertNotIn('class="brand-x"', builder)
