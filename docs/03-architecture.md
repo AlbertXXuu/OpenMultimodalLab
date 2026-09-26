@@ -1,5 +1,9 @@
 # 技术架构
 
+<!-- 2026-09-26 execution routing -->
+> 原始规划/学习参考，保留当时目标、技术选择和节奏。当前工程任务以 [TASKS](../TASKS.md) 和 [post-v1 roadmap](post-v1-roadmap.md) 为准；旧MVP清单、外部用户数、工时和周更频次不作为当前执行门槛。
+
+
 ## 1. 总体结构
 
 ```mermaid
