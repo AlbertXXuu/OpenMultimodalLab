@@ -213,8 +213,9 @@ explicitly unscored; the interface distinguishes the first cold model load
 from later warm reuse, and Clear resets both media tabs, the prompt, response,
 and metrics without unloading the model. Running with that cleared prompt
 restores the default visual-description prompt automatically. The AlvenX
-wordmark is a static identity element with no hidden click interaction. Use
-`oml run` for durable, comparable evidence.
+wordmark button returns to the document top while preserving the URL and current
+workspace state. It stays still at the top and scrolls immediately when reduced
+motion is enabled. Use `oml run` for durable, comparable evidence.
 See the [local interface guide and security boundary](docs/alvenx-studio.md).
 
 ## Run a real local model

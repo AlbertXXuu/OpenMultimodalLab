@@ -1,5 +1,9 @@
 # 质量与开源标准
 
+<!-- 2026-09-26 execution routing -->
+> 原始规划/学习参考，保留当时目标、技术选择和节奏。当前工程任务以 [TASKS](../TASKS.md) 和 [post-v1 roadmap](post-v1-roadmap.md) 为准；旧MVP清单、外部用户数、工时和周更频次不作为当前执行门槛。
+
+
 > `v1.0.0` 的公开证据见[发布准备矩阵](public-release-readiness.md)和
 > [最终验证报告](reports/final-candidate-validation.md)。以下规则继续作为未来
 > 版本的可复用门槛，复选框不是 v1.0 状态记录。

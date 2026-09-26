@@ -52,10 +52,10 @@ An adapter that only makes another model import successfully is not enough.
 
 ### Next: evidence-led extension
 
-- Run observed fresh-clone sessions with non-author users and fix the highest
-  friction points.
-- Publish an adapter template only after its contract tests and license/revision
-  checklist are complete.
+- Verify the documented fresh-install path with existing public tasks and fix observed
+  friction. Reuse unchanged acceptance evidence; external-user sessions can follow when available.
+- Maintain the already delivered adapter template and its contract tests; change it only
+  for an observed integration gap.
 - Add one low-VRAM comparison at a time, each motivated by a question the
   existing v1.0 evidence cannot answer.
 
@@ -76,14 +76,13 @@ An adapter that only makes another model import successfully is not enough.
 
 The next validation targets are:
 
-- five successful clean-environment runs by people other than the author;
-- three substantive external Issues, Discussions, or pull requests that change
-  a documented decision;
 - a core quick start completed within 10 minutes, excluding model downloads;
-- two or three substantive updates per week when evidence is ready.
+- documented input-to-report behavior and understandable malformed-input failures;
+- compatibility of preserved evidence and clear boundaries for new report versions;
+- a reviewed release when a coherent engineering milestone is complete.
 
-Until measured, these remain targets. Empty commits, retrospective releases,
-or invented feedback do not satisfy them.
+Until measured, these remain targets. External use is recorded when it occurs; recruitment
+counts and a weekly commit quota are not engineering acceptance conditions.
 
 ## Stop conditions
 
