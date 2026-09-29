@@ -12,7 +12,7 @@
 ![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB)
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
 
-[简体中文](README.zh-CN.md)
+[English](README.md) · [简体中文](README.zh-CN.md)
 
 > Version status: current software is the `v1.1.2` maintenance patch. The research and evidence
 > baseline remains the immutable `v1.0.0` public release. This patch aligns the packaged Studio
@@ -63,8 +63,9 @@ cross-family token throughput uses different token definitions.
 
 ![Formal 102-task Qwen3-VL-2B and SmolVLM2-500M comparison](docs/reports/v1.0.0-candidate/overview.svg)
 
-Read the [byte-rebuildable report](docs/reports/v1.0.0-candidate/report.md) or
-inspect the preserved
+Read the benchmark report in [English](docs/reports/v1.0.0-candidate/report.md) or
+[简体中文](docs/reports/v1.0.0-candidate.zh-CN.md). The English original remains byte-rebuildable.
+Inspect the preserved
 [Qwen JSONL](docs/reports/results/2026-08-10-qwen3-vl-v1.0.0-formal.jsonl),
 [SmolVLM2 JSONL](docs/reports/results/2026-08-10-smolvlm2-v1.0.0-formal.jsonl),
 and their SHA-bound manifests. Historical ten-task and document-only reports
@@ -311,7 +312,7 @@ equivalent because tokenizers differ.
 | Run records, manifests, and resume | [Artifact contract](docs/run-records-and-manifests.md) |
 | Two-model formal result | [Qwen3-VL vs SmolVLM2](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md) |
 | 32-task document comparison | [Qwen3-VL vs SmolVLM2 on documents](docs/reports/2026-08-02-document-model-comparison.md) |
-| 102-task v1.0.0 benchmark comparison | [Byte-rebuildable final-corpus bundle](docs/reports/v1.0.0-candidate/report.md) |
+| 102-task v1.0.0 benchmark comparison | [English (byte-rebuildable)](docs/reports/v1.0.0-candidate/report.md) · [简体中文](docs/reports/v1.0.0-candidate.zh-CN.md) |
 | Performance methodology | [Qwen formal performance baseline](docs/reports/2026-07-31-qwen3-vl-formal-performance.md) |
 | Quality and public-release gates | [Quality standard](docs/06-quality-and-open-source.md) |
 | Live public-release status | [Evidence matrix and strict readiness check](docs/public-release-readiness.md) |

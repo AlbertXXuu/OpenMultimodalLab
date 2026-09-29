@@ -12,7 +12,7 @@
 ![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB)
 [![License](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
 
-[English](README.md)
+[English](README.md) · [简体中文](README.zh-CN.md)
 
 > 版本状态：当前软件是 `v1.1.2` 维护修补版。研究与证据基线仍是不可变的 `v1.0.0`
 > 公开正式版。本次修补让打包后的 Studio Header 回到跨产品统一几何，并澄清测量与
@@ -56,7 +56,8 @@ OCR、事件顺序等部分分类领先。结果适用于固定模型 revision�
 
 ![102 条任务正式对比](docs/reports/v1.0.0-candidate/overview.svg)
 
-完整证据见[可逐字节重建报告](docs/reports/v1.0.0-candidate/report.md)，原始
+完整报告：[English（可逐字节重建原件）](docs/reports/v1.0.0-candidate/report.md) ·
+[简体中文](docs/reports/v1.0.0-candidate.zh-CN.md)。原始
 [Qwen JSONL](docs/reports/results/2026-08-10-qwen3-vl-v1.0.0-formal.jsonl)、
 [SmolVLM2 JSONL](docs/reports/results/2026-08-10-smolvlm2-v1.0.0-formal.jsonl)
 及其 SHA 绑定 manifest 均已保存。早期 10 条任务和文档专项报告仍保留在下方
@@ -125,7 +126,7 @@ flowchart LR
 面向发布的重建流程见[确定性报告包说明](docs/report-bundles.md)。它会先验证
 “恰好一次 warm-up + 三次完整重复”、来源 manifest、模型/数据集身份和媒体哈希，
 再生成完整对比包。仓库中的
-[v1.0.0 正式报告](docs/reports/v1.0.0-candidate/report.md)已经覆盖完整的
+[v1.0.0 正式报告（简体中文）](docs/reports/v1.0.0-candidate.zh-CN.md)已经覆盖完整的
 102 条任务双模型正式网格；旧的
 [重建基线](docs/reports/rebuilt-baseline/report.md)仅作为历史审计证据保留。
 
@@ -270,7 +271,7 @@ Git 状态、输出哈希与大小、记录数和严格尝试前缀。只有明�
 | 运行记录、manifest 和恢复 | [产物契约](docs/run-records-and-manifests.md) |
 | 双模型正式结果 | [Qwen3-VL vs SmolVLM2](docs/reports/2026-07-31-qwen3-vl-vs-smolvlm2.md) |
 | 32 条文档任务对比 | [Qwen3-VL 与 SmolVLM2 文档评测](docs/reports/2026-08-02-document-model-comparison.md) |
-| 102 条 v1.0.0 正式对比 | [可逐字节重建的完整语料报告](docs/reports/v1.0.0-candidate/report.md) |
+| 102 条 v1.0.0 正式对比 | [English（可逐字节重建）](docs/reports/v1.0.0-candidate/report.md) · [简体中文](docs/reports/v1.0.0-candidate.zh-CN.md) |
 | 性能方法 | [Qwen 正式性能基线](docs/reports/2026-07-31-qwen3-vl-formal-performance.md) |
 | 质量与公开门槛 | [质量标准](docs/06-quality-and-open-source.md) |
 | 实时公开准备状态 | [证据矩阵与严格验收命令](docs/public-release-readiness.md) |
