@@ -14,6 +14,11 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md)
 
+工程案例：[English](docs/case-studies/multimodal-measurement.md) ·
+[简体中文](docs/case-studies/multimodal-measurement.zh-CN.md) ·
+网站阅读版：[English](https://alvenx.com/notes/engineering/multimodal-measurement) ·
+[简体中文](https://alvenx.com/notes/engineering/multimodal-measurement-zh)
+
 > 版本状态：当前软件是 `v1.1.2` 维护修补版。研究与证据基线仍是不可变的 `v1.0.0`
 > 公开正式版。本次修补让打包后的 Studio Header 回到跨产品统一几何，并澄清测量与
 > 未来运行时边界；它不新增基准证据，也不改变已发布结果。详见

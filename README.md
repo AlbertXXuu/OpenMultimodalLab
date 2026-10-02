@@ -14,6 +14,11 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md)
 
+Engineering case: [English](docs/case-studies/multimodal-measurement.md) ·
+[简体中文](docs/case-studies/multimodal-measurement.zh-CN.md) ·
+Website: [English](https://alvenx.com/notes/engineering/multimodal-measurement) ·
+[简体中文](https://alvenx.com/notes/engineering/multimodal-measurement-zh)
+
 > Version status: current software is the `v1.1.2` maintenance patch. The research and evidence
 > baseline remains the immutable `v1.0.0` public release. This patch aligns the packaged Studio
 > header with the canonical cross-product geometry and clarifies measurement and future-runtime
