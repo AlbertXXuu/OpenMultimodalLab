@@ -2,7 +2,7 @@ accelerate==1.14.0
 annotated-doc==0.0.5
 anyio==4.14.2
 av==18.0.0
-certifi==2026.7.22
+certifi==2026.10.18
 click==8.4.2
 colorama==0.4.6
 docopt==0.6.2
